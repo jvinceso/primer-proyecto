@@ -1,0 +1,176 @@
+<?php
+    $this->titulopagina='Los Pinos - Nuevo Grado';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $h3 = '<ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+//Script envio de Formulario por ajax
+    $script='<script type="text/javascript" src="/js/jquery.form.js" ></script>
+        <script type="text/javascript"> 
+            // wait for the DOM to be loaded 
+           $(document).ready(function() { 
+            // bind "formLogin" and provide a simple callback function 
+            $("#formLogin").ajaxForm(function() { 
+                $(".setenta").load("./listadosecciones");
+                
+            }); 
+        });         
+        </script>';
+    $this->script=$script;    
+    
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
+        <ul class="bread">
+            <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="plataforma" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Plataforma</span>
+                </a>
+            </li>
+            <li>
+                <a href="nuevaseccion" class="breadcrumb breadcrumb1">
+                    <span>Nueva Sección</span>
+                </a>
+            </li>
+        </ul>';
+           
+        $contenido ='
+            <div class="admin_section treinta"> 
+                <h4>Crear Seccion</h4>'.$this->formnuevaseccion.'</div>'.
+            '
+            <div class="admin_section setenta">
+            <h4>Lista de Secciones</h4>
+            <table class="data_table">
+	<tbody>
+        <tr class="row_odd">
+		<th width="18px">&nbsp;</th>
+		<th>Codigo</th>
+		<th><a href="">Grado</a></th>
+		<th><a href="">Sección</a></th> 
+		<th width="15px"><a href="">Activo</a></th>
+		<th width="220px">Acción</th>
+	</tr>';
+        
+        $seccion = new Application_Model_Seccion();
+        $listasecciones = $seccion->listarSeccionesPeriodoActual();
+        
+        $cont=0;
+        foreach ($listasecciones as $aux){
+            if ($cont % 2){
+                $contenido.='<tr class="row_even">';
+            }
+            else{
+                $contenido .= '<tr class="row_odd">';
+            }
+            $contenido.='
+                        <td>
+                            <input type="checkbox" name="id[]" value="4">
+                        </td>
+                        <td>
+                            <center>'.$aux['iSeccIdSeccion'].'</center>
+                        </td>
+
+                        <td>
+                            <center>'.$aux['vGradoDescripcion'].'</center>
+                        </td> 
+                        <td>
+                            <center>'.$aux['vSeccDescripcion'].'</center>
+                        </td>
+                        <td>
+                            <center>';
+                            if($aux['tiSeccEstado']=='A'){
+                                $contenido.=' <a href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=I"><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';
+                            }
+                            else{
+                                $contenido.=' <a href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=A"><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
+                            }
+            $contenido.='
+                           </center>
+                        </td>
+                        <td>
+                            <a href="">
+                                <img src="/main/img/course.gif" title="Cursos" alt="Cursos" />
+                            </a>&nbsp;&nbsp;
+                            <a href="">
+                                <img src="/main/img/synthese_view.gif" alt="Información" title="Información">
+                            </a>&nbsp;&nbsp;
+                            <a href="">
+                                <img src="/main/img/login_as.gif" alt="Iniciar sesión como" title="Iniciar sesión como">
+                            </a>&nbsp;&nbsp;
+                            <img src="/main/img/statistics_na.gif" alt="Informes" title="Informes">&nbsp;&nbsp;
+                            <a href="">
+                                <img src="/main/img/icons/22/edit.png" alt="Editar" title="Editar">
+                            </a>&nbsp;
+                            <img src="/main/img/admin_star_na.png" alt="No es administrador" title="No es administrador" />';
+                            
+                            if ($cont<sizeof($listasecciones)-1){
+                                if($aux['vGradoDescripcion']==$listasecciones[$cont+1]['vGradoDescripcion']){
+                                    $contenido.='
+                                    <a>
+                                        <img src="/main/img/icons/22/delete_na.png" alt="No Eliminar" title="No Puede Eliminarse">
+                                    </a>';
+                                }
+                                else{
+                                    $contenido.='
+                                    <a href="/admin/eliminarseccion/?secc='.$aux['iSeccIdSeccion'].'">
+                                        <img src="/main/img/icons/22/delete.png" alt="Eliminar?" title="Eliminar?">
+                                    </a>';
+                                }
+                            }
+                            else {
+                                $contenido.='
+                                    <a href="/admin/eliminarseccion/?secc='.$aux['iSeccIdSeccion'].'">
+                                        <img src="/main/img/icons/22/delete.png" alt="Eliminar?" title="Eliminar?">
+                                    </a>';
+                            }
+                                    
+                       $contenido.='                             
+                        </td>
+                    </tr>';
+            
+            $cont++;
+        }
+        
+	$contenido .= '</tbody>
+                </table>
+            </div>';
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+?>

@@ -1,0 +1,91 @@
+<?php
+    $this->titulopagina='Los Pinos - Actualizar Periodo';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
+        <ul class="bread">
+            <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="plataforma" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Plataforma</span>
+                </a>
+            </li>
+            <li>
+                <a href="actualizarperiodo" class="breadcrumb breadcrumb1">
+                    <span>Actualizar Periodo</span>
+                </a>
+            </li>
+        </ul>';
+    $peranterior=date("Y")-1;
+        $periodoacademico = new Application_Model_PeriodoAcademico();
+        $idperacademico=$periodoacademico->getPeriodoActualId();
+        
+        switch($periodoacademico){
+            case 'A':
+                $contenido =  '
+                <h2>Actualizar Periodo</h2><div class="warning-message">
+                <b>No existe Periodo Academico Activo</b></div>';
+    
+                break;
+            case 'B':
+                $contenido =  '
+                <h2>Actualizar Periodo</h2><div class="warning-message">
+                <b>Existe inconsistencia ne la Base de Datos. Por favor comunicarlo al Encargado.</b></div>';
+                break;
+            default:
+                $mysession->id_periodoacademico=$idperacademico;
+                $contenido =  '
+                <h2>Actualizar Periodo</h2><div class="warning-message">
+                    <b>ADVERTENCIA:</b> Al aceptar el registro actual se inhabilitará el periodo académico anterior ('.$peranterior.').
+                    Recuerde que esta operación quedará registrada y no podrá modificarla hasta el siguiente periodo académico.</div>'.$this->formactperiodo;
+                break;
+            }
+        
+        $contenido =  '
+            <h2>Actualizar Periodo</h2><div class="warning-message">
+                <b>ADVERTENCIA:</b> Al aceptar el registro actual se inhabilitará el periodo académico anterior ('.$peranterior.').
+                    Recuerde que esta operación quedará registrada y no podrá modificarla hasta el siguiente periodo académico.</div>'.$this->formactperiodo;
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+?>

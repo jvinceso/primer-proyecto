@@ -1,0 +1,50 @@
+<?php
+    $html= new Application_Model_Html();
+    //$html->setLayoutt($this);
+    print $html->crearDoctype();
+    print $html->cargarCss($this->css);
+    print $html->cargarScript($this->script);
+    print $html->setTitle($this->titulopagina);
+    print $html->closeHead();
+    print '<body>';
+?>
+<?php
+    if (Zend_Session::sessionExists()){
+     //if ($_ $_REQUEST('controller')=='index' && $_REQUEST('action')=='index'){              
+           
+    //$defaultNamespace = new Zend_Session_Namespace('sesion');
+    //if (isset($defaultNamespace->usuario_nombre)) {
+        // this will increment for each page load.
+        print $this->layout()->content.'
+            </body>
+            </html>';
+    }
+    else {
+        $head2='<div id="Header2Right">
+                        <ul>
+                            <li>
+                            </li>
+                            <li>
+                                <a href="" target="_top" title="Usuarios en línea">
+                                    <img width="13px" src="/main/img/members.gif" title="Usuarios en línea"> 2
+                                </a>
+                            </li>
+                        </ul>
+                    </div>';
+        $content='
+                 <h2>¡Bienvenido al portal Educativo de Los Pinos!</h2>
+                    <p>Ahora podrás ver tus cursos y navegar de una forma más sencilla para aprender tus cursos favoritos. Además:<br>
+                    </p>
+                        <ol>
+                            <li>Mira tus cursos</li>
+                            <li>Conéctate con tus amigos.</li>
+                            <li>Realiza tus prácticas</li>
+                        </ol>
+                    <p>Siempre podrá solicitar más información sobre de el uso de este sistema enviando un correo a: <a href="#">administrador@lospinos.com</a>.</p>
+                    <p>Diviértete, no dudes en dejarnos tu opinión.</p>';
+        print $html->crearWrapper(null, null, $head2, null, null, $content, $this->layout()->content,null);
+    }
+    print $html->crearFooter();
+     
+?>
+

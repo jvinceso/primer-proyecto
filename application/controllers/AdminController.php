@@ -405,7 +405,61 @@ class AdminController extends Zend_Controller_Action
 
         $form->addElement($boton);
 
+ $gradoajax=$form->createElement('select','cbogrados',array(
+            'label'        => 'Grado',
+            'onchange'=>'cargarsecion();',
+            'autocomplete' => false,
+            'multiOptions' => array("4"=>"CUARTO", "5"=>"QUINTO"))
+        );
+
+        $gradoajax->setDecorators(array(
+                'ViewHelper',
+                'Description',
+                'Errors',
+                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
+                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
+                array('Label', array('tag' => 'td')),
+            ));
+       $form->addElement($gradoajax);
+        $seccion2=$form->createElement('select','cboseccion',array(
+            'label'        => 'Seccion',
+            'autocomplete' => false,
+            'multiOptions' => array("1"=>"A", "2"=>"B"))
+        );
+
+        $seccion2->setDecorators(array(
+                'ViewHelper',
+                'Description',
+                'Errors',
+                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
+                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
+                array('Label', array('tag' => 'td')),
+            ));
+       $form->addElement($seccion2);					
+
+        
         return $form;
+    }
+    
+    public function cargacomboAction(){
+
+        $this->_helper->layout->disableLayout();         
+
+//         return $json;      
+//             
+//        $this->view->array_re=$array_re; 
+    }
+  
+    public function listarsecciongradoAction(){
+        $this->_helper->layout->disableLayout();  
+        $this->_helper->viewRenderer->setNoRender();        
+        $seccion=new Application_Model_Seccion();         
+        $idGrado=$this->_request->codgrad;
+        
+        $array_re=$seccion->listarSeccionesPorGrado($idGrado); 
+//funcion de zend framewrok que me codifica el listado para formato Json         
+        $json = Zend_Json::encode($array_re);  
+        echo $json;
     }
     
     public function nuevogradoAction(){
@@ -508,4 +562,21 @@ class AdminController extends Zend_Controller_Action
 //     $this->_helper->viewRenderer->setNoRender();   
     }      
     
+    /*Juegando Ajax*/
+
+    public function saludoajaxAction(){
+//         $this->_helper->layout->disableLayout();  
+    }
+    
+    
+    public function saludoajax2Action()
+    {
+        //esta accion no usara layout.phtml
+        $this->_helper->layout->disableLayout();
+        //esta accion no renderizara su contenido en saludoajax2.phtml
+        $this->_helper->viewRenderer->setNoRender();
+
+        //esta es la respuesta a la llamada ajax
+        echo "saludos desde el servidor";
+    }    
 }

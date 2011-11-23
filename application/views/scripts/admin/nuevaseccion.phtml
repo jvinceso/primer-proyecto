@@ -1,3 +1,58 @@
+<script type="text/javascript">    
+
+     function cargarsecion(){
+        var valor=$("#cbogrados").val();
+            elem=document.getElementById('cboseccion');  
+            var datos = "";  
+            //funcion que hace llamada a ajax esperando un  
+            // arreglo json de respuesta  
+         //   borrarElements();
+            removeAllOptions(elem);
+//            alert("Aqui voy valor es : "+valor+" NODOS "+elem.length);
+            
+//            $.get("listarsecciongrado/?codgrad="+valor,function(data)
+            $.getJSON("listarsecciongrado/?codgrad="+valor,  function(data){
+//                $("#cboseccion").html(data)
+//            var url="listarsecciongrado/?codgrad="+valor;
+            //POR DEFECTO HABILITADO
+//            $.getJSON('listarsecciongrado',  function(data)  
+//            {  
+                //por cada elemento  
+                //(recordar que recibimos un arreglo de arreglos)  
+                var seccion = data, html = '';
+                for (var x = 0 ; x < seccion.length ; x++) {
+                    var option=document.createElement("option");
+                    option.value=seccion[x].iSeccIdSeccion;
+                    option.text=seccion[x].vSeccDescripcion;
+                    elem.appendChild(option)
+//                        html= '<option value="' + seccion[x].iSeccIdSeccion+ '">' + seccion[x].vSeccDescripcion + '</option>';
+//                        alert("OPT "+html);
+//                        elem.options[].adoptNode(html);
+                }
+//                 elem.appendChild(document.createElement(html));
+                //coloco resultado en capa id=albumesdiv  
+//            }); 
+           });
+        }  
+//        function cargarsecion(){
+//            var valor=$("#cbogrados").val();
+//            
+//            alert("Aqui voy valor es : "+valor+" NODOS "+elem.length);
+//            borrarElements();
+//            $.get("cargacombo/?codgrad="+valor,function(data){$("#cboseccion").html(data)});
+//        }
+
+        function removeAllOptions(selectbox)
+        {
+//            elem=document.getElementById('cboseccion');
+            var i;
+          for(i=selectbox.options.length-1;i>=0;i--)
+          {
+              selectbox.remove(i);
+          }
+        }        
+
+</script>
 <?php
     $this->titulopagina='Los Pinos - Nuevo Grado';
     $html= new Application_Model_Html();
@@ -22,6 +77,7 @@
     
 //Script envio de Formulario por ajax
     $script='<script type="text/javascript" src="/js/jquery.form.js" ></script>
+        <script type="text/javascript" src="/js/codigito.js" ></script>
         <script type="text/javascript"> 
             // wait for the DOM to be loaded 
            $(document).ready(function() { 
@@ -30,7 +86,8 @@
                 $(".setenta").load("./listadosecciones");
                 
             }); 
-        });         
+        });
+
         </script>';
     $this->script=$script;    
     

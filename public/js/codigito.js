@@ -44,25 +44,7 @@ function ActualizaSeccion(secc,estado,e){
                 buttons:{
                     "Aceptar": function(){
                         $( this ).dialog( "close" );
-                             $.ajax( 
-                            {
-                                dataType: "html",
-                                type: "POST",
-                                // ruta donde se encuentra nuestro action que procesa la peticion XmlHttpRequest        
-                                url: "/admin/actualizarseccionajax/", 
-                                data: "secc=" + secc+"&"+"est="+estado, 
-                                success: function(requestData){ 	//Llamada exitosa
-                                    $(".setenta").load("listadosecciones"); 
-                                //           $("#lstRegiones").html(requestData);//Usando JQUERY, Cargamos las regiones del pais
-                                },
-                                error: function(requestData, strError, strTipoError){
-                                    alert("Error " + strTipoError +': ' + strError); //En caso de error mostraremos un alert
-                                },
-                                complete: function(requestData, exito){
-                                //fin de la llamada ajax.
-                                // En caso de usar una gif (cargando...) aqui quitas la imagen
-                                }
-                            });
+//aca ira ajax
                     },
                     Cancelar: function(){
                         $( this ).dialog( "close" );
@@ -78,4 +60,30 @@ function ActualizaSeccion(secc,estado,e){
 //            });
         });
 
+}
+function ajaxselectivo(urls,parametros)
+{
+    $.ajax( 
+    {
+        dataType: "html",
+        type: "POST",
+        // ruta donde se encuentra nuestro action que procesa la peticion XmlHttpRequest        
+        url: urls, 
+        data: "secc=" + secc+"&"+"est="+estado, 
+        success: function(requestData){ 	//Llamada exitosa
+           if(requestData=="1"){
+            $(".setenta").load("listadosecciones");     
+           }
+          else{
+              window.location="/";
+          } 
+        },
+        error: function(requestData, strError, strTipoError){
+            alert("Error " + strTipoError +': ' + strError); //En caso de error mostraremos un alert
+        },
+        complete: function(requestData, exito){
+        //fin de la llamada ajax.
+        // En caso de usar una gif (cargando...) aqui quitas la imagen
+        }
+    });    
 }

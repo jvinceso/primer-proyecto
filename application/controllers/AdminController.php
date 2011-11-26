@@ -568,7 +568,7 @@ class AdminController extends Zend_Controller_Action
         $secciones->actualizarSeccion($idseccion, $estado);
         return $this->_redirect('/admin/nuevaseccion');        
     }
-    
+//Funciones Ajax
     public function actualizarseccionajaxAction(){
       $secciones = new Application_Model_Seccion();
         if ($this->getRequest()->isXmlHttpRequest())//Detectamos si es una llamada AJAX
@@ -582,8 +582,20 @@ class AdminController extends Zend_Controller_Action
             $secciones->actualizarSeccion($idseccion, $estado);    
             echo "1";
         } 
-    }    
-
+    }
+    
+    public function eliminarseccionajaxAction(){
+        $secciones = new Application_Model_Seccion();
+        if ($this->getRequest()->isXmlHttpRequest())
+        {   
+            $this->_helper->layout->disableLayout();
+            $this->_helper->viewRenderer->setNoRender();             
+            $idseccion=$this->getRequest()->getParam('secc');
+            $secciones->deleteSeccion($idseccion);
+            echo "1";
+        
+        }
+    }
     public function listadoseccionesAction()  
     {  
      // action body  

@@ -41,10 +41,10 @@ $contenido='
                         <td>
                             <center>';
                             if($aux['tiSeccEstado']=='A'){
-                               $contenido.=' <a class="actsecc" onclick="ActualizaSeccion('.$aux['iSeccIdSeccion'].',\'I\',event);" href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=I"  ><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';                                   
+                               $contenido.='<a class="actsecc" onclick="ActDelSeccion('.$aux['iSeccIdSeccion'].',\'I\',event,\'act\');" href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=I"  ><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';                                   
                             }
                             else{
-                              $contenido.=' <a class="actsecc" onclick="ActualizaSeccion('.$aux['iSeccIdSeccion'].',\'A\',event);"  href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=A"><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
+                              $contenido.='<a class="actsecc" onclick="ActDelSeccion('.$aux['iSeccIdSeccion'].',\'A\',event,\'act\');" href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=A"  ><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
                             }
             $contenido.='
                            </center>
@@ -74,14 +74,14 @@ $contenido='
                                 }
                                 else{
                                     $contenido.='
-                                    <a href="/admin/eliminarseccion/?secc='.$aux['iSeccIdSeccion'].'">
+                                     <a onclick="ActDelSeccion('.$aux['iSeccIdSeccion'].',\'nad\',event,\'del\');" href="/admin/eliminarseccion/?secc='.$aux['iSeccIdSeccion'].'">
                                         <img src="/main/img/icons/22/delete.png" alt="Eliminar?" title="Eliminar?">
                                     </a>';
                                 }
                             }
                             else {
                                 $contenido.='
-                                    <a href="/admin/eliminarseccion/?secc='.$aux['iSeccIdSeccion'].'">
+                                     <a onclick="ActDelSeccion('.$aux['iSeccIdSeccion'].',\'nad\',event,\'del\');" href="/admin/eliminarseccion/?secc='.$aux['iSeccIdSeccion'].'">
                                         <img src="/main/img/icons/22/delete.png" alt="Eliminar?" title="Eliminar?">
                                     </a>';
                             }

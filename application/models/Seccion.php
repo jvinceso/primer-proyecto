@@ -6,7 +6,7 @@ class Application_Model_Seccion {
         protected $iGradoIdGrado;
         protected $Grado_iGradoIdGrado;
 
-	public function __construct(){
+	public function __construct(){ 
 
 	}
         

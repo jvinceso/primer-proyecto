@@ -376,9 +376,10 @@ class AdminController extends Zend_Controller_Action
         $combo=$form->createElement('select','cbogrado',
             array(
             'label'        => 'Grado', 
-                'placeholder' => 'Seleccionar Grado',
             'autocomplete' => false,
-            'multiOptions' => $arraygradostoarray)
+            'multiOptions' => $arraygradostoarray,
+                
+                )
         );
 
         $combo->setDecorators(array(
@@ -405,38 +406,51 @@ class AdminController extends Zend_Controller_Action
 
         $form->addElement($boton);
 
- $gradoajax=$form->createElement('select','cbogrados',array(
-            'label'        => 'Grado',
-            'onchange'=>'cargarsecion();',
-            'autocomplete' => false,
-            'multiOptions' => array("4"=>"CUARTO", "5"=>"QUINTO"))
-        );
-
-        $gradoajax->setDecorators(array(
-                'ViewHelper',
-                'Description',
-                'Errors',
-                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                array('Label', array('tag' => 'td')),
-            ));
-       $form->addElement($gradoajax);
-        $seccion2=$form->createElement('select','cboseccion',array(
-            'label'        => 'Seccion',
-            'autocomplete' => false,
-            'multiOptions' => array("1"=>"A", "2"=>"B"))
-        );
-
-        $seccion2->setDecorators(array(
-                'ViewHelper',
-                'Description',
-                'Errors',
-                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                array('Label', array('tag' => 'td')),
-            ));
-       $form->addElement($seccion2);					
-
+//        $gradoajax=$form->createElement('select','cbogrados',array(
+//            'label'        => 'Grado',
+//            'onchange'=>'cargarsecion();',
+//            'autocomplete' => false,
+//            'multiOptions' => array("4"=>"CUARTO", "5"=>"QUINTO"))
+//        );
+//
+//        $gradoajax->setDecorators(array(
+//                'ViewHelper',
+//                'Description',
+//                'Errors',
+//                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
+//                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
+//                array('Label', array('tag' => 'td')),
+//            ));
+//       $form->addElement($gradoajax);
+//        $seccion2=$form->createElement('select','cboseccion',array(
+//            'label'        => 'Seccion',
+//            'autocomplete' => false,
+//            'multiOptions' => array("0"=>"Seleccion Grado"))
+//        );
+//
+//        $seccion2->setDecorators(array(
+//                'ViewHelper',
+//                'Description',
+//                'Errors',
+//                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
+//                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
+//                array('Label', array('tag' => 'td')),
+//            ));
+//       $form->addElement($seccion2);					
+//        // Crea un y configura el elemento username
+//        $peracademico = $form->createElement('text', 'peracademico', array('label' => 'Periodo Académico'));
+//        $peracademico->addValidator('notEmpty', true, array('messages' => array('isEmpty' => 'Campo requerido'))) 
+//                 ->setRequired(true);
+// 
+//        $peracademico->setDecorators(array(
+//                    'ViewHelper',
+//                    'Description',
+//                    'Errors',
+//                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
+//                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
+//                    array('Label', array('tag' => 'td')),
+//                ));
+//    $form->addElement($peracademico);
         
         return $form;
     }
@@ -457,7 +471,8 @@ class AdminController extends Zend_Controller_Action
         $idGrado=$this->_request->codgrad;
         
         $array_re=$seccion->listarSeccionesPorGrado($idGrado); 
-//funcion de zend framewrok que me codifica el listado para formato Json         
+//funcion de zend framewrok que me codifica el listado para formato Json   
+
         $json = Zend_Json::encode($array_re);  
         echo $json;
     }
@@ -520,7 +535,7 @@ class AdminController extends Zend_Controller_Action
             // Falla la validación; Se vuelve a mostrar el formulario
            
             $this->view->formnuevaseccion = $form;
-            //return $this->render('form');
+            return $this->render('nuevaseccion');
         }
         
         $secciones = new Application_Model_Seccion();
@@ -547,12 +562,27 @@ class AdminController extends Zend_Controller_Action
     }
     
     public function actualizarseccionAction(){
-        $secciones = new Application_Model_Seccion();
+      $secciones = new Application_Model_Seccion();
         $idseccion=$this->_request->secc;
         $estado=$this->_request->est;
         $secciones->actualizarSeccion($idseccion, $estado);
-        return $this->_redirect('/admin/nuevaseccion');
+        return $this->_redirect('/admin/nuevaseccion');        
     }
+    
+    public function actualizarseccionajaxAction(){
+      $secciones = new Application_Model_Seccion();
+        if ($this->getRequest()->isXmlHttpRequest())//Detectamos si es una llamada AJAX
+        {
+            //esta accion no usara layout.phtml
+            $this->_helper->layout->disableLayout();
+            //esta accion no renderizara su contenido en saludoajax2.phtml
+            $this->_helper->viewRenderer->setNoRender();            
+            $idseccion=$this->getRequest()->getParam('secc');
+            $estado=$this->getRequest()->getParam('est');                
+            $secciones->actualizarSeccion($idseccion, $estado);    
+            echo "1";
+        } 
+    }    
 
     public function listadoseccionesAction()  
     {  
@@ -560,15 +590,9 @@ class AdminController extends Zend_Controller_Action
         $this->verificarInactividad();
      $this->_helper->layout->disableLayout();  
 //     $this->_helper->viewRenderer->setNoRender();   
-    }      
+    }     
     
     /*Juegando Ajax*/
-
-    public function saludoajaxAction(){
-//         $this->_helper->layout->disableLayout();  
-    }
-    
-    
     public function saludoajax2Action()
     {
         //esta accion no usara layout.phtml
@@ -579,4 +603,37 @@ class AdminController extends Zend_Controller_Action
         //esta es la respuesta a la llamada ajax
         echo "saludos desde el servidor";
     }    
+    
+    public function ajaxcontrolAction()
+    {
+        if (!$this->getRequest()->isXmlHttpRequest())//Detectamos si es una llamada AJAX
+        {
+            //Declaramos las clases que necesitamos 
+            $seccion = new Application_Model_Seccion();
+            $includes=new Application_Model_Includes();
+            
+            // Solo si estas usando Zend_Layout
+            $this->_helper->layout->disableLayout();             
+            //No necesitamos el render de la vista en una llamada ajax.
+            $this->_helper->viewRenderer->setNoRender();             
+            
+            
+            $idGrado=$this->_request->getPost('codgrad'); 
+            
+            $array_re=$seccion->listarSeccionesPorGrado($idGrado); 
+//          $intIdCarrera = $this->_request->getPost('pais');
+        
+//            Segunda Opcion
+//            $tmpSecciones = $includes->query2array($array_re, 'iSeccIdSeccion', 'vSeccDescripcion');
+            
+            $optListaSecciones='<option value="0">[SELECCIONE UNA SECCION]</option>';
+
+            for($i=0;$i<sizeof($array_re);$i++){
+               $optListaSecciones.="<option value='".$array_re[$i]['iSeccIdSeccion']."'>".($array_re[$i]['vSeccDescripcion'])."</option>"; 
+            }            
+
+            echo $optListaSecciones;
+        }
+    }
+    
 }

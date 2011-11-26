@@ -1,56 +1,28 @@
 <script type="text/javascript">    
-
-     function cargarsecion(){
+function cargarsecion(){
         var valor=$("#cbogrados").val();
             elem=document.getElementById('cboseccion');  
-            var datos = "";  
-            //funcion que hace llamada a ajax esperando un  
-            // arreglo json de respuesta  
-         //   borrarElements();
-            removeAllOptions(elem);
-//            alert("Aqui voy valor es : "+valor+" NODOS "+elem.length);
-            
-//            $.get("listarsecciongrado/?codgrad="+valor,function(data)
+            $("#cboseccion").html('<option>Cargando...</option>');
+            var option;
             $.getJSON("listarsecciongrado/?codgrad="+valor,  function(data){
-//                $("#cboseccion").html(data)
-//            var url="listarsecciongrado/?codgrad="+valor;
-            //POR DEFECTO HABILITADO
-//            $.getJSON('listarsecciongrado',  function(data)  
-//            {  
-                //por cada elemento  
-                //(recordar que recibimos un arreglo de arreglos)  
-                var seccion = data, html = '';
+                var seccion = data;var option;
                 for (var x = 0 ; x < seccion.length ; x++) {
-                    var option=document.createElement("option");
-                    option.value=seccion[x].iSeccIdSeccion;
-                    option.text=seccion[x].vSeccDescripcion;
-                    elem.appendChild(option)
-//                        html= '<option value="' + seccion[x].iSeccIdSeccion+ '">' + seccion[x].vSeccDescripcion + '</option>';
-//                        alert("OPT "+html);
-//                        elem.options[].adoptNode(html);
+
+                    option+='<option value='+seccion[x].iSeccIdSeccion+'>'+seccion[x].vSeccDescripcion+'</option>';
                 }
-//                 elem.appendChild(document.createElement(html));
-                //coloco resultado en capa id=albumesdiv  
-//            }); 
+                 $("#cboseccion").html(option);
            });
         }  
-//        function cargarsecion(){
-//            var valor=$("#cbogrados").val();
-//            
-//            alert("Aqui voy valor es : "+valor+" NODOS "+elem.length);
-//            borrarElements();
-//            $.get("cargacombo/?codgrad="+valor,function(data){$("#cboseccion").html(data)});
-//        }
-
-        function removeAllOptions(selectbox)
-        {
-//            elem=document.getElementById('cboseccion');
-            var i;
-          for(i=selectbox.options.length-1;i>=0;i--)
-          {
-              selectbox.remove(i);
-          }
-        }        
+    
+//        .jqactualiza
+//        function removeAllOptions(selectbox)
+//        {
+//            var i;
+//          for(i=selectbox.options.length-1;i>=0;i--)
+//          {
+//              selectbox.remove(i);
+//          }
+//        }        
 
 </script>
 <?php
@@ -74,23 +46,23 @@
  
     $tipo=$mysession->tipo_usuario;
     $result = $menu->getMenu($tipo);
-    
-//Script envio de Formulario por ajax
-    $script='<script type="text/javascript" src="/js/jquery.form.js" ></script>
-        <script type="text/javascript" src="/js/codigito.js" ></script>
-        <script type="text/javascript"> 
-            // wait for the DOM to be loaded 
-           $(document).ready(function() { 
-            // bind "formLogin" and provide a simple callback function 
-            $("#formLogin").ajaxForm(function() { 
-                $(".setenta").load("./listadosecciones");
-                
-            }); 
-        });
 
-        </script>';
-    $this->script=$script;    
-    
+    $script='<script type="text/javascript" src="/js/jquery.form.js" ></script>
+        <script type="text/javascript" src="/js/codigito.js" > </script>
+<script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>        
+    <script type="text/javascript"> 
+        // wait for the DOM to be loaded 
+        $(document).ready(function() { 
+            // bind "myForm" and provide a simple callback function 
+            $("#formLogin").ajaxForm(function() { 
+                $(".setenta").load("listadosecciones");
+            }); 
+        }); 
+</script>   
+   ';
+      $this->script=$script;
+$css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">';
+      $this->css=$css;
     
     $h3 .= '<ul>'; 
     foreach ($result as $aux) {
@@ -173,10 +145,12 @@
                         <td>
                             <center>';
                             if($aux['tiSeccEstado']=='A'){
-                                $contenido.=' <a href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=I"><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';
-                            }
+                                $contenido.=' <a class="actsecc" onclick="ActualizaSeccion('.$aux['iSeccIdSeccion'].',\'I\',event);" href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=I"  ><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';                                
+//                                $contenido.=' <a id="actsecc" href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=I"  onclick="ActualizaSeccion('.$aux['iSeccIdSeccion'].',\'I\',event);" ><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';                                
+
+                                }
                             else{
-                                $contenido.=' <a href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=A"><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
+                                $contenido.=' <a class="actsecc" onclick="ActualizaSeccion('.$aux['iSeccIdSeccion'].',\'A\',event);"  href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=A"><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
                             }
             $contenido.='
                            </center>
@@ -228,6 +202,15 @@
 	$contenido .= '</tbody>
                 </table>
             </div>';
-    
+        $mensaje='
+<div id="dialog-confirm" title="Esta Seguro?" style="display:none">
+  <p>
+    <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;">
+</span>Realmente Desea Inhabilitar el Item Seleccionado?</p>
+</div>
+
+';
+   print $html->crearContentAjax($mensaje);
     print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+    
 ?>

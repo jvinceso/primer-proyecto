@@ -1,7 +1,7 @@
 <?php
-class Application_Model_Includes{
+class Application_Model_Includes{ 
     public function query2array($array_re,$campo_value, $campo_texto){
-        $array_temp;
+        $array_temp=null;
         for($i=0;$i<sizeof($array_re);$i++){
            //aca Pones el Id del campo que quieres pasar al array
            //$array_temp[$array_re[$i]['iTiUsuarioIdTipoUsuario']]=($array_re[$i]['vDescripcion']);

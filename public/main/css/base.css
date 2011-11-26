@@ -2043,8 +2043,8 @@ input.maininput:focus {
 
 /* Fixes the administration block section */
 .admin_section div {    
-    margin: 5px 0 14px 5px;
-    margin-left: 39px;
+    /* margin: 5px 0 14px 5px; 
+    margin-left: 39px; */
 }
 
 .rounded_div {

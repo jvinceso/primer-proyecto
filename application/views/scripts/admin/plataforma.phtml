@@ -1,5 +1,20 @@
 <?php
     $this->titulopagina='Los Pinos - Administracion de la Plataforma';
+    $this->css='
+        <link media="screen" rel="stylesheet" href="/css/colorbox.css" />';
+    $this->script=' 
+    	<script type="text/javascript" src="/js/colorbox/jquery.colorbox.js"></script>
+    	<script>
+        $(document).ready(function () {
+            //Examples of how to assign the ColorBox event to elements
+            $(".jqIframe").colorbox({ width: "90%", height: "90%", iframe: true });
+            //Example of preserving a JavaScript event for inline calls.
+            $("#click").click(function () {
+                $("#click").css({ "background-color": "#f00", "color": "#fff", "cursor": "inherit" }).text("Abrir esta ventana de nuevo y este mensaje aún estará aqui.");
+                return false;
+            });
+        });
+	</script>';
     $html= new Application_Model_Html();
     $menu= new Application_Model_Menu();
     $usuario= new Application_Model_Usuario();    
@@ -96,7 +111,7 @@
                 $contenido .= '<li><a href="nuevaseccion">Crear Sección</a></li> ';
             }
         $contenido.='   
-                <li><a href="configrados">Grados por Defecto</a></li>                
+                <li><a class="jqIframe" href="pruebando">Grados por Defecto</a></li>                
                 <li><a href="course_export.php">Exportar cursos</a></li>
                 <li><a href="course_import.php">Importar Seccion desde un fichero</a></li>
                 <li><a href="course_category.php">Secciones por Grado</a></li>

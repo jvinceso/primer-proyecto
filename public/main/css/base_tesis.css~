@@ -75,34 +75,10 @@ ul#navigation {
     position: fixed;
     margin: 0px;
     padding: 0px;
-    top: 10px;
-    right: -10px;
+    top: 30px;
+    right: -80px;
     list-style: none;
     z-index:9999;
-}
-
-ul#navigation li {
-    width: 73px;
-}
-
-ul#navigation li a {
-    display: block;
-    margin-left: 1px;
-    width: 65px;
-    height: 60px;
-    background-color:#CFCFCF;
-    background-repeat:no-repeat;
-    background-position:center center;
-    border:1px solid #AFAFAF;
-    -moz-border-radius:10px 0px 0px 10px;
-    -webkit-border-bottom-right-radius: 10px;
-    -webkit-border-top-right-radius: 10x;
-    -khtml-border-bottom-right-radius: 10px;
-    -khtml-border-top-right-radius: 10px;
-    -moz-box-shadow: 0px 4px 3px #000;
-    opacity: 0.6;
-    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=60);
-    -webkit-box-shadow: 0px 4px 3px #000;
 }
 
 ul#navigation .help a {
@@ -120,19 +96,16 @@ ul#navigation .help a {
     padding: 6px 0 8px 6px;
 }
 
-
-ul#navigation .report a {
+ul#navigation li {
     -moz-border-radius:8px 0 0 8px;
     -moz-box-shadow:0 2px 2px #000000;
-    background-color:#8fd400;
+    background-color:#0575A1;
     background-position:center center;
     background-repeat:no-repeat;
     border:1px solid #FFFFFF;
     display:block;
-    height:44px;
+    
     margin-left:50px;
-    opacity:0.6;
-    width:65px;
     padding: 6px 0 8px 6px;
 }
 
@@ -375,6 +348,7 @@ input.link_alike:hover {
     font-size:12px;
     font-style:normal;
     color:#666666;
+    margin-right:50px;
 }
 #Header2Right ul li a {
     padding: 4px 6px 4px 4px;
@@ -1112,7 +1086,7 @@ div .treinta{
 }
 
 div .setenta{ 
-    width: 65%;
+    width: 62%;
     float:left;
 }
 .admin_section li {    
@@ -2714,5 +2688,35 @@ abbr {
     border-top:1px solid #ccc; 
     width:92%;
     padding: 8px 0px 2px 0; 
+}
+
+
+/* Chat */
+#chatdiv{ 
+    padding: 6px 0 8px 6px;
+}
+
+#chatdiv a{
+    color:white;
+    display: block;
+    padding: 2px 10px 2px 10px;
+}
+
+#chatdiv a:hover{
+    background-color:#D1D7D9;
+}
+
+#chatdiv img{ 
+    margin-top: 3px;
+    margin-right:3px;
+    height:28px;
+    width:28px;
+}
+
+#chatdiv a .name{
+    vertical-align:8px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 

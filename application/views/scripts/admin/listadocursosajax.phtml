@@ -1,0 +1,6 @@
+<?php
+    $html= new Application_Model_Html();
+    $cursos = new Application_Model_Cursos;
+    $contenido = '<h4>Lista de Cursos</h4>'.$cursos->crearTablaCursosSimple();
+    print $html->crearContentAjax($contenido);
+?>

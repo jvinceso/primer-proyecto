@@ -1,5 +1,5 @@
 <?php
-$this->titulopagina='Los Pinos - "Cursos"';
+    $this->titulopagina='Los Pinos - "Cursos"';
     $html= new Application_Model_Html();
     $menu= new Application_Model_Menu();
     $usuario= new Application_Model_Usuario();    
@@ -53,14 +53,8 @@ $this->titulopagina='Los Pinos - "Cursos"';
     $contenido = '
         <div class="admin_section">
             <h4><img src="/main/img/course.gif" alt="Cursos" title="Cursos"> Cursos</h4>
-            <div style="list-style-type:none">
-                <form method="get" action="course_list.php">
-                    <input type="text" name="keyword" value="">
-                    <button class="search" type="submit">Buscar</button>
-                </form>
-            </div>
             <ul>
-                <li><a href="agregarcurso">Crear un curso</a></li>                
+                <li><a href="nuevocurso">Crear un curso</a></li>                
                 <li><a href="course_list.php">Lista de cursos</a></li>
                 <li><a href="course_export.php">Exportar cursos</a></li>
                 <li><a href="course_import.php">Importar cursos desde un fichero</a></li>
@@ -69,14 +63,8 @@ $this->titulopagina='Los Pinos - "Cursos"';
             </ul>
         </div>
         <div class="admin_section">
-            <h4><img src="/main/img/course.gif" alt="Secciones" title="Secciones"> Secciones</h4>
-            <div style="list-style-type:none">
-                <form method="get" action="course_list.php">
-                    <input type="text" name="keyword" value="">
-                    <button class="search" type="submit">Buscar</button>
-                </form>
-            </div>
-            <ul>
+           <h4><img src="/main/img/course.gif" alt="Secciones" title="Secciones"> Secciones</h4>
+           <ul>
                 <li><a href="course_list.php">Lista de Secciones</a></li>
                 <li><a href="course_add.php">Crear una Seccion</a></li>
                 <li><a href="course_export.php">Exportar cursos</a></li>

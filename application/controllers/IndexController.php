@@ -5,7 +5,7 @@ class IndexController extends Zend_Controller_Action
     public function init(){   
         if (Zend_Session::sessionExists()){
                  $this->verificarInactividad();
-                 return $this->_redirect('/admin/principal');
+                
         }
     }
 
@@ -52,33 +52,7 @@ class IndexController extends Zend_Controller_Action
             
             $log = new Application_Model_Logs();
             $log->crearLog('A');
-            switch ($mysession->tipo_usuario){
-                case 1:
-                    //Alumno
-                    
-                    return $this->_redirect('/admin/principal');
-                    break;
-                case 2:
-                    //Docente
-                    return $this->_redirect('http://www.google.com/');
-                    break;
-                case 3:
-                    //Apoderado
-                    return $this->_redirect('http://www.google.com/');
-                    break;
-                case 4:
-                    //Director
-                    return $this->_redirect('http://www.google.com/');
-                    break;
-                case 5:
-                    //Administrador
-                    return $this->_redirect('/admin/principal');
-                    break;
-                default:
-                    return $this->_redirect('http://www.google.com/');
-                    break;
-            }
-            //echo "Bienvenido ".$mysession->usuario_nombre;
+            $this->redireccionar(); 
         } 
     }
  
@@ -145,6 +119,9 @@ class IndexController extends Zend_Controller_Action
             $usuario->logout();
             return $this->_redirect('/');
         }
+        else{
+             $this->redireccionar(); 
+        }    
     }
     
     public function saludoajax2Action()
@@ -157,7 +134,35 @@ class IndexController extends Zend_Controller_Action
         //esta es la respuesta a la llamada ajax
         echo "<div id='login_fail'>Usuario Incorrecto</div>";
     }
-
+    
+    public function redireccionar(){
+        $mysession = new Zend_Session_Namespace('sesion');
+        switch ($mysession->tipo_usuario){
+                case 1:
+                    //Alumno                    
+                    return $this->_redirect('/alumno/principal');
+                    break;
+                case 2:
+                    //Docente
+                    return $this->_redirect('/docente/principal');
+                    break;
+                case 3:
+                    //Apoderado
+                    return $this->_redirect('/apoderado/principal');
+                    break;
+                case 4:
+                    //Director
+                    return $this->_redirect('/director/principal');
+                    break;
+                case 5:
+                    //Administrador
+                    return $this->_redirect('/admin/principal');
+                    break;
+                default:
+                    return $this->_redirect('/');
+                    break;
+            }
+    }
 
 }
 

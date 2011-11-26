@@ -1,13 +1,11 @@
 <?php
 
-class AdminController extends Zend_Controller_Action
-{
+class AdminController extends Zend_Controller_Action{
+    
     public function init(){  
         $this->verificarInactividad();
         $mysession = new Zend_Session_Namespace('sesion');
         $mysession->setExpirationSeconds(60*3,'actividad');
-        /* Initialize action controller here */
-        
     } 
     
     public function indexAction(){ 
@@ -16,51 +14,40 @@ class AdminController extends Zend_Controller_Action
     
     public function principalAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
-        $mysession->paginaActual = 'Pagina Principal';
-                
+        $mysession->paginaActual = 'Pagina Principal';           
     }
     
     public function cursosAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
-        $mysession->paginaActual = 'Cursos';
-        
+        $mysession->paginaActual = 'Cursos';        
     }
     
-    public function agendaAction(){
+    public function usuariosAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
-        $mysession->paginaActual = 'Agenda';
-        
+        $mysession->paginaActual = 'Usuarios';        
     }
     
     public function informesAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
-        $mysession->paginaActual = 'Informes';
-        
+        $mysession->paginaActual = 'Informes';        
     }
     
     public function redsocialAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
-        $mysession->paginaActual = 'Red Social';
-        
+        $mysession->paginaActual = 'Red Social';        
     }
     
     public function panelcontrolAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
-        $mysession->paginaActual = 'Panel de Control';
-        
+        $mysession->paginaActual = 'Panel de Control';        
     }
     
     public function plataformaAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
-        $mysession->paginaActual = 'Administracion de la Plataforma';
-        
+        $mysession->paginaActual = 'Administracion de la Plataforma';        
     }
     
     public function logoutAction(){
-        //Zend_Session::writeClose();
-        //Zend_Session::destroy(true);
-        //Zend_Session::expireSessionCookie();
-        //Zend_Session::namespaceUnset('sesion');
         $usuario= new Application_Model_Usuario();
         $usuario->logout();
         return $this->_redirect('/');
@@ -74,11 +61,22 @@ class AdminController extends Zend_Controller_Action
         }
     }
     
-    public function agregarcursoAction(){ 
-        //$opt = $this->_request->opt;
-        //Sreturn $this->_redirect('http://www.google.com/'.$opt);
-        $this->view->formularioagregarcurso = $this->getFormAgregarCurso();
-        //$this->render('formagregarcurso');
+    public function listausuariosAction(){
+    }
+    
+    public function nuevoalumnoAction(){
+    }
+    
+    public function nuevodocenteAction(){
+    }
+    
+    public function nuevoapoderadoAction(){
+    }
+    
+    public function nuevodirectorAction(){
+    }
+        
+    public function buscarusuarioAction(){
     }
     
     public function actualizarperiodoAction(){
@@ -87,19 +85,18 @@ class AdminController extends Zend_Controller_Action
         //Sreturn $this->_redirect('http://www.google.com/'.$opt);
         
         //OK
-        $this->view->formactperiodo = $this->getFormActualizarPeriodo();
+        $form=new Application_Form_FormActualizarPeriodo();
+        $this->view->formactperiodo = $form;
         
     }
         
-    public function tablerodidacticoAction(){
-        
-    }
     public function actperiodoAction(){ 
         
         if (!$this->getRequest()->isPost()) { 
             return $this->_forward('actualizarperiodo');
         }
-        $form = $this->getFormActualizarPeriodo();
+        $form=new Application_Form_FormActualizarPeriodo();
+        
         if (!$form->isValid($_POST)) {
             // Falla la validación; Se vuelve a mostrar el formulario
            
@@ -122,374 +119,20 @@ class AdminController extends Zend_Controller_Action
         }  
     }    
     
-    public function getFormAgregarCurso()
-    {
-        $form = new Zend_Form();
-        $form->setAction('/index/login')->setMethod('post')
-             ->setAttrib('id', 'formLogin');
-        
-        // Crea un y configura el elemento username
-        $username = $form->createElement('text', 'username', array('label' => 'Nombre de Usuario'));
-        $username->addValidator('notEmpty', true, array('messages' => array('isEmpty' => 'Campo requerido'))) 
-                 ->addValidator('regex', true, array('pattern'=>'/^[(a-zA-Z0-9)]+$/','messages'=>array('regexNotMatch'=>'Caracteres invalidos')))
-                 ->addValidator('stringLength', false, array(5, 20,'messages' => "5 a 20 caracteres"))
-                 ->setRequired(true)
-                 ->addFilter('StringToLower');
- 
-        $username->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td')),
-                ));
-
-        // Crea y configura el elemento password:
-        $password = $form->createElement('password', 'password', array('label' => 'Contraseña'));
-        $password->addValidator('notEmpty', true, array('messages' => array('isEmpty' => 'Campo requerido')))
-                 ->addValidator('stringLength', false, array(5, 20,'messages' => "5 a 20 caracteres"))
-                 ->setRequired(true);
-       
-        $password->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td')),
-                ));
- 
-        $recordarme = $form->createElement('checkbox', 'remember', array('label'=>'Recordar mi Sesión'));
-        $recordarme ->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors', 
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td'))
-            ));
- 
-         
-        // Añade los elementos al formulario:
-        $form->addElement($username)
-             ->addElement($password)
-             ->addElement($recordarme)
-             // uso de addElement() como fábrica para crear el botón 'Login':
-             ->addElement('submit', 'registrar', array('label' => 'Registrar'));
-              
-        return $form;
-    }
-
-    public function getFormAgregarSeccion()
-    {
-        $form = new Zend_Form();
-        $form->setAction('/index/login')->setMethod('post')
-             ->setAttrib('id', 'formLogin');
-        
-        // Crea un y configura el elemento username
-        $username = $form->createElement('text', 'username', array('label' => 'Nombre de Usuario'));
-        $username->addValidator('notEmpty', true, array('messages' => array('isEmpty' => 'Campo requerido'))) 
-                 ->addValidator('regex', true, array('pattern'=>'/^[(a-zA-Z0-9)]+$/','messages'=>array('regexNotMatch'=>'Caracteres invalidos')))
-                 ->addValidator('stringLength', false, array(5, 20,'messages' => "5 a 20 caracteres"))
-                 ->setRequired(true)
-                 ->addFilter('StringToLower');
- 
-        $username->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td')),
-                ));
-
-        // Crea y configura el elemento password:
-        $password = $form->createElement('password', 'password', array('label' => 'Contraseña'));
-        $password->addValidator('notEmpty', true, array('messages' => array('isEmpty' => 'Campo requerido')))
-                 ->addValidator('stringLength', false, array(5, 20,'messages' => "5 a 20 caracteres"))
-                 ->setRequired(true);
-       
-        $password->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td')),
-                ));
- 
-        $recordarme = $form->createElement('checkbox', 'remember', array('label'=>'Recordar mi Sesión'));
-        $recordarme ->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors', 
-                    array('Label', array('placement' => 'APPEND')),
-            ));
- 
-         
-        // Añade los elementos al formulario:
-        $form->addElement($username)
-             ->addElement($password)
-             ->addElement($recordarme)
-             // uso de addElement() como fábrica para crear el botón 'Login':
-             ->addElement('submit', 'registrar', array('label' => 'Registrar'));
-              
-        return $form;
-    }
-    
-    public function getFormActualizarPeriodo()
-    {
-        $form = new Zend_Form();
-        $form->setAction('/admin/actperiodo')->setMethod('post')
-             ->setAttrib('id', 'formLogin');
-        
-        // Crea un y configura el elemento username
-        $peracademico = $form->createElement('text', 'peracademico', array('label' => 'Periodo Académico', 'value'=>date("Y"),'disabled'=>'true'));
-        $peracademico->addValidator('notEmpty', true, array('messages' => array('isEmpty' => 'Campo requerido'))) 
-                 ->setRequired(true);
- 
-        $peracademico->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td')),
-                ));
-
-        // Crea y configura el elemento password:
-        
- 
-        $estado = $form->createElement('radio', 'estado', array('value'=>'Uno', 'checked'=>'true' ,'disabled'=>'true'));
-        $estado->addMultiOptions(array(
-            'A' => 'Periodo Actual')); 
-        
-        $estado->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td')),
-                ));
-         
-        // Añade los elementos al formulario:
-        $form->addElement($peracademico)
-             ->addElement($estado) 
-             // uso de addElement() como fábrica para crear el botón 'Login':
-             ->addElement('submit', 'registrar', array('label' => 'Registrar'));
-              
-        return $form;
-    }
-    
-    public function getFormNuevoGrado()
-    {
-        $form = new Zend_Form();
-        $form->setAction('/admin/agregargrado')->setMethod('post')
-             ->setAttrib('id', 'formLogin');
-        
-        $grados = new Application_Model_Grado(); 
-        $listagrados=$grados->listarGradosPeriodoActual();
-        
-        if($listagrados==NULL){
-            $configuracion = new Application_Model_Configuracion();
-            $grados=$configuracion->getGradosPrimaria();
-            //$recordarme = $form->createElement('checkbox', 'remember');
-
-            foreach($grados as $aux){
-                $name=$aux["tConfDescripcion"];
-                $recordarme=$form->createElement('checkbox', $name, array('label' => $name ));
-
-                $recordarme->setName($name);
-                $recordarme->setLabel($name);
-                 $recordarme ->setDecorators(array(
-                        'ViewHelper',
-                        'Description',
-                        'Errors', 
-                        array('Label', array('placement' => 'APPEND')),
-                        array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                ));
-                 $form->addElement($recordarme);
-
-            }
-        }
-        else{
-             foreach($listagrados as $aux){
-                $name=$aux["vGradoDescripcion"];
-                $estado=$aux["tiGradoEstado"];
-                
-                if($estado=='I'){
-                    $recordarme=$form->createElement('checkbox', $name, array('label' => $name));
-                }
-                else{
-                    $recordarme=$form->createElement('checkbox', $name, array('label' => $name, 'checked'=>true));  
-                }
-                
-                $recordarme->setName($name);
-                $recordarme->setLabel($name);
-                $recordarme ->setDecorators(array(
-                        'ViewHelper',
-                        'Description',
-                        'Errors', 
-                        array('Label', array('placement' => 'APPEND')),
-                        array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                ));
-                 $form->addElement($recordarme);
-
-            }
-            
-        }
-            
-        
-            // Añade los elementos al formulario: 
-             // uso de addElement() como fábrica para crear el botón 'Login':
-        $boton=$form->createElement('submit', 'login', array('label' => 'Registrar'));
-        $boton->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')) 
-                ));
-        
-             $form->addElement($boton);
-              
-        return $form;
-    }
-    
-    public function getFormNuevaSeccion()
-    {
-        $form = new Zend_Form();
-        $form->setAction('/admin/agregarseccion')->setMethod('post')
-             ->setAttrib('id', 'formLogin');
-        
-        $seccion = new Application_Model_Seccion(); 
-        $listasecciones=$seccion->listarSeccionesPeriodoActual();
-        
-        $includes = new Application_Model_Includes();    
-        $gradosactuales = new Application_Model_Grado();
-
-        $arraygrados=$gradosactuales->listarGradosActivos();
-        $arraygradostoarray=$includes->query2array($arraygrados, 'iGradoIdGrado', 'vGradoDescripcion');
-
-        $combo=$form->createElement('select','cbogrado',
-            array(
-            'label'        => 'Grado', 
-            'autocomplete' => false,
-            'multiOptions' => $arraygradostoarray,
-                
-                )
-        );
-
-        $combo->setDecorators(array(
-                'ViewHelper',
-                'Description',
-                'Errors',
-                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                array('Label', array('tag' => 'td')),
-            ));
-
-        $form->addElement($combo);
-
-            // Añade los elementos al formulario: 
-         // uso de addElement() como fábrica para crear el botón 'Login':
-        $boton=$form->createElement('submit', 'login', array('label' => 'Registrar'));
-        $boton->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')) 
-                ));
-
-        $form->addElement($boton);
-
-//        $gradoajax=$form->createElement('select','cbogrados',array(
-//            'label'        => 'Grado',
-//            'onchange'=>'cargarsecion();',
-//            'autocomplete' => false,
-//            'multiOptions' => array("4"=>"CUARTO", "5"=>"QUINTO"))
-//        );
-//
-//        $gradoajax->setDecorators(array(
-//                'ViewHelper',
-//                'Description',
-//                'Errors',
-//                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-//                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-//                array('Label', array('tag' => 'td')),
-//            ));
-//       $form->addElement($gradoajax);
-//        $seccion2=$form->createElement('select','cboseccion',array(
-//            'label'        => 'Seccion',
-//            'autocomplete' => false,
-//            'multiOptions' => array("0"=>"Seleccion Grado"))
-//        );
-//
-//        $seccion2->setDecorators(array(
-//                'ViewHelper',
-//                'Description',
-//                'Errors',
-//                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-//                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-//                array('Label', array('tag' => 'td')),
-//            ));
-//       $form->addElement($seccion2);					
-//        // Crea un y configura el elemento username
-//        $peracademico = $form->createElement('text', 'peracademico', array('label' => 'Periodo Académico'));
-//        $peracademico->addValidator('notEmpty', true, array('messages' => array('isEmpty' => 'Campo requerido'))) 
-//                 ->setRequired(true);
-// 
-//        $peracademico->setDecorators(array(
-//                    'ViewHelper',
-//                    'Description',
-//                    'Errors',
-//                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-//                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-//                    array('Label', array('tag' => 'td')),
-//                ));
-//    $form->addElement($peracademico);
-        
-        return $form;
-    }
-    
-    public function cargacomboAction(){
-
-        $this->_helper->layout->disableLayout();         
-
-//         return $json;      
-//             
-//        $this->view->array_re=$array_re; 
-    }
-  
-    public function listarsecciongradoAction(){
-        $this->_helper->layout->disableLayout();  
-        $this->_helper->viewRenderer->setNoRender();        
-        $seccion=new Application_Model_Seccion();         
-        $idGrado=$this->_request->codgrad;
-        
-        $array_re=$seccion->listarSeccionesPorGrado($idGrado); 
-//funcion de zend framewrok que me codifica el listado para formato Json   
-
-        $json = Zend_Json::encode($array_re);  
-        echo $json;
-    }
-    
     public function nuevogradoAction(){
         ////////////////////////////////////////////////////////        
         //$opt = $this->_request->opt;
         //Sreturn $this->_redirect('http://www.google.com/'.$opt);
-         $this->view->formnuevogrado = $this->getFormNuevoGrado();
+        $form=new Application_Form_FormNuevoGrado();
+        $this->view->formnuevogrado = $form;
          
-         }
+        }
     
     public function agregargradoAction(){ 
         if (!$this->getRequest()->isPost()) { 
             return $this->_forward('nuevogrado');
         }
-        $form = $this->getFormNuevoGrado();
+        $form=new Application_Form_FormNuevoGrado();
         if (!$form->isValid($_POST)) {
             // Falla la validación; Se vuelve a mostrar el formulario
            
@@ -519,23 +162,18 @@ class AdminController extends Zend_Controller_Action
     }
     
     public function nuevaseccionAction(){
-        ////////////////////////////////////////////////////////        
-        //$opt = $this->_request->opt;
-        //Sreturn $this->_redirect('http://www.google.com/'.$opt);
-         $this->view->formnuevaseccion = $this->getFormNuevaSeccion();
-         
+        $form=new Application_Form_FormNuevaSeccion();
+        $this->view->formnuevaseccion = $form;
     }
     
     public function agregarseccionAction(){ 
         if (!$this->getRequest()->isPost()) { 
             return $this->_forward('nuevaseccion');
         }
-        $form = $this->getFormNuevaSeccion();
-        if (!$form->isValid($_POST)) {
-            // Falla la validación; Se vuelve a mostrar el formulario
-           
+        $form=new Application_Form_FormNuevaSeccion();
+        if (!$form->isValid($_POST)) {           
             $this->view->formnuevaseccion = $form;
-            return $this->render('nuevaseccion');
+            //return $this->render('form');
         }
         
         $secciones = new Application_Model_Seccion();
@@ -562,13 +200,68 @@ class AdminController extends Zend_Controller_Action
     }
     
     public function actualizarseccionAction(){
-      $secciones = new Application_Model_Seccion();
+        $secciones = new Application_Model_Seccion();
         $idseccion=$this->_request->secc;
         $estado=$this->_request->est;
         $secciones->actualizarSeccion($idseccion, $estado);
-        return $this->_redirect('/admin/nuevaseccion');        
+        return $this->_redirect('/admin/nuevaseccion');
     }
-//Funciones Ajax
+       
+    public function pruebandoAction(){
+        $this->_helper->layout->disableLayout();
+        //$this->_helper->viewRenderer->setNoRender();
+        
+    }
+    
+    public function nuevocursoAction(){          
+        $form = new Application_Form_FormNuevoCurso();
+        $this->view->formularioagregarcurso = $form;
+    }
+    
+    public function agregarcursoAction(){
+        if (!$this->getRequest()->isPost()) { 
+            return $this->_forward('nuevocurso');
+        }
+        $form = new Application_Form_FormNuevoCurso();
+        if (!$form->isValid($_POST)) {           
+            $this->view->formularioagregarcurso = $form;
+            return $this->render('nuevocurso');
+        } 
+        
+        $cursos = new Application_Model_Cursos();
+        
+        $nombrecurso=$form->getValue('nombrecurso');
+        $descripcion=$form->getValue('descripcion');
+        $idseccion=$form->getValue('cboseccion');
+        
+        $cursos->registrarCurso($nombrecurso, $descripcion, $idseccion);
+        
+        return $this->_redirect('/admin/nuevocurso');
+         
+    }
+    
+    public function actualizarcursoAction(){
+        $cursos = new Application_Model_Cursos();
+        $idcurso=$this->_request->cur;
+        $estado=$this->_request->est;
+        $cursos->actualizarSeccion($idcurso, $estado);
+        return $this->_redirect('/admin/nuevocurso');
+    }
+    
+    public function listarsecciongradoAction(){
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender();
+        $seccion=new Application_Model_Seccion();
+        $idGrado=$this->_request->codgrad;
+        
+        $array_re=$seccion->listarSeccionesPorGradoActivos($idGrado);
+//funcion de zend framewrok que me codifica el listado para formato Json
+
+        $json = Zend_Json::encode($array_re);
+        echo $json;
+    }
+    
+    //Funciones Ajax
     public function actualizarseccionajaxAction(){
       $secciones = new Application_Model_Seccion();
         if ($this->getRequest()->isXmlHttpRequest())//Detectamos si es una llamada AJAX
@@ -576,76 +269,60 @@ class AdminController extends Zend_Controller_Action
             //esta accion no usara layout.phtml
             $this->_helper->layout->disableLayout();
             //esta accion no renderizara su contenido en saludoajax2.phtml
-            $this->_helper->viewRenderer->setNoRender();            
+            $this->_helper->viewRenderer->setNoRender();
             $idseccion=$this->getRequest()->getParam('secc');
-            $estado=$this->getRequest()->getParam('est');                
-            $secciones->actualizarSeccion($idseccion, $estado);    
+            $estado=$this->getRequest()->getParam('est');
+            $secciones->actualizarSeccion($idseccion, $estado);
             echo "1";
-        } 
+        }
     }
     
     public function eliminarseccionajaxAction(){
         $secciones = new Application_Model_Seccion();
-        if ($this->getRequest()->isXmlHttpRequest())
-        {   
+        if ($this->getRequest()->isXmlHttpRequest()){
             $this->_helper->layout->disableLayout();
-            $this->_helper->viewRenderer->setNoRender();             
+            $this->_helper->viewRenderer->setNoRender();
             $idseccion=$this->getRequest()->getParam('secc');
             $secciones->deleteSeccion($idseccion);
+            echo "1";        
+        }
+    }
+    
+    public function actualizarcursoajaxAction(){
+      $curso = new Application_Model_Cursos();
+      //Detectamos si es una llamada AJAX
+        if ($this->getRequest()->isXmlHttpRequest()){
+            //esta accion no usara layout.phtml
+            $this->_helper->layout->disableLayout();
+            //esta accion no renderizara su contenido en saludoajax2.phtml
+            $this->_helper->viewRenderer->setNoRender();
+            $idcurso=$this->getRequest()->getParam('cur');
+            $estado=$this->getRequest()->getParam('est');
+            $curso->actualizarCursoPorId($idcurso, $estado);
             echo "1";
-        
         }
     }
-    public function listadoseccionesAction()  
-    {  
-     // action body  
+    
+    public function eliminarcursoajaxAction(){
+        $curso = new Application_Model_Cursos();
+        if ($this->getRequest()->isXmlHttpRequest()){
+            $this->_helper->layout->disableLayout();
+            $this->_helper->viewRenderer->setNoRender();
+            $idcurso=$this->getRequest()->getParam('cur');
+            $curso->deleteCurso($idcurso);
+            echo "1";        
+        }
+    }
+    
+    public function listadoseccionesajaxAction()
+    {
         $this->verificarInactividad();
-     $this->_helper->layout->disableLayout();  
-//     $this->_helper->viewRenderer->setNoRender();   
-    }     
-    
-    /*Juegando Ajax*/
-    public function saludoajax2Action()
-    {
-        //esta accion no usara layout.phtml
         $this->_helper->layout->disableLayout();
-        //esta accion no renderizara su contenido en saludoajax2.phtml
-        $this->_helper->viewRenderer->setNoRender();
-
-        //esta es la respuesta a la llamada ajax
-        echo "saludos desde el servidor";
-    }    
+    } 
     
-    public function ajaxcontrolAction()
+    public function listadocursosajaxAction()
     {
-        if (!$this->getRequest()->isXmlHttpRequest())//Detectamos si es una llamada AJAX
-        {
-            //Declaramos las clases que necesitamos 
-            $seccion = new Application_Model_Seccion();
-            $includes=new Application_Model_Includes();
-            
-            // Solo si estas usando Zend_Layout
-            $this->_helper->layout->disableLayout();             
-            //No necesitamos el render de la vista en una llamada ajax.
-            $this->_helper->viewRenderer->setNoRender();             
-            
-            
-            $idGrado=$this->_request->getPost('codgrad'); 
-            
-            $array_re=$seccion->listarSeccionesPorGrado($idGrado); 
-//          $intIdCarrera = $this->_request->getPost('pais');
-        
-//            Segunda Opcion
-//            $tmpSecciones = $includes->query2array($array_re, 'iSeccIdSeccion', 'vSeccDescripcion');
-            
-            $optListaSecciones='<option value="0">[SELECCIONE UNA SECCION]</option>';
-
-            for($i=0;$i<sizeof($array_re);$i++){
-               $optListaSecciones.="<option value='".$array_re[$i]['iSeccIdSeccion']."'>".($array_re[$i]['vSeccDescripcion'])."</option>"; 
-            }            
-
-            echo $optListaSecciones;
-        }
+        $this->verificarInactividad();
+        $this->_helper->layout->disableLayout();
     }
-    
 }

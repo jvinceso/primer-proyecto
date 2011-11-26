@@ -89,18 +89,18 @@ class Application_Model_PeriodoAcademico extends Zend_Db_Table_Abstract{
             return false;
         }        
     }
-     public function validarActivarSeccion(){
-        if ((int)date("Y")==(int)$this->getPeriodoActualAnual() && (int)date("n")==11){
+    public function validarActivarSeccion(){
+        if ((int)date("Y")==(int)$this->getPeriodoActualAnual() && (int)date("n")==1){
             return true;
         }
         else{
             return false;
         }        
     }
-     public function registrarPeriodo(){
+    public function registrarPeriodo(){
         $peracademicoactual = $this->getPeriodoActualId();
         
-         switch($peracademicoactual){
+        switch($peracademicoactual){
             case 'A': 
             case 'B':
                 return false;

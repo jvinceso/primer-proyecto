@@ -1,12 +1,12 @@
 $(function() {
- $('#navigation a').stop().animate({'marginLeft':'50px'},1000);
+ $('#navigation li').stop().animate({'marginLeft':'10px'},1000);
  
- $('#navigation> li').hover(
+ $('#navigation').hover(
   function () {
-   $('a',$(this)).stop().animate({'marginLeft':'1px'},200);
+   $('li',$(this)).stop().animate({'marginLeft':'-250px'},500);
   },
   function () {
-   $('a',$(this)).stop().animate({'marginLeft':'50px'},200);
+   $('li',$(this)).stop().animate({'marginLeft':'10px'},500);
   }
  );
 });

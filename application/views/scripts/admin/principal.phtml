@@ -50,7 +50,62 @@
                 </a>
             </li>
         </ul>';
-    $contenido = 'Bienvenido Usuario';
+    $nombre="'ren'";
+    $contenido = '<a href="javascript:void(0)" onclick="javascript:chatWith('.$nombre.')">Bienvenido Usuario</a>';
+    $submain='
+        <div id="menu-wrapper">
+            <div id="menu" class="menu">
+                <div class="menusection  ">
+                    <span class="menusectioncaption">Perfil</span>
+                    <div id="social_widget">
+                        <div id="social_widget_image">
+                            <a href="">
+                                <img title="Editar perfil" src="/main/img/unknown.jpg" width="90" height="90" border="1">
+                            </a>
+                        </div>
+                    </div>
+                <div class="clear">
+                </div>
+                <div class="message-content">
+                    <ul class="menulist">
+                        <li>
+                            <a href="" class="message-body">Bandeja de entrada </a>
+                        </li>
+                        <li>
+                            <a href="" class="message-body">Redactar </a>
+                        </li>
+                        <li>
+                            <a href="" class="message-body">Invitaciones pendientes</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="menu" id="menu">
+            <div class="menusection">
+                <span class="menusectioncaption">Usuario</span>
+                    <ul class="menulist">
+                        <li>
+                            <a href="">Crear un curso</a>
+                        </li>
+                        <li>
+                            <a href="">Catálogo de cursos</a>
+                        </li>
+                    </ul>
+             </div>
+         </div>
+         <div id="menu" class="menu">
+            <div class="menusection  ">
+                <span class="menusectioncaption">General</span>
+                    <ul class="menulist">
+                        <li>
+                            <a href="" target="_self">Forum</a>
+                        </li>
+                    </ul>
+            </div>
+         </div>
+         </div>
+        ';
     
-    print $html->crearWrapper(null, null, null, $h3, $h4 ,$contenido, $this->layout()->content,null);
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$contenido, $this->layout()->content,$submain);
 ?>

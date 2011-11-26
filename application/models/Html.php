@@ -34,7 +34,9 @@ class Application_Model_Html{
             </style>
             <style type="text/css" media="print">
                 /*<![CDATA[*/@import "/main/css/tesis/print.css";/*]]>*/
-            </style>';
+            </style>
+            
+            <link type="text/css" rel="stylesheet" media="all" href="/css/chat.css" />';
         if ($css==null){
             return $res;
          }
@@ -78,11 +80,21 @@ class Application_Model_Html{
                     });
             });
             </script>
-            <script type="text/javascript" src="/main/inc/lib/javascript/dtree/dtree.js" ></script>';
-         if ($script==null){
-            return $res;
-         }
-         else{
+            <script type="text/javascript" src="/main/inc/lib/javascript/dtree/dtree.js" ></script>
+            
+            ';
+        
+//        if ($script==null){
+//         return $res;     
+//         }
+//         else{
+//            return $res.$script;
+//         }
+            if (Zend_Session::sessionExists()){
+                return $res.'
+            <script type="text/javascript" src="/js/chat/chat.js"></script>'.$script;
+            }
+            else{
             return $res.$script;
          }
     }
@@ -127,11 +139,48 @@ class Application_Model_Html{
             print $navigation;
         }
         else{
+//            print '
+//                    <li class="report">
+//                            <a href="#" target="_blank">
+//                            <img src="/main/img/chat.png" style="vertical-align: middle;" alt="Comunicar un error" title="Dejar un Mensaje">
+//                              <a>1 Tello</a>
+//                              <a>2 Tello</a>
+//                            </a>
+//                    </li>';  
+            if (Zend_Session::sessionExists()){
             print '
                     <li class="report">
-                            <a href="#" target="_blank" style="margin-left: 50px; ">
-                            <img src="/main/img/bug.large.png" style="vertical-align: middle;" alt="Comunicar un error" title="Dejar un Mensaje"></a>
-                    </li>';                
+                            <img src="/main/img/chat.png" style="vertical-align: middle;" alt="Comunicar un error" title="Dejar un Mensaje">
+                            <div id="chatdiv">
+                                
+                                <div>
+                                    <a href="">
+                                        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/372617_1420530801_1579660712_q.jpg" class="pic">
+                                         <span class="name">Luis Salazar</span>                                   
+                                    </a>
+                                </div>
+                                <div>
+                                    <a href="">
+                                        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/276299_1643254581_840383293_q.jpg" class="pic">
+                                        <span class="name">Harumy Ac</span>                                    
+                                    </a>
+                                </div>
+                                <div>
+                                    <a href="">
+                                        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/371572_1320182226_1371922053_q.jpg" class="pic">
+                                        <span class="name">Margori Miñano</span>                                     
+                                    </a>
+                                </div>
+                                <div>
+                                    <a href="">
+                                        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/274006_1394739207_3741528_q.jpg" class="pic">
+                                        <span class="name">José Vinces Ortiz</span>                                     
+                                    </a>
+                                </div>
+                                
+                            </div>
+                    </li>'; 
+                }
         }
         //Fin de Div Navigation
         print '</ul>';
@@ -250,15 +299,14 @@ class Application_Model_Html{
     //Fin del div wrapper 
     print '</div>'; 
     }
-
-  public function crearContentAjax($submain=null){
-    if(!$submain==null){
-        print $submain;        
+    
+    public function crearContentAjax($submain=null){
+        if(!$submain==null){
+            print $submain;
         }else{
            print 'ERROR NO HAY CONTENIDO';
-        }    
-  }    
-    
+        }
+    } 
 }
 
 ?>

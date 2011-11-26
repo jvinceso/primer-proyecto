@@ -1,7 +1,110 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+    $this->titulopagina='Los Pinos - Informes y Progreso';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $h3 = '<ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
+        <ul class="bread">
+            <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="informes" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Informes</span>
+                </a>
+            </li>
+        </ul>';
+           
+        $contenido = '
+            <div id="submain">
+                <div id="actions" class="actions">
+                    <a href=""> <img src="/main/img/icons/32/stats.png" alt="Ver mis estadísticas" title="Ver mis estadísticas"></a>
+                    <a href="" onclick="javascript: window.print()">
+                        <img src="/main/img/icons/32/printer.png" alt="Imprimir" title="Imprimir">
+                    </a>Interfaz de profesor&nbsp;|&nbsp;
+                    <a href="">Interfaz de administrador</a>&nbsp;|&nbsp;
+                    <a href="">Seguimiento exámenes</a>
+                </div>
+                <h2> Cursos</h2>
+                <div class="clear">&nbsp;</div>
+                <table class="data_table">
+                    <tbody>
+                        <tr class="row_odd">
+                            <th align="center">Título del curso</th>
+                            <th>Número de estudiantes</th>
+                            <th>Tiempo<img align="absmiddle" hspace="3px" src="/main/img/info3.gif" alt="Tiempo de formación (media del tiempo de permanencia de todos los estudiantes)" title="Tiempo de formación (media del tiempo de permanencia de todos los estudiantes)"></th>
+                            <th>Progreso<img align="absmiddle" hspace="3px" src="/main/img/info3.gif" alt="Promedio de todos los estudiantes" title="Promedio de todos los estudiantes"></th>
+                            <th>Puntuación en las lecciones<img align="absmiddle" hspace="3px" src="/main/img/info3.gif" alt="Promedio de todos los estudiantes" title="Promedio de todos los estudiantes"></th>
+                            <th>Puntuación en los ejercicios<img align="absmiddle" hspace="3px" src="/main/img/info3.gif" alt="Promedio de todos los estudiantes" title="Promedio de todos los estudiantes"></th>
+                            <th>Mensajes por estudiante</th>
+                            <th>Tareas por estudiante</th>
+                            <th>Detalles</th>
+                        </tr>
+                        <tr class="row_even">
+                                <td>Matematica</td>
+                                <td>1</td>
+                                <td>5:34:57</td>
+                                <td>100%</td>
+                                <td>-%</td>
+                                <td>0%</td>
+                                <td>1</td>
+                                <td>-</td>
+                                <td>
+                                    <center>
+                                        <a href="">
+                                            <img src="/main/img/2rightarrow.gif" border="0">
+                                        </a>
+                                    </center>
+                                </td>
+                        </tr>
+                </tbody>
+            </table>
+            <table style="width:100%;">
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="clear">&nbsp;</div>
+</div>';
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
 ?>

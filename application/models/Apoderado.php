@@ -1,8 +1,8 @@
 <?php
-require_once(realpath(dirname(__FILE__)) . '/Alumno.php');
-require_once(realpath(dirname(__FILE__)) . '/Usuario.php');
+//require_once(realpath(dirname(__FILE__)) . '/Alumno.php');
+//require_once(realpath(dirname(__FILE__)) . '/Usuario.php');
 
-class Apoderado extends Usuario {
+class Application_Model_Apoderado {
 	private $idApoderado;
 	private $idUsuario;
 	/**
@@ -17,7 +17,7 @@ class Apoderado extends Usuario {
 	private $cn;
 	public function __construct()
 	{
-		$this->cn = new Db();
+//		$this->cn = new Db();
 	}	 
 	public function getApoderado() {
 		// Not yet implemented

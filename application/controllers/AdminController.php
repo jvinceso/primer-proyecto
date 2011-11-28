@@ -22,6 +22,10 @@ class AdminController extends Zend_Controller_Action{
         $mysession->paginaActual = 'Cursos';        
     }
     
+    public function acordiongradosAction(){
+        
+    }
+    
     public function usuariosAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
         $mysession->paginaActual = 'Usuarios';        
@@ -71,6 +75,8 @@ class AdminController extends Zend_Controller_Action{
     }
     
     public function nuevoapoderadoAction(){
+        $form = new Application_Form_FormNuevoApoderado();
+        $this->view->formularionuevoapoderado = $form;        
     }
     
     public function nuevodirectorAction(){
@@ -78,6 +84,7 @@ class AdminController extends Zend_Controller_Action{
         
     public function buscarusuarioAction(){
     }
+
     
     public function actualizarperiodoAction(){
         ////////////////////////////////////////////////////////        
@@ -239,6 +246,19 @@ class AdminController extends Zend_Controller_Action{
         return $this->_redirect('/admin/nuevocurso');
          
     }
+
+    public function agregarapoderadoAction(){
+        if (!$this->getRequest()->isPost()) { 
+            return $this->_forward('nuevoapoderado');
+        }
+        $form = new Application_Form_FormNuevoCurso();
+        if (!$form->isValid($_POST)) {           
+            $this->view->formularionuevoapoderado = $form;
+            return $this->render('nuevoapoderado');
+        } 
+        
+    }
+    
     
     public function actualizarcursoAction(){
         $cursos = new Application_Model_Cursos();

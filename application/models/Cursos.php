@@ -92,7 +92,38 @@ class Application_Model_Cursos{
          
         return $contenido;
     }    
-	 
+
+    public  function CrearAcordiongrados(){
+    $grado=new Application_Model_Grado();
+    $seccion=new Application_Model_Seccion();
+      
+    $contenido='';
+    $result=$grado->listarGradosActivos();
+        foreach ($result as $valor) {
+            //Title del Acordion
+            $contenido.='<div><h3><a href="#">'.$valor['vGradoDescripcion'].'</a></h3>
+            <div>    
+            ';
+            //Obtengo la lista de Secciones en el Grado actual
+            $rstemp=$seccion->listarSeccionesPorGrado($valor['iGradoIdGrado']);
+            //Recorro el array
+                foreach ($rstemp as $keyval) {
+                    //Creo el contenido del Tab en un div
+                   $contenido.='<p> Seccion : '.$keyval['vSeccDescripcion'].'</p>' ;
+                   $tmparra=$this->listarCursosActivosxseccion($keyval['iSeccIdSeccion']);
+                        foreach($tmparra as $valores){
+                            $contenido.='<ul>
+                                <li class="ui-icon-check" style="background:none">'.$valores['vCursNombreCurso'].'</li></ul>';
+                        }
+                }
+                $contenido.='</div>
+                    </div>
+                    ';
+        }
+        return $contenido;
+    }
+
+
     public function registrarCurso($nombrecurso, $descripcion, $idseccion) {
             $dbAdapter = Zend_Db_Table::getDefaultAdapter();
             
@@ -227,4 +258,20 @@ class Application_Model_Cursos{
             $data = array('tiCursActivo' =>  $estado );   
             $dbAdapter->update('cursos',$data,'iCursIdCursos = ' . $id);
         }
+        
+        public function listarCursosActivosxseccion($idseccion){
+            
+            $dbAdapter = Zend_Db_Table::getDefaultAdapter();
+            $select = $dbAdapter->select()
+                    ->from("cursos")
+                    ->where("Seccion_iSeccIdSeccion='".$idseccion."' AND tiCursActivo='A'");
+
+            $stmt = $dbAdapter->query($select);
+            $result = $stmt->fetchAll();
+            if(isset($result)){
+                return $result;
+            }else{
+                return NULL;   
+            }
+        }        
 }

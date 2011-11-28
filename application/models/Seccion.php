@@ -56,7 +56,7 @@ class Application_Model_Seccion {
             $stmt=$dbAdapter->query("Select sec.iSeccIdSeccion, sec.vSeccDescripcion, sec.Grado_iGradoIdGrado , gr.vGradoDescripcion 
                             from seccion sec inner join grado gr on sec.Grado_iGradoIdGrado=gr.iGradoIdGrado 
                             inner join periodoacademico pera on gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico=pera.iPerAcaIdPeriodoAcademico 
-                            where pera.iPerAcaIdPeriodoAcademico='".$idperiodoacademicoactual."' and gr.tiGradoEstado='A' and sec.Grado_iGradoIdGrado ='".$idGrado."' order by sec.Grado_iGradoIdGrado, gr.vGradoDescripcion");
+                            where pera.iPerAcaIdPeriodoAcademico='".$idperiodoacademicoactual."' and gr.tiGradoEstado='A' and sec.Grado_iGradoIdGrado ='".$idGrado."' order by sec.Grado_iGradoIdGrado,sec.vSeccDescripcion, gr.vGradoDescripcion");
              
             $result = $stmt->fetchAll();
             

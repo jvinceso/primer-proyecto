@@ -1,12 +1,12 @@
 <?php
-require_once(realpath(dirname(__FILE__)) . '/Apoderado.php');
-require_once(realpath(dirname(__FILE__)) . '/Seccion.php');
-require_once(realpath(dirname(__FILE__)) . '/Usuario.php');
+//require_once(realpath(dirname(__FILE__)) . '/Apoderado.php');
+//require_once(realpath(dirname(__FILE__)) . '/Seccion.php');
+//require_once(realpath(dirname(__FILE__)) . '/Usuario.php');
 
 /**
  * Asiste a Clases Mediante Sistema Web
  */
-class Alumno extends Usuario {
+class Application_Model_Alumno {
 	private $idAlumno;
 	private $idUsuario;
 	private $idSeccion;

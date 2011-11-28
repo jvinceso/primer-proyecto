@@ -4,6 +4,9 @@
     $menu= new Application_Model_Menu();
     $usuario= new Application_Model_Usuario();    
     
+    $curso=new Application_Model_Cursos();
+
+    
     $mysession = new Zend_Session_Namespace('sesion');                    
     $paginaActual=$mysession->paginaActual ;
     $nombreUsuario=$mysession->usuario_nombre;
@@ -17,7 +20,39 @@
                 </a>
             </li>
         </ul>';
- 
+
+    $script='<script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>
+	<script type="text/javascript">
+	$(function() {
+		var stop = false;
+		$( "#accordion h3" ).click(function( event ) {
+			if ( stop ) {
+				event.stopImmediatePropagation();
+				event.preventDefault();
+				stop = false;
+			}
+		});
+		$( "#accordion" )
+			.accordion({
+				header: "> div > h3",
+                                active: false,
+                                collapsible: true
+			})
+			.sortable({
+				axis: "y",
+				handle: "h3",
+				stop: function() {
+					stop = true;
+				}
+			});
+	});
+	</script>      
+        ';
+    $this->script=$script;
+    
+    $css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">';
+    $this->css=$css;
+    
     $tipo=$mysession->tipo_usuario;
     $result = $menu->getMenu($tipo);
     
@@ -51,7 +86,7 @@
             </li>
         </ul>';
     $contenido = '
-        <div class="admin_section">
+        <div class="admin_section treinta" >
             <h4><img src="/main/img/course.gif" alt="Cursos" title="Cursos"> Cursos</h4>
             <ul>
                 <li><a href="nuevocurso">Crear un curso</a></li>                
@@ -62,18 +97,11 @@
                 <li><a href="subscribe_user2course.php">Inscribir usuarios en un curso</a></li>
             </ul>
         </div>
-        <div class="admin_section">
-           <h4><img src="/main/img/course.gif" alt="Secciones" title="Secciones"> Secciones</h4>
-           <ul>
-                <li><a href="course_list.php">Lista de Secciones</a></li>
-                <li><a href="course_add.php">Crear una Seccion</a></li>
-                <li><a href="course_export.php">Exportar cursos</a></li>
-                <li><a href="course_import.php">Importar Seccion desde un fichero</a></li>
-                <li><a href="course_category.php">Secciones por Grado</a></li>
-                <li><a href="subscribe_user2course.php">Inscribir sección en un grado</a></li>
-            </ul>
-        </div>
-        ';
+        <div class="admin_section setenta">
+           
+<div id="accordion">';
+$contenido.=$curso->CrearAcordiongrados();
+$contenido.='</div>';
     
     print $html->crearWrapper(null, null, null, $h3, $h4 ,null, null,$contenido);
 ?>

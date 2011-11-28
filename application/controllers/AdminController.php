@@ -280,6 +280,20 @@ class AdminController extends Zend_Controller_Action{
         $json = Zend_Json::encode($array_re);
         echo $json;
     }
+
+    public function listarnombreusuarioAction(){
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender();
+        $usuario=new Application_Model_Usuario();
+        $nombreusuario=$this->getRequest()->getParam('usunombre');
+        $array_usu=$usuario->getUsuariobyNombreUsuario($nombreusuario);
+//        $json = Zend_Json::encode($array_usu);
+        if(sizeof($array_usu)>0)
+        {
+            echo "existe";
+        }
+//        echo $json;
+    }    
     
     //Funciones Ajax
     public function actualizarseccionajaxAction(){
@@ -295,6 +309,25 @@ class AdminController extends Zend_Controller_Action{
             $secciones->actualizarSeccion($idseccion, $estado);
             echo "1";
         }
+    }
+    
+    public function obtenapoderadoajaxAction(){
+      $apoderado = new Application_Model_Apoderado();
+        if ($this->getRequest()->isXmlHttpRequest())
+        {
+            $this->_helper->layout->disableLayout();
+            $this->_helper->viewRenderer->setNoRender();
+            $parametro=$this->getRequest()->getParam('parametro');
+            $opcion=$this->getRequest()->getParam('opt');
+            if($opcion=='dni'){
+                $result=$apoderado->listarApoderadobydni($parametro);
+            }else{$result=$apoderado->listarApoderadobynombre($parametro);}
+            if(sizeof($result)>0){
+                $json = Zend_Json::encode($result);
+                echo $json;            
+            }else{echo 'nada';}
+
+        }        
     }
     
     public function eliminarseccionajaxAction(){

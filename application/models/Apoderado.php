@@ -3,8 +3,8 @@
 //require_once(realpath(dirname(__FILE__)) . '/Usuario.php');
 
 class Application_Model_Apoderado {
-	private $idApoderado;
-	private $idUsuario;
+	protected $idApoderado;
+	protected $idUsuario;
 	/**
 	 * @AssociationType Alumno
 	 * @AssociationMultiplicity 1..*
@@ -46,5 +46,40 @@ class Application_Model_Apoderado {
 	public function getAlumno() {
 		// Not yet implemented
 	}
+
+        public function listarApoderadobynombre($apellido){
+ 
+            $dbAdapter = Zend_Db_Table::getDefaultAdapter();
+            $stmt=$dbAdapter->query("SELECT ap.iApodIdApoderado, ap.Usuarios_iUsuIdUsuario,usu.vUsuNombre, usu.vUsuApellidoPat, usu.vUsuApellidoMat, usu.cUsuDni
+                    FROM apoderados ap
+                    INNER JOIN usuarios usu ON usu.iUsuIdUsuario = ap.Usuarios_iUsuIdUsuario
+INNER JOIN tipousuario tipusu ON tipusu.iTiUsuarioIdTipoUsuario = usu.TipoUsuario_iTiUsuarioIdTipoUsuario
+WHERE usu.vUsuApellidoPat LIKE '".$apellido."%'");
+             
+            $result = $stmt->fetchAll();
+            
+            if(isset($result)){
+                return $result;
+            }else{
+                return NULL;   
+            }
+        }   
+        public function listarApoderadobydni($dni){
+ 
+            $dbAdapter = Zend_Db_Table::getDefaultAdapter();
+            $stmt=$dbAdapter->query("SELECT ap.iApodIdApoderado, ap.Usuarios_iUsuIdUsuario, usu.vUsuNombre,usu.vUsuApellidoPat, usu.vUsuApellidoMat, usu.cUsuDni
+                    FROM apoderados ap
+                    INNER JOIN usuarios usu ON usu.iUsuIdUsuario = ap.Usuarios_iUsuIdUsuario
+INNER JOIN tipousuario tipusu ON tipusu.iTiUsuarioIdTipoUsuario = usu.TipoUsuario_iTiUsuarioIdTipoUsuario
+WHERE usu.cUsuDni LIKE '".$dni."%'");
+             
+            $result = $stmt->fetchAll();
+            
+            if(isset($result)){
+                return $result;
+            }else{
+                return NULL;   
+            }
+        }         
 }
 ?>

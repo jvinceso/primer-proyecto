@@ -10,7 +10,7 @@ class Application_Form_FormNuevoApoderado extends Zend_Form{
         
         $tipousuario=new Application_Model_TipoUsuario();
         
-        $nombreusuario = $this->createElement('text', 'nombreusuario', array('label' => 'Nombre del Usuario', 'placeholder' => 'Máximo 25 caracteres'));
+        $nombreusuario = $this->createElement('text', 'nombreusuario', array('label' => 'Nombre del Usuario','class'=>'nombreusuario', 'placeholder' => 'Máximo 25 caracteres'));
         $nombreusuario->addValidator('notEmpty',true,array('messages'=>array('isEmpty'=>'Campo Requerido')))
                       ->addValidator('regex',true,array('patern'=>'/^[(a-zA-Z)]+$/',array('regexNotMatch'=>'Solo Letras')))
                       ->addValidator('stringLength',false,array(5,25,'messages'=>"Entre 5 y 25 caracteres"))
@@ -147,6 +147,7 @@ class Application_Form_FormNuevoApoderado extends Zend_Form{
              ->addElement($nombreusuario)
              ->addElement($clave)                
              ->addElement($tipousuario) 
+                ->addElement('button', 'buscar', array('label' => 'busca apoderado','onclick'=>'buscaapoderado();'))
              // uso de addElement() como fábrica para crear el botón 'Login':
              ->addElement('submit', 'registrar', array('label' => 'Registrar'));
     }

@@ -17,7 +17,18 @@
                 </a>
             </li>
         </ul>';
- 
+    $script='<script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>
+        <script type="text/javascript" src="/js/codigito.js" > </script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#appaterno").validaTexto("s","registrar");
+	});
+	</script>
+        ';
+    $this->script=$script;    
+    $css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">';
+    $this->css=$css;
+    
     $tipo=$mysession->tipo_usuario;
     $result = $menu->getMenu($tipo);
     
@@ -67,6 +78,39 @@
        
         $contenido .= '
             </div>';
-    
+
+$mensaje='<div id="dialog-form" title="Buscar Apoderado" style="display:none">
+	<p class="validateTips">Busca por Nombre o Dni.</p>
+
+	<fieldset>
+		<label for="nombres">Nombre</label>
+		<input onkeyup="buscarapoderado(\'apellido\',this);" type="text" name="nombres" id="nombres" class="text ui-widget-content ui-corner-all" />
+		&nbsp;&nbsp;<label for="dnis">Dni</label>
+		<input type="text" onkeyup="buscarapoderado(\'dni\',this);" name="dnis" id="dnis" value="" class="text ui-widget-content ui-corner-all" />
+	</fieldset>
+        <h1>Usuarios Encontrados:</h1>
+        <table id="users" class="ui-widget ui-widget-content">
+                <thead>
+                        <tr class="ui-widget-header ">
+                                <th>Codigo</th>
+                                <th>Nombre</th>
+                                <th>Apellido Paterno</th>
+                                <th>Apellido Paterno</th>
+                                <th>Dni</th>
+                                <th>Seleccionar</th>
+                        </tr>
+                </thead>
+                <tbody id="buscaap">
+
+                </tbody>
+        </table>        
+  
+</div>';
+$mensaje.='
+      <div id="users-contain" class="ui-widget" style="display:none">
+
+        </div>             
+    ';
+    $html->crearContentAjax($mensaje);
     print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
 ?>

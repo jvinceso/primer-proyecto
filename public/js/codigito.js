@@ -146,17 +146,23 @@ $.get("listarnombreusuario/?usunombre="+a.trim($this.val()), function(data){
 
 function buscaapoderado(){
     $.fx.speeds._default = 1000;
-         
+$("#buscaap").html(" ");
+document.getElementById("nombres").value="";
+document.getElementById("dnis").value="";
+
+
+    
+    
     $(function() {
         $( "#dialog-form" ).dialog({
             autoOpen: false,
             show: "blind",
-            hide: "explode",
+            hide: "Drop",
             resizable: false,
             height: 450,
             width: 'auto',
-            modal: true
-//            buttons:{
+            modal: true,
+            buttons:{
 //                "Aceptar": function(){
 //                    $( this ).dialog( "aceptar" );
 //                    //aca ira ajax
@@ -173,11 +179,12 @@ function buscaapoderado(){
 //                            break;
 //                    }
 //                },
-//                Cancelar: function(){
-//                    $( this ).dialog( "cerrar" );
-// 
-//                }
-//            }
+                Cancelar: function(){
+                    $( this ).dialog( "close" );
+                    
+ 
+                }
+            }
         });
         //Invoca al panel Informativo
         $( "#dialog-form" ).dialog( "open" );
@@ -186,18 +193,22 @@ function buscaapoderado(){
 
 function buscarapoderado(opcion,obj){    
 //    alert("valor : "+obj.value);
+    var apodera='nada'
     $.getJSON("obtenapoderadoajax/?parametro="+obj.value+"&opt="+opcion, function(data){
-        $("#buscaap").html("Listando...");
+        $("#buscaap").html("");
                 var apodera = data;var fila;
-         if(apodera=='nada'){
-             $("#buscaap").html("No se encontro informacion del apoderado");
-         }else{
+//                alert(apodera.length);
+//                alert(apodera);
+    if(apodera!=null){
+         if(apodera.length>0){
              for (var x = 0 ; x < apodera.length ; x++) {
-                fila+='<tr ><td>'+apodera[x].iApodIdApoderado+'</td><td>'+apodera[x].vUsuNombre+'</td><td>'+apodera[x].vUsuApellidoPat+'</td><td>'+apodera[x].vUsuApellidoMat+'</td><td>'+apodera[x].cUsuDni+'</td><td><a style="cursor:pointer" alt="Seleccionar" onclick="selecapoderado(\''+apodera[x].iApodIdApoderado+'\',\''+apodera[x].vUsuApellidoPat+' '+apodera[x].vUsuApellidoMat+' '+apodera[x].vUsuNombre+' '+'\',\''+apodera[x].cUsuDni+'\');" ><span  class="ui-icon ui-icon-check"></span></a></td></tr>';
+                fila+='<tr ><td>'+apodera[x].iApodIdApoderado+'</td><td>'+apodera[x].vUsuNombre+'</td><td>'+apodera[x].vUsuApellidoPat+'</td><td>'+apodera[x].vUsuApellidoMat+'</td><td>'+apodera[x].cUsuDni+'</td><td><center><a style="cursor:pointer" alt="Seleccionar" onclick="selecapoderado(\''+apodera[x].iApodIdApoderado+'\',\''+apodera[x].vUsuApellidoPat+' '+apodera[x].vUsuApellidoMat+' '+apodera[x].vUsuNombre+' '+'\',\''+apodera[x].cUsuDni+'\');" ><span  class="ui-icon ui-icon-check"></span></a></center> </td></tr>';
             }        
             $("#buscaap").html(fila);            
+            }        
+         }else{
+             $("#buscaap").html("<td colspan='6' >No existe ningun registro con los datos solicitados</td>");
          }
-
     });
 }
 
@@ -206,6 +217,7 @@ function selecapoderado(id,nombre,dni){
     document.getElementById("nombre").value=id;
     document.getElementById("appaterno").value=nombre;
     document.getElementById("apmaterno").value=dni;
+    $( "#dialog-form" ).dialog( "close" );    
 //    $("#nombre").val=id;
 
 }

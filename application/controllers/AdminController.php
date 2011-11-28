@@ -325,7 +325,7 @@ class AdminController extends Zend_Controller_Action{
             if(sizeof($result)>0){
                 $json = Zend_Json::encode($result);
                 echo $json;            
-            }else{echo 'nada';}
+            }else{}
 
         }        
     }

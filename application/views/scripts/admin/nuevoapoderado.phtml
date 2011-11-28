@@ -19,11 +19,21 @@
         </ul>';
     $script='<script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>
         <script type="text/javascript" src="/js/codigito.js" > </script>
+        <script type="text/javascript" src="/js/mascarainput.js" > </script>
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$("#appaterno").validaTexto("s","registrar");
 	});
-	</script>
+	</script >
+        <script type="text/javascript">
+            jQuery(function($){
+            $("#dnis").mask("99999999");
+
+
+        });
+        </script>   
+
+
         ';
     $this->script=$script;    
     $css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">';
@@ -86,9 +96,9 @@ $mensaje='<div id="dialog-form" title="Buscar Apoderado" style="display:none">
 		<label for="nombres">Nombre</label>
 		<input onkeyup="buscarapoderado(\'apellido\',this);" type="text" name="nombres" id="nombres" class="text ui-widget-content ui-corner-all" />
 		&nbsp;&nbsp;<label for="dnis">Dni</label>
-		<input type="text" onkeyup="buscarapoderado(\'dni\',this);" name="dnis" id="dnis" value="" class="text ui-widget-content ui-corner-all" />
+		<input type="text" onkeyup="buscarapoderado(\'dni\',this);" size="8" name="dnis" id="dnis" value="" class="text ui-widget-content ui-corner-all" />
 	</fieldset>
-        <h1>Usuarios Encontrados:</h1>
+        <h3>Resultados Obtenidos:</h3>
         <table id="users" class="ui-widget ui-widget-content">
                 <thead>
                         <tr class="ui-widget-header ">
@@ -106,11 +116,7 @@ $mensaje='<div id="dialog-form" title="Buscar Apoderado" style="display:none">
         </table>        
   
 </div>';
-$mensaje.='
-      <div id="users-contain" class="ui-widget" style="display:none">
 
-        </div>             
-    ';
     $html->crearContentAjax($mensaje);
     print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
 ?>

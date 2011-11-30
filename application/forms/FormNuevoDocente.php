@@ -1,22 +1,8 @@
 <?php
-class Application_Form_FormNuevoAlumno extends Zend_Form{
+class Application_Form_FormNuevoDocente extends Zend_Form{
     
     public function init(){                
-        $seccion = new Application_Model_Seccion();
-        $array = $seccion->listarSeccionesPeriodoActualActivos();
-        $include = new Application_Model_Includes();
-        //$q2a=$include->query2array($array, 'iSeccIdSeccion','vSeccDescripcion');
-        $q2a=$include->querytoeach($array,"iSeccIdSeccion");
-      
-        $validator = new Zend_Validate_InArray($q2a); 
-        $validator->setHaystack($q2a);
-        $validator->setMessages( array(
-        Zend_Validate_InArray::NOT_IN_ARRAY =>
-                //'El string \'%value%\'  no se encuentra'
-                'Eliga una sección'
-        ));
-        
-        $this->setAction('/admin/agregaralumno')->setMethod('post')
+        $this->setAction('/admin/agregardocente')->setMethod('post')
              ->setAttrib('id','formLogin');
         
         
@@ -83,52 +69,6 @@ class Application_Form_FormNuevoAlumno extends Zend_Form{
                     array('Label', array('tag' => 'td')),
                 ));
         
-        $dniapo = $this->createElement('text', 'dniapo', array('label' => 'DNI Apoderado', 'disabled'=>true));
-        $dniapo->addValidator('notEmpty',true,array('messages'=>array('isEmpty'=>'Campo Requerido')))
-                      ->addValidator('regex',true,array('patern'=>'/^[(0-9)]+$/',array('regexNotMatch'=>'Solo Numeros')))
-                      ->addValidator('stringLength',false,array(8,8,'messages'=>"DNI se Compone e 8 Carateres"))
-                      ->addFilter("StringTrim");
-        
-        $dniapo->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td')),
-                ));
-        
-        $nombreapo = $this->createElement('text', 'nombreapo', array('label' => 'Nombre del Apoderado', 'disabled'=>true));
-        $nombreapo->addValidator('notEmpty',true,array('messages'=>array('isEmpty'=>'Campo Requerido')))
-                      ->addValidator('regex',true,array('patern'=>'/^[(a-z A-Z)]+$/',array('regexNotMatch'=>'Solo Letras')))
-                      ->addValidator('stringLength',false,array(2,150,'messages'=>"Entre 2 y 150 caracteres"))
-                      ->addFilter("StringToUpper")
-                      ->addFilter("StringTrim");
-        
-        $nombreapo->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td')),
-                ));
-        
-        $idapo = $this->createElement('text', 'idapo', array('label' => 'Id del Apoderado', 'disabled'=>true));
-        $idapo->addValidator('notEmpty',true,array('messages'=>array('isEmpty'=>'Campo Requerido')))
-                      ->addValidator('regex',true,array('patern'=>'/^[(0-9)]+$/',array('regexNotMatch'=>'Solo Numeros')))
-                      ->addValidator('stringLength',false,array(1,8,'messages'=>"Elegir DNI"))
-                      ->addFilter("StringTrim");
-        
-        $idapo->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                    array('Label', array('tag' => 'td')),
-                ));
-        
         $nombre = $this->createElement('text', 'nombre', array('label' => 'Nombre '));
         $nombre->addValidator('notEmpty',true,array('messages'=>array('isEmpty'=>'Campo Requerido')))
                       ->addValidator('regex',true,array('patern'=>'/^[(a-z A-Z)]+$/',array('regexNotMatch'=>'Solo Letras')))
@@ -180,6 +120,22 @@ class Application_Form_FormNuevoAlumno extends Zend_Form{
                     array('Label', array('tag' => 'td')),
                 ));
         
+        $especialidad = $this->createElement('textarea', 'especialidad', array('label' => 'Especialidad', 'cols' => '40', 'rows'=>'5'));
+        $especialidad->addValidator('notEmpty',true,array('messages'=>array('isEmpty'=>'Campo Requerido')))
+                      ->addValidator('stringLength',false,array(5,300,'messages'=>"Entre 5 y 300 caracteres"))
+                      ->setRequired(true)
+                      ->addFilter("StringToUpper")
+                      ->addFilter("StringTrim");
+        
+        $especialidad->setDecorators(array(
+                    'ViewHelper',
+                    'Description',
+                    'Errors',
+                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
+                    array(array('td' => 'HtmlTag'), array('tag' => 'td')),
+                    array('Label', array('tag' => 'td')),
+                ));
+        
         $btnregistrar=$this->createElement('submit', 'registrar', array('label' => 'Registrar'));
         $btnregistrar->setDecorators(array(
                     'ViewHelper',
@@ -187,63 +143,12 @@ class Application_Form_FormNuevoAlumno extends Zend_Form{
                     'Errors',
                     array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
                     array(array('td' => 'HtmlTag'), array('tag' => 'td'))
-                ));    
+                ));
         
-        $btnapoderado=$this->createElement('button', 'buscar', array('label' => 'Buscar Apoderado','onclick'=>'buscaapoderado();'));
-        $btnapoderado->setDecorators(array(
-                    'ViewHelper',
-                    'Description',
-                    'Errors',
-                    array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                    array(array('td' => 'HtmlTag'), array('tag' => 'td'))
-                )); 
-        
-        
-        $gradosactuales = new Application_Model_Grado();
-        $includes=new Application_Model_Includes();
-        $arraygrados=$gradosactuales->listarGradosActivos();
-        $arraygradostoarray=$includes->query2array($arraygrados, 'iGradoIdGrado', 'vGradoDescripcion');
-
-        $grado=$this->createElement('select','cbogrado',array(
-            'label'        => 'Grado',
-            'autocomplete' => false,
-            'multiOptions' => $arraygradostoarray,
-            'onChange' => 'cargarseccion();')
-        );
-
-        $grado->setDecorators(array(
-                'ViewHelper',
-                'Description',
-                'Errors',
-                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                array('Label', array('tag' => 'td')),
-            ));
-        
-        $seccion=$this->createElement('select','cboseccion',array(
-            'label'        => 'Seccion',
-            'multiOptions' => array("0"=>"Seleccionar Sección"))
-        ); 
-        $seccion->addValidator($validator);
-        $seccion->addValidator('notEmpty', true, array('messages' => array('isEmpty' => 'Campo requerido')));
-        $seccion->setDecorators(array(
-                'ViewHelper',
-                'Description',
-                'Errors',
-                array(array('elementDiv' => 'HtmlTag'), array('tag' => 'div')),
-                array(array('td' => 'HtmlTag'), array('tag' => 'td')),
-                array('Label', array('tag' => 'td')),
-            ));
-         
-     $this->addElement($btnapoderado)
-             ->addElement($idapo)
-             ->addElement($nombreapo)
-             ->addElement($dniapo)
-             ->addElement($grado)
-             ->addElement($seccion)
-             ->addElement($nombre)
+        $this->addElement($nombre)
              ->addElement($appaterno)
              ->addElement($apmaterno)
+             ->addElement($especialidad)
              ->addElement($dni)
              ->addElement($email)
              ->addElement($nombreusuario)

@@ -3,7 +3,7 @@ $(function() {
  
  $('#navigation').hover(
   function () {
-   $('li',$(this)).stop().animate({'marginLeft':'-300px'},500);
+   $('li',$(this)).stop().animate({'marginLeft':'-350px'},500);
   },
   function () {
    $('li',$(this)).stop().animate({'marginLeft':'10px'},500);

@@ -1,8 +1,8 @@
 /*
-	Masked Input plugin for jQuery
-	Copyright (c) 2007-2011 Josh Bush (digitalbush.com)
-	Licensed under the MIT license (http://digitalbush.com/projects/masked-input-plugin/#license) 
-	Version: 1.3
+Masked Input plugin for jQuery
+Copyright (c) 2007-2011 Josh Bush (digitalbush.com)
+Licensed under the MIT license (http://digitalbush.com/projects/masked-input-plugin/#license)
+Version: 1.3
 */
 (function(a){
     var b=(a.browser.msie?"paste":"input")+".mask",c=window.orientation!=undefined;

@@ -78,7 +78,7 @@ ul#navigation {
     top: 30px;
     right: -80px;
     list-style: none;
-    z-index:9999;
+    z-index:20;
 }
 
 ul#navigation .help a {
@@ -1089,6 +1089,12 @@ div .setenta{
     width: 62%;
     float:left;
 }
+
+div .formulario{
+    width: 30%; 
+    float:none;
+}
+
 .admin_section li {    
     background-repeat:no-repeat;
     list-style:none;

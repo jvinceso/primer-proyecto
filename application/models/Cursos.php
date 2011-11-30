@@ -14,10 +14,12 @@ class Application_Model_Cursos{
   
             $dbAdapter = Zend_Db_Table::getDefaultAdapter();
             $stmt=$dbAdapter->query("Select cur.iCursIdCursos, gr.vGradoDescripcion, sec.vSeccDescripcion, cur.vCursNombreCurso, cur.iCursDescripcion, cur.tiCursActivo
-                            from cursos cur
-                            inner join seccion sec on cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
-                            inner join grado gr on sec.Grado_iGradoIdGrado=gr.iGradoIdGrado
-                            order by gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso");
+                           from cursos cur
+                           inner join seccion sec on cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
+                           inner join grado gr on sec.Grado_iGradoIdGrado=gr.iGradoIdGrado
+                           where gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico=".$idperiodoacademicoactual."
+                           order by gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso"                    
+                    );
              
             $result = $stmt->fetchAll();
             
@@ -28,21 +30,84 @@ class Application_Model_Cursos{
             }
     }
     
-    public function crearTablaCursosSimple() {
+    public function listarCursosPeriodoActualActivos(){
+      $periodoacademico=  new Application_Model_PeriodoAcademico();
+      $idperiodoacademicoactual=$periodoacademico->getPeriodoActualId();        
+        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
+        $stmt=$dbAdapter->query("SELECT cur.iCursIdCursos, gr.vGradoDescripcion, sec.vSeccDescripcion, cur.vCursNombreCurso, cur.iCursDescripcion, cur.tiCursActivo
+                            FROM cursos cur
+                            INNER JOIN seccion sec ON cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
+                            INNER JOIN grado gr ON sec.Grado_iGradoIdGrado = gr.iGradoIdGrado
+                            where gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico=".$idperiodoacademicoactual." and cur.tiCursActivo = 'A'
+                            ORDER BY gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso");
+
+        $result = $stmt->fetchAll();
+
+        if(isset($result)){
+            return $result;
+        }else{
+            return NULL;   
+        }        
+    }
+
+    public function listarNombreCursosActivos(){
+      $periodoacademico=  new Application_Model_PeriodoAcademico();
+      $idperiodoacademicoactual=$periodoacademico->getPeriodoActualId();        
+        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
+        $stmt=$dbAdapter->query("SELECT  cur.vCursNombreCurso
+                            FROM cursos cur
+                            INNER JOIN seccion sec ON cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
+                            INNER JOIN grado gr ON sec.Grado_iGradoIdGrado = gr.iGradoIdGrado
+                            where gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico=".$idperiodoacademicoactual." and cur.tiCursActivo = 'A'
+                            ORDER BY gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso");
+
+        $result = $stmt->fetchAll();
+
+        if(isset($result)){
+            return $result;
+        }else{
+            return NULL;   
+        }        
+    }    
+    
+    public function obtenerdocentescurso($idcurso){
+        $dbAdapter= Zend_Db_Table::getDefaultAdapter();
+        $stmt=$dbAdapter->query("
+            SELECT cusu.Cursos_iCursIdCursos, cusu.Usuarios_iUsuIdUsuario 
+            FROM cursosusuarios cusu 
+            inner join usuarios usu on usu.iUsuIdUsuario=cusu.Usuarios_iUsuIdUsuario 
+            inner join tipousuario tusu on tusu.iTiUsuarioIdTipoUsuario=usu.TipoUsuario_iTiUsuarioIdTipoUsuario
+            WHERE   tusu.iTiUsuarioIdTipoUsuario='2' and cusu.Cursos_iCursIdCursos='".$idcurso."'
+            ");
+        $result = $stmt->fetchAll();
+        if(isset($result)){
+            return $result;
+        }else{
+            return NULL;   
+        }        
+    }
+    public function crearTablaCursosSimple($pag_inicio=null, $nroregistros=null, $opt=null) {
             $contenido = '
             <table class="data_table">
-            <tbody>
-            <tr class="row_odd">
-                    <th>&nbsp;</th>
-                    <th>Codigo</th>
-                    <th><a href="">Grado</a></th>                    
-                    <th><a href="">Seccion</a></th>
-                    <th><a href="">Curso</a></th>
-                    <th><a href="">Descripcion</a></th>  
-                    <th><a href="">Estado</a></th>
-            </tr>';
+                <tbody>
+                    <tr class="row_odd">
+                        <th>&nbsp;</th>
+                        <th>Codigo</th>
+                        <th><a href="">Grado</a></th>                    
+                        <th><a href="">Seccion</a></th>
+                        <th><a href="">Curso</a></th>
+                        <th><a href="">Descripcion</a></th>  
+                        <th><a href="">Estado</a></th>
+                    </tr>';
 
-            $listacursos = $this->listarCursosPeriodoActual();
+            //$listacursos = $this->listarCursosPeriodoActual();
+            $consulta="
+                Select cur.iCursIdCursos, gr.vGradoDescripcion, sec.vSeccDescripcion, cur.vCursNombreCurso, cur.iCursDescripcion, cur.tiCursActivo
+                from cursos cur
+                inner join seccion sec on cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
+                inner join grado gr on sec.Grado_iGradoIdGrado=gr.iGradoIdGrado
+                order by gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso";
+            $listacursos = $this->consultaPaginada($consulta, $pag_inicio, $nroregistros,$opt);
             
             $cont=0;
             foreach ($listacursos as $aux){
@@ -83,47 +148,44 @@ class Application_Model_Cursos{
                                </center>
                             </td>
                         </tr>';
-            
             $cont++;
         }
         
 	$contenido .= '</tbody>
                 </table>';
-         
-        return $contenido;
+        $paginador = '
+            <table class="data_table">
+                <tbody>
+                    <th><a href=""><< Primero</a></th>                    
+                    <th><a href="">< Anterior</a></th>
+                    <th>
+                        <a href="">1 </a>
+                        <a href="">2 </a>
+                        <a href="">3 </a>
+                    </th>
+                    <th><a href="/admin/listacursos/?opt=sig">Siguiente ></a></th>
+                    <th><a href="">Ultimo >></a></th>  
+                <tbody>
+                <tr class="row_odd">
+                    
+                </tr>
+            </table>';
+    
+//        $pagina_actual=0;
+//        $nroregistros=5;
+//        
+//        $consulta="Select cur.iCursIdCursos, gr.vGradoDescripcion, sec.vSeccDescripcion, cur.vCursNombreCurso, cur.iCursDescripcion, cur.tiCursActivo
+//                from cursos cur
+//                inner join seccion sec on cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
+//                inner join grado gr on sec.Grado_iGradoIdGrado=gr.iGradoIdGrado
+//                order by gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso
+//                LIMIT ".$pagina_actual.",".$nroregistros;
+//        
+//        $paginador=$this->crearNavegador($consulta);
+//        
+        return $contenido.$paginador;
     }    
-
-    public  function CrearAcordiongrados(){
-    $grado=new Application_Model_Grado();
-    $seccion=new Application_Model_Seccion();
-      
-    $contenido='';
-    $result=$grado->listarGradosActivos();
-        foreach ($result as $valor) {
-            //Title del Acordion
-            $contenido.='<div><h3><a href="#">'.$valor['vGradoDescripcion'].'</a></h3>
-            <div>    
-            ';
-            //Obtengo la lista de Secciones en el Grado actual
-            $rstemp=$seccion->listarSeccionesPorGrado($valor['iGradoIdGrado']);
-            //Recorro el array
-                foreach ($rstemp as $keyval) {
-                    //Creo el contenido del Tab en un div
-                   $contenido.='<p> Seccion : '.$keyval['vSeccDescripcion'].'</p>' ;
-                   $tmparra=$this->listarCursosActivosxseccion($keyval['iSeccIdSeccion']);
-                        foreach($tmparra as $valores){
-                            $contenido.='<ul>
-                                <li class="ui-icon-check" style="background:none">'.$valores['vCursNombreCurso'].'</li></ul>';
-                        }
-                }
-                $contenido.='</div>
-                    </div>
-                    ';
-        }
-        return $contenido;
-    }
-
-
+	 
     public function registrarCurso($nombrecurso, $descripcion, $idseccion) {
             $dbAdapter = Zend_Db_Table::getDefaultAdapter();
             
@@ -154,22 +216,22 @@ class Application_Model_Cursos{
             }
      }
      
-      public function crearTablaCursos(){
+    public function crearTablaCursos(){
             $contenido = '
             <table class="data_table">
-            <tbody>
-            <tr class="row_odd">
-                    <th>&nbsp;</th>
-                    <th>Codigo</th>
-                    <th><a href="">Grado</a></th>                    
-                    <th><a href="">Seccion</a></th>
-                    <th><a href="">Curso</a></th>
-                    <th><a href="">Descripcion</a></th>  
-                    <th><a href="">Estado</a></th>
-            </tr>';
+                <tbody>
+                    <tr class="row_odd">
+                        <th>&nbsp;</th>
+                        <th>Codigo</th>
+                        <th><a href="">Grado</a></th>                    
+                        <th><a href="">Seccion</a></th>
+                        <th><a href="">Curso</a></th>
+                        <th><a href="">Descripcion</a></th>  
+                        <th><a href="">Estado</a></th>
+                    </tr>';
 
             $listacursos = $this->listarCursosPeriodoActual();
-
+           
             $cont=0;
             foreach ($listacursos as $aux){
                 if ($cont % 2){
@@ -180,98 +242,79 @@ class Application_Model_Cursos{
                 }
                 $contenido.='
                             <td>
-                                <input type="checkbox" name="id[]" value="4">
+                                <input type="checkbox" name="id" value="'.$aux['iCursIdCursos'].'">
                             </td>
                             <td>
-                                <center>'.$aux['iSeccIdSeccion'].'</center>
+                                <center>'.$aux['iCursIdCursos'].'</center>
                             </td>
-
                             <td>
                                 <center>'.$aux['vGradoDescripcion'].'</center>
-                            </td> 
+                            </td>
                             <td>
                                 <center>'.$aux['vSeccDescripcion'].'</center>
                             </td>
                             <td>
+                                <center>'.$aux['vCursNombreCurso'].'</center>
+                            </td>
+                            <td>
+                                <center>'.$aux['iCursDescripcion'].'</center>
+                            </td>
+                            <td>
                                 <center>';
-                                if($aux['tiSeccEstado']=='A'){
-                                    $contenido.=' <a href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=I"><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';
+                                if($aux['tiCursActivo']=='A'){
+                                    $contenido.='<a href="/admin/actualizarseccion/?cur='.$aux['iCursIdCursos'].'&est=I" onclick="ActDelCurso('.$aux['iCursIdCursos'].',\'I\',event,\'act\');" ><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';
                                 }
                                 else{
-                                    $contenido.=' <a href="/admin/actualizarseccion/?secc='.$aux['iSeccIdSeccion'].'&est=A"><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
+                                    $contenido.='<a href="/admin/actualizarseccion/?cur='.$aux['iCursIdCursos'].'&est=A" onclick="ActDelCurso('.$aux['iCursIdCursos'].',\'A\',event,\'act\');" ><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
                                 }
                 $contenido.='
                                </center>
                             </td>
-                            <td>
-                                <a href="">
-                                    <img src="/main/img/course.gif" title="Cursos" alt="Cursos" />
-                                </a>&nbsp;&nbsp;
-                                <a href="">
-                                    <img src="/main/img/synthese_view.gif" alt="Información" title="Información">
-                                </a>&nbsp;&nbsp;
-                                <a href="">
-                                    <img src="/main/img/login_as.gif" alt="Iniciar sesión como" title="Iniciar sesión como">
-                                </a>&nbsp;&nbsp;
-                                <img src="/main/img/statistics_na.gif" alt="Informes" title="Informes">&nbsp;&nbsp;
-                                <a href="">
-                                    <img src="/main/img/icons/22/edit.png" alt="Editar" title="Editar">
-                                </a>&nbsp;
-                                <img src="/main/img/admin_star_na.png" alt="No es administrador" title="No es administrador" />';
-
-                                if ($cont<sizeof($listacursos)-1){
-                                    if($aux['vGradoDescripcion']==$listasecciones[$cont+1]['vGradoDescripcion']){
-                                        $contenido.='
-                                        <a>
-                                            <img src="/main/img/icons/22/delete_na.png" alt="No Eliminar" title="No Puede Eliminarse">
-                                        </a>';
-                                    }
-                                    else{
-                                        $contenido.='
-                                        <a href="/admin/eliminarseccion/?secc='.$aux['iSeccIdSeccion'].'">
-                                            <img src="/main/img/icons/22/delete.png" alt="Eliminar?" title="Eliminar?">
-                                        </a>';
-                                    }
-                                }
-                                else {
-                                    $contenido.='
-                                        <a href="/admin/eliminarseccion/?secc='.$aux['iSeccIdSeccion'].'">
-                                            <img src="/main/img/icons/22/delete.png" alt="Eliminar?" title="Eliminar?">
-                                        </a>';
-                                }
-
-                           $contenido.='                             
-                            </td>
                         </tr>';
-
-                $cont++;
-            }
-
-            $contenido .= '</tbody>
-                    </table>
-                </div>';
+            $cont++;
+        }
+        
+	$contenido .= '</tbody>
+                </table>';
          
             return $contenido;
         }
-        public function actualizarCursoPorId($id,$estado) {
+    
+    public function actualizarCursoPorId($id,$estado) {
             $dbAdapter = Zend_Db_Table::getDefaultAdapter(); 
             $data = array('tiCursActivo' =>  $estado );   
             $dbAdapter->update('cursos',$data,'iCursIdCursos = ' . $id);
         }
-        
-        public function listarCursosActivosxseccion($idseccion){
-            
-            $dbAdapter = Zend_Db_Table::getDefaultAdapter();
-            $select = $dbAdapter->select()
-                    ->from("cursos")
-                    ->where("Seccion_iSeccIdSeccion='".$idseccion."' AND tiCursActivo='A'");
 
-            $stmt = $dbAdapter->query($select);
-            $result = $stmt->fetchAll();
-            if(isset($result)){
+    public function consultaPaginada($consulta,$inicio=null,$nro_registros=1,$opt=null){
+        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
+        $stmt=$dbAdapter->query($consulta);
+        $result = $stmt->fetchAll();
+        
+        $total_registros=sizeof($result);
+        $nro_paginas=(int)$total_registros/$nro_registros;
+        
+        switch($opt){
+            case 'pri':
+                $stmt=$dbAdapter->query($consulta." LIMIT ".$inicio.", ".$nro_registros);
+                $result = $stmt->fetchAll();
                 return $result;
-            }else{
-                return NULL;   
-            }
-        }        
+                break;
+            
+            case 'ant':
+                break;
+            
+            case 'sig':
+                $inicio+=$nro_registros;
+                $stmt=$dbAdapter->query($consulta." LIMIT ".$inicio.", ".$nro_registros);
+                $result = $stmt->fetchAll();
+                return $result;
+                break;
+            
+            case 'ult':
+                break;
+                
+        }
+    }
+        
 }

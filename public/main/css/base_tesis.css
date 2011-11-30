@@ -76,7 +76,7 @@ ul#navigation {
     margin: 0px;
     padding: 0px;
     top: 30px;
-    right: -80px;
+    right: -130px;
     list-style: none;
     z-index:20;
 }
@@ -1089,6 +1089,12 @@ div .setenta{
     width: 62%;
     float:left;
 }
+
+div .formulario{
+    width: 30%; 
+    float:none;
+}
+
 .admin_section li {    
     background-repeat:no-repeat;
     list-style:none;

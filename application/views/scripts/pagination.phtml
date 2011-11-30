@@ -1,0 +1,52 @@
+<?php
+    print ' <table class="data_table">
+                <tbody>
+                    <tr>';
+    
+    if(isset($this->previous)){
+        print '<th><a href="?page='.$this->first.'&nroreg='.$_GET['nroreg'].'">Primero</a></th>';
+    }
+    else{
+        print '<th><a>Primero</a></th>';
+    }
+    
+    if(isset($this->previous)){
+        print '<th><a href="?page='.$this->previous.'&nroreg='.$_GET['nroreg'].'">Anterior</a></th>';
+    }
+    else{
+        print '<th><a>Anterior</a></th>';
+    }
+    
+    print '<th>';
+    foreach($this->pagesInRange as $page){
+       
+        if($this->current != $page){
+            echo '<a href="?page='.$page.'&nroreg='.$_GET['nroreg'].'">'.$page.' </a>';
+        }
+        else{
+            echo $page.' ';
+        }
+    }
+    print '</th>';
+    
+    if(isset($this->next)){
+        print '<th><a href="?page='.$this->next.'&nroreg='.$_GET['nroreg'].'">Siguiente</a></th>';
+    }
+    else{
+        print '<th><a>Siguiente</a></th>';
+    }
+    
+    if(isset($this->next)){
+        print '<th><a href="?page='.$this->last.'&nroreg='.$_GET['nroreg'].'">Ultimo</a></th>';
+    }
+    else{
+        print '<th><a>Ultimo</a></th>';
+    }
+    print '     
+                    </tr>
+                    <tr class="row_odd">
+                       <td  colspan="5"><center> Página '.$this->current.' de '.$this->pageCount.'</center></td>
+                    </tr>
+                </tbody>
+            </table>';
+?>

@@ -1,5 +1,5 @@
 <?php
-class Application_Model_Usuario extends Zend_Db_Table_Abstract{
+class Application_Model_Usuario extends Zend_Db_Table_Abstract{ 
     protected $nombreUsuario;
     protected $clave;
     protected $nombre;
@@ -15,23 +15,9 @@ class Application_Model_Usuario extends Zend_Db_Table_Abstract{
     protected $_name = 'usuarios';
     protected $_primary = 'iUsuIdUsuario';
 
-    public function __construct(){
+    public function __construct() {
     }
     
-    public function nuevoUsuario($idusuario,$nombreUsuario,$clave,$nombre,$direccion,$apellido_Paterno,$apellido_Materno,$tipoUsuario,$estado,$email,$dni,$activo){
-        $this->idusuario=$idusuario;
-        $this->nombreUsuario=$nombreUsuario;
-        $this->nombre=$nombre;
-        $this->clave=$clave;
-        $this->direccion=$direccion;
-        $this->apellido_Paterno=$apellido_Paterno;
-        $this->apellido_Materno=$apellido_Materno;
-        $this->tipoUsuario=$tipoUsuario;
-        $this->estado=$estado;
-        $this->email=$email;
-        $this->dni=$dni;
-        $this->activo=$activo;           
-        }
     public function setUsuario($idusuario=null,$nombreUsuario=null,$clave=null,$nombre=null,$direccion=null,$apellido_Paterno=null,$apellido_Materno=null,$tipoUsuario=null,$estado=null,$email=null,$dni=null,$activo=null){
         $this->idusuario=$idusuario;
         $this->nombreUsuario=$nombreUsuario;
@@ -46,6 +32,7 @@ class Application_Model_Usuario extends Zend_Db_Table_Abstract{
         $this->dni=$dni;
         $this->activo=$activo;
     }
+    
     public function getUsarios() {
         $dbAdapter = Zend_Db_Table::getDefaultAdapter();
         $select = $dbAdapter->select()
@@ -85,6 +72,7 @@ class Application_Model_Usuario extends Zend_Db_Table_Abstract{
     public function eliminarUsuariobyid($idusuario) {
 
     }
+    
     public function validarLogin($username, $password){
         $dbAdapter = Zend_Db_Table::getDefaultAdapter();
         $authAdapter = new Zend_Auth_Adapter_DbTable( $dbAdapter, 'usuarios', 'vUsuUsuario', 'vUsuClave');
@@ -136,4 +124,21 @@ class Application_Model_Usuario extends Zend_Db_Table_Abstract{
         }
     }
    
+    public function registrarUsuario($vUsuUsuario,$vUsuClave,$vUsuEmail,$cUsuDni,$vUsuNombre, $vUsuApellidoPat, $vUsuApellidoMat, $TipoUsuario_iTiUsuarioIdTipoUsuario){
+        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
+        $dbAdapter->insert("usuarios", array(
+                'vUsuUsuario'     =>  $vUsuUsuario,
+                'vUsuClave'     =>  $vUsuClave,
+                'vUsuEmail'     =>  $vUsuEmail,
+                'cUsuDni'     =>  $cUsuDni,
+                'vUsuNombre'     =>  $vUsuNombre,
+                'vUsuApellidoPat'     =>  $vUsuApellidoPat,
+                'vUsuApellidoMat'     =>  $vUsuApellidoMat,
+                'cUsuActivo'     =>  'A',
+                'cUsuEstado'     =>  'A',
+                'TipoUsuario_iTiUsuarioIdTipoUsuario'     =>  $TipoUsuario_iTiUsuarioIdTipoUsuario,
+            ));
+        $id = $dbAdapter->lastInsertId();
+        return $id;
+    }
 }

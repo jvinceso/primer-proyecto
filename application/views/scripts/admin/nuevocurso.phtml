@@ -96,15 +96,15 @@
                 <h4>Lista de Cursos</h4>';
         
         $cursos = new Application_Model_Cursos;
-        $contenido .= $cursos->crearTablaCursosSimple();
+        $contenido .= $cursos->crearTablaCursos();
         $contenido .= '
             </div>';
     $mensaje='
     <div id="dialog-confirm" title="Advertencia" style="display:none">
-    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Esta Seguro de Confirmar?</p>
-    </div>
-
-    ';
-   print $html->crearContentAjax($mensaje);
-   print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Esta Seguro de Confirmar?
+        </p>
+    </div>';
+    print $html->crearContentAjax($mensaje);
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
 ?>

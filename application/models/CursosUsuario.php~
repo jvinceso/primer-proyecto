@@ -13,7 +13,7 @@ class Application_Model_CursosUsuario {
 
 	public function unsetCursoUsuario($idusuario,$idcurso) {
            $dbAdapter = Zend_Db_Table::getDefaultAdapter();
-           $dbAdapter->update('cursosusuarios',
+           $dbAdapter->delete('cursosusuarios',
                    array('Cursos_iCursIdCursos=?'=>$idcurso,
                        'Usuarios_iUsuIdUsuario=?'=>$idusuario
                        )

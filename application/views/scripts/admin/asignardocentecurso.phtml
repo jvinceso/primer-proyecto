@@ -1,0 +1,189 @@
+<?php
+
+$this->titulopagina = 'Los Pinos - Lista de Cursos';
+$html = new Application_Model_Html();
+$menu = new Application_Model_Menu();
+$usuario = new Application_Model_Usuario();
+$cursos=new Application_Model_Cursos();
+$cursousuario=new Application_Model_CursosUsuario();
+
+$mysession = new Zend_Session_Namespace('sesion');
+$paginaActual = $mysession->paginaActual;
+$nombreUsuario = $mysession->usuario_nombre;
+$usuario_id = $mysession->usuario_id;
+
+$h3 = '<ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de ' . $nombreUsuario . '</span>
+                </a>
+            </li>
+        </ul>';
+
+    $script='
+    <script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>
+    <script type="text/javascript" src="/js/codigito.js" > </script>
+    <script type="text/javascript">
+	$.fx.speeds._default = 1000;
+	$(function() {
+		$( "#dialog" ).dialog({
+			autoOpen: false,
+			show: "clip",
+			hide: "clip"
+		});
+
+		$( ".info" ).click(function() {
+			$( "#dialog" ).dialog( "open" );
+			return false;
+		});
+	});
+
+    </script>
+    ';
+
+      $css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">';
+      $this->css=$css;    
+    
+      $this->script=$script;
+
+
+$tipo = $mysession->tipo_usuario;
+$result = $menu->getMenu($tipo);
+
+$h3 .= '<ul>';
+foreach ($result as $aux) {
+    if ($paginaActual == $aux['Descripcion']) {
+        $h3.='<li id="current">';
+    } else {
+        $h3.='<li>';
+    }
+
+    $h3.='
+           <a href="' . $aux['url'] . '" target="_top">
+                    <span id="tab_active">' . $aux['Descripcion'] . '</span>
+                </a>
+            </li>';
+}
+$h3 .= '</ul>';
+
+$h4 = '
+        <ul class="bread">
+            <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="cursos" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Cursos</span>
+                </a>
+            </li>
+            <li>
+                <a href="listacursos" class="breadcrumb breadcrumb1">
+                    <span>Lista de Cursos</span>
+                </a>
+            </li>
+        </ul>';
+
+$contenido = '
+            
+            <fieldset><legend>Opciones de Busqueda</legend>
+                <label for="namecurso">Buscar por nombre de Curso <input type="text" name="namecurso" ></label>
+                <label for="grado">Buscar por nombre de Curso <input type="text" name="namecurso" ></label>
+                <select><option>Cuarto</option><option>Quinto</option></select>
+                <input type="submit" value="Mostrar"/><br/>
+            </fieldset>
+                
+            </form>
+            <div class="recagatab">
+            <table class="data_table">
+                <thead>
+                    <tr class="row_odd">
+                        <th>&nbsp;</th>
+                        <th>Codigo</th>
+                        <th><a href="">Grado</a></th>                    
+                        <th><a href="">Seccion</a></th>
+                        <th><a href="">Curso</a></th>
+                        <th><a href="">Descripcion</a></th>  
+                        <th><a href="">Accion</a></th>
+                    </tr>
+                 </thead> ';
+foreach ($this->listacursosactivos as $aux) {
+        $contenido.=' <tr class="row_odd">
+                        <td>
+                            <input type="checkbox" name="id" value="' . $aux['iCursIdCursos'] . '">
+                        </td>
+                        <td>
+                            <center>' . $aux['iCursIdCursos'] . '</center>
+                        </td>
+                        <td>
+                            <center>' . $aux['vGradoDescripcion'] . '</center>
+                        </td>
+                        <td>
+                            <center>' . $aux['vSeccDescripcion'] . '</center>
+                        </td>
+                        <td>
+                            <center>' . $aux['vCursNombreCurso'] . '</center>
+                        </td>
+                        <td>
+                            <center>' . $aux['iCursDescripcion'] . '</center>
+                        </td>
+                        <td>
+                            <center>';
+        $resultado=$cursos->obtenerdocentescurso($aux['iCursIdCursos'] );
+    if ($resultado==NULL) {
+        $contenido.='
+<a onclick="modaldocente('.$aux['iCursIdCursos'].');" class="suscripcion" style="cursor:pointer" ><img id="img_4" src="/main/img/icons/22/user_subscribe_course.png" alt="Desactivar" title="Inscribir Docente"></a>
+<a ><img src="/main/img/icons/22/unsubscribe_course_na.png" alt="Dar de Baja" title="Dar de Baja" /></a>
+<a class="info"><img src="/main/img/icons/22/info.png " alt="Informacion Adicional" title="Informacion Docente" /></a>         
+           
+';
+    } else {
+        $contenido.='<a onclick="modaldocente('.$aux['iCursIdCursos'].');" class="suscripcion" style="cursor:pointer" ><img id="img_4" src="/main/img/icons/22/wiki_assignment.png" alt="Desactivar" title="Quitar Docente"></a>
+<a style="cursor:pointer" onclick="inscribedocente('.$resultado[0]['Usuarios_iUsuIdUsuario'].',\'del\','.$aux['iCursIdCursos'].')"><img src="/main/img/icons/22/unsubscribe_course.png" alt="Dar de Baja" title="Dar de Baja" /></a>
+<a class="info" id="info" style="cursor:pointer"><img src="/main/img/icons/22/info.png " alt="Informacion Adicional" title="Informacion Docente" /></a>         
+';        
+    }
+    $contenido.='
+                           </center>
+                        </td>
+                    </tr>';    
+}
+$contenido .= '</tbody>
+                </table></div>';
+    $mensaje='
+            <div id="dialog-form" title="Buscar Docente" style="display:none">
+                    <fieldset><legend>Busca por Nombre o Dni</legend>
+                         <label for="nombres">Nombre</label>
+                            <input onkeyup="buscardocente(\'apellido\',this);" type="text" name="nombres" id="nombres" class="text ui-widget-content ui-corner-all" />
+                            &nbsp;&nbsp;<label for="dnis">Dni</label>
+                            <input type="text" onkeyup="buscardocente(\'dni\',this);" size="8" name="dnis" id="dnis" value="" class="text ui-widget-content ui-corner-all" />
+                            <input type="hidden" name="idcurso" id="idcurso" >
+                    </fieldset>
+            <h3>Resultados Obtenidos:</h3>
+                <table id="users" class="ui-widget ui-widget-content" width="800px">
+                    <thead>
+                        <tr class="ui-widget-header ">
+                            <th>Codigo</th>
+                            <th>Especialidad</th>
+                            <th>Nombre</th>
+                            <th>Apellido Paterno</th>
+                            <th>Apellido Paterno</th>
+                            <th>Dni</th>                            
+                            <th>Seleccionar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="buscaap">
+
+                    </tbody>
+                </table>
+        </div>';
+    $mensaje.='
+<div id="dialog" title="Detalles de Curso" style="display:none">
+	<p>Datos del Docente.</p>
+</div>        
+        ';
+    $html->crearContentAjax($mensaje);
+print $html->crearWrapper(null, null, null, $h3, $h4, $this->layout()->content, null, $contenido);
+
+?>

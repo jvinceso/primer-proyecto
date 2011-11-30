@@ -480,6 +480,7 @@ class AdminController extends Zend_Controller_Action{
             }else{}
         }
     }
+    
     public function asignadocentecursoajaxAction(){
       $cursousuario = new Application_Model_CursosUsuario();
         if ($this->getRequest()->isXmlHttpRequest()){
@@ -495,6 +496,26 @@ class AdminController extends Zend_Controller_Action{
                  $cursousuario->unsetCursoUsuario($idusuario, $idcurso);
             }
             echo "1";
+        }        
+    }
+
+/*by : jvinceso
+ * blog: http://jvinceso.blogspot.com
+ * twitter: @jvinceso
+ * Funcion Obtener Datos del Docente en el curso
+ */
+    public function obtenerdocentesporcursoajaxAction(){
+        $docente=new Application_Model_Docente();
+        if($this->getRequest()->isXmlHttpRequest())
+        {
+            $this->_helper->layout->disableLayout();
+            $this->_helper->viewRenderer->setNoRender();
+            $idcurso=$this->getRequest()->getParam('idcurso');
+            $result=$docente->getDocentesbyCurso($idcurso);
+            if(sizeof($result)>0){
+                $json = Zend_Json::encode($result);
+                echo $json;
+            }else{}
         }        
     }
 }

@@ -229,11 +229,9 @@ function buscarapoderado(opcion,obj){
     $.getJSON("obtenapoderadoajax/?parametro="+obj.value+"&opt="+opcion, function(data){
         $("#buscaap").html("");
                 var apodera = data;var fila;
-// alert(apodera.length);
-// alert(apodera);
     if(apodera!=null){
          if(apodera.length>0){
-             for (var x = 0 ; x < apodera.length ; x++) {
+             for (var x = 0 ; x <apodera.length ; x++) {
                 fila+='<tr ><td>'+apodera[x].iApodIdApoderado+'</td><td>'+apodera[x].vUsuNombre+'</td><td>'+apodera[x].vUsuApellidoPat+'</td><td>'+apodera[x].vUsuApellidoMat+'</td><td>'+apodera[x].cUsuDni+'</td><td><center><a style="cursor:pointer" alt="Seleccionar" onclick="selecapoderado(\''+apodera[x].iApodIdApoderado+'\',\''+apodera[x].vUsuApellidoPat+' '+apodera[x].vUsuApellidoMat+' '+apodera[x].vUsuNombre+' '+'\',\''+apodera[x].cUsuDni+'\');" ><span class="ui-icon ui-icon-check"></span></a></center> </td></tr>';
             }
             $("#buscaap").html(fila);
@@ -245,30 +243,29 @@ function buscarapoderado(opcion,obj){
 }
 
 function selecapoderado(id,nombre,dni){
-// alert(id+nombre+dni);
     document.getElementById("idapo").value=id;
     document.getElementById("nombreapo").value=nombre;
     document.getElementById("dniapo").value=dni;
     $( "#dialog-form" ).dialog( "close" );
-// $("#nombre").val=id;
-
 }
-//
-//$(document).ready(function() {
-// $('#usernameLoading').hide();
-// $('#username').blur(function(){
-// $('#usernameLoading').show();
-// $.post("check.php", {
-// username: $('#username').val()
-// }, function(response){
-// $('#usernameResult').fadeOut();
-// setTimeout("finishAjax('usernameResult', '"+escape(response)+"')", 400);
-// });
-// return false;
-// });
-//});
-//function finishAjax(id, response) {
-// $('#usernameLoading').hide();
-// $('#'+id).html(unescape(response));
-// $('#'+id).fadeIn();
-//} //finishAjax 
+
+function infoDocenteCurso(idcurso){
+//    alert(idcurso)
+        $.getJSON("obtenerdocentesporcursoajax/?idcurso="+idcurso, function(data){
+            var docente=data;
+            var datoshtml;
+            if(docente!=null){
+                if(docente.length>0){
+                    for(var x = 0 ; x<docente.length ; x++)
+                        {
+                            datoshtml='<ul style="list-style-type:none"><li><h3>Docente : '+docente[x].vUsuApellidoPat+' '+docente[x].vUsuApellidoMat+' '+docente[x].vUsuNombre+'</h3></li><li><h3>Especialidad : '+docente[x].tDocEspecialidad +'</h3></li></ul>';
+                        }
+                        $("#dialog").html(datoshtml);
+                }
+            }else{
+              $("#dialog").html("<p><h4>No se encuentra datos del docente</h4></p>");  
+             
+            }
+             $( "#dialog" ).dialog( "open" );
+        });
+}

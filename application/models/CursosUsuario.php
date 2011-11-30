@@ -31,6 +31,7 @@ class Application_Model_CursosUsuario {
             } 
 	}
 
+        
 	public function editarCursoUsuario() {
 		// Not yet implemented
 	}
@@ -45,6 +46,8 @@ class Application_Model_CursosUsuario {
 	public function EliminarUsuario() {
 		// Not yet implemented
 	}
+        
+
 
 }
 ?>

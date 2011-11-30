@@ -49,7 +49,7 @@ foreach ($listacursos as $aux) {
     } else {
         $contenido.='<a onclick="modaldocente('.$aux['iCursIdCursos'].');" class="suscripcion" style="cursor:pointer" ><img id="img_4" src="/main/img/icons/22/wiki_assignment.png" alt="Desactivar" title="Quitar Docente"></a>
 <a onclick="inscribedocente('.$resultado[0]['Usuarios_iUsuIdUsuario'].',\'del\','.$aux['iCursIdCursos'].')"><img src="/main/img/icons/22/unsubscribe_course.png" alt="Dar de Baja" title="Dar de Baja" /></a>
-<a class="info" id="info" style="cursor:pointer"><img src="/main/img/icons/22/info.png " alt="Informacion Adicional" title="Informacion Docente" /></a>         
+<a onclick="infoDocenteCurso('.$aux['iCursIdCursos'].');" class="info" id="info" style="cursor:pointer"><img src="/main/img/icons/22/info.png " alt="Informacion Adicional" title="Informacion Docente" /></a>         
 ';        
     }
     $contenido.='

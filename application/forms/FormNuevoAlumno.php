@@ -129,6 +129,18 @@ class Application_Form_FormNuevoAlumno extends Zend_Form{
                     array('Label', array('tag' => 'td')),
                 ));
         
+        // creating object for Zend_Form_Element_File
+         
+        $doc_file = new Zend_Form_Element_File('/root');
+        $doc_file->setLabel('Foto: ')
+                          ->setRequired(true);
+        $doc_file->setDecorators(
+                array(array('Description', array('tag' => 'p', 'class' => 'description', 'escape' => false)),
+                array('File'),
+                array('Errors'),
+                array('HtmlTag', array('tag' => 'div')),
+                array('Label')));
+        
         $nombre = $this->createElement('text', 'nombre', array('label' => 'Nombre '));
         $nombre->addValidator('notEmpty',true,array('messages'=>array('isEmpty'=>'Campo Requerido')))
                       ->addValidator('regex',true,array('patern'=>'/^[(a-z A-Z)]+$/',array('regexNotMatch'=>'Solo Letras')))
@@ -244,6 +256,7 @@ class Application_Form_FormNuevoAlumno extends Zend_Form{
              ->addElement($nombre)
              ->addElement($appaterno)
              ->addElement($apmaterno)
+             ->addElement($doc_file)
              ->addElement($dni)
              ->addElement($email)
              ->addElement($nombreusuario)

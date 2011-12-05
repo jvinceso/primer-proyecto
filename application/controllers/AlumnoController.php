@@ -27,4 +27,13 @@ class AlumnoController extends Zend_Controller_Action{
     public function pruebandoAction(){
         $this->_helper->layout->disableLayout();        
     }
+    public function cursosAction(){
+        $mysession = new Zend_Session_Namespace('sesion');                    
+        $mysession->paginaActual = 'Cursos';        
+    }
+    public function agendaAction(){
+        $mysession = new Zend_Session_Namespace('sesion');                    
+        $mysession->paginaActual = 'Agenda';        
+    }
+    
 }

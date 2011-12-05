@@ -1,5 +1,5 @@
 <?php
-    $this->titulopagina='Los Pinos - Usuarios';
+    $this->titulopagina='Los Pinos - Panel de Control';
     $this->css='
         <link media="screen" rel="stylesheet" href="/css/colorbox.css" />';
     $this->script=' 
@@ -60,40 +60,40 @@
                 </a>
             </li>
             <li>
-                <a href="usuarios" class="breadcrumb breadcrumb0" target="_top">
-                    <span>Usuarios</span>
+                <a href="panel" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Panel de Control</span>
                 </a>
             </li>
         </ul>';
     $peraca= new Application_Model_PeriodoAcademico();
     $contenido = '
         <div class="admin_section">
-            <h4><img src="/main/img/members.gif" alt="Usuarios" title="Usuarios"> Usuarios</h4>
-            <ul>               
-                <li><a href="listausuarios">Lista de Usuarios</a></li>
+            <h4><img src="/main/img/course.gif" alt="Cursos" title="Cursos"> Aperturar Año Académico</h4>
+            <ul>';
+        
+        if($peraca->validarExistePeriodo()>1){
+            if($peraca->validarNotasFinales()){
+                //Promover alumnos
+                $contenido .= '<li><a href=""><img src="/main/img/accept.png"/> Cerrar Notas</a></li>';
+                $contenido .= '<li><a href="promoveralumnos"><img src="/main/img/online.png"/> Promover Alumnos</a></li>';
+                $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Aperturar Cursos (Nuevo Periodo)</a></li>';
+            }
+            else{
+                //Mensaje de que aun no se cierran las notas finales
+               $contenido .= '<li><a href="cerrarnotas"><img src="/main/img/online.png"/> Cerrar Notas</a></li>';
+               $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Promover Alumnos</a></li>';
+               $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Aperturar Cursos (Nuevo Periodo)</a></li>';
+            }
+        }
+        else{
+             $contenido .= '<li><a href=""><img src="/main/img/accept.png"/> Cerrar Notas</a></li>';
+             $contenido .= '<li><a href=""><img src="/main/img/accept.png"/> Promover Alumnos</a></li>';
+             $contenido .= '<li><a href="aperturarcursos"><img src="/main/img/online.png"/> Aperturar Cursos</a></li>';
+        }
+        $contenido .= '              
             </ul>
         </div>
-        <div class="admin_section">
-            <h4><img src="/main/img/members.gif" alt="Alumnos" title="Alumnos"> Alumnos</h4>
-            <ul>               
-                <li><a href="nuevoalumno">Registrar Alumno</a></li>
-                <li><a href="nuevoalumno">Listar Alumnos</a></li>
-            </ul>
-        </div>
-        <div class="admin_section">
-            <h4><img src="/main/img/members.gif" alt="Apoderados" title="Apoderados"> Apoderados</h4>
-            <ul>               
-                <li><a href="nuevoapoderado">Registrar Apoderado</a></li>
-                <li><a href="nuevoapoderado">Listar Apoderados</a></li>
-            </ul>
-        </div>
-         <div class="admin_section">
-            <h4><img src="/main/img/members.gif" alt="Docentes" title="Docentes"> Docentes</h4>
-            <ul>               
-                <li><a href="nuevodocente">Registrar Docente</a></li>
-                <li><a href="nuevodocente">Listar Docentes</a></li>
-            </ul>
-        </div>';
+        ';
     
     print $html->crearWrapper(null, null, null, $h3, $h4 ,null, null,$contenido);
 ?>

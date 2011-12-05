@@ -3,6 +3,7 @@ class Application_Model_PeriodoAcademico extends Zend_Db_Table_Abstract{
     protected $iPerAcaIdPeriodoAcademico;
     protected $vPerAcaDescripcion;
     protected $cPerAcaEstado;
+    
     public function getPeriodoActual(){
         $dbAdapter = Zend_Db_Table::getDefaultAdapter();
         $select = $dbAdapter->select()
@@ -13,6 +14,7 @@ class Application_Model_PeriodoAcademico extends Zend_Db_Table_Abstract{
         $result = $stmt->fetchAll(); 
         return $result;
     }
+    
     public function getPeriodoActualAnual(){
         $dbAdapter = Zend_Db_Table::getDefaultAdapter();
         $select = $dbAdapter->select()
@@ -89,6 +91,7 @@ class Application_Model_PeriodoAcademico extends Zend_Db_Table_Abstract{
             return false;
         }        
     }
+    
     public function validarActivarSeccion(){
         if ((int)date("Y")==(int)$this->getPeriodoActualAnual() && (int)date("n")==1){
             return true;
@@ -97,6 +100,7 @@ class Application_Model_PeriodoAcademico extends Zend_Db_Table_Abstract{
             return false;
         }        
     }
+    
     public function registrarPeriodo(){
         $peracademicoactual = $this->getPeriodoActualId();
         
@@ -121,4 +125,22 @@ class Application_Model_PeriodoAcademico extends Zend_Db_Table_Abstract{
                 break;
             }
     }
+
+    public function validarExistePeriodo(){
+        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
+            $stmt=$dbAdapter->query("SELECT Count(*) as nro
+                                 FROM periodoacademico");
+            $result = $stmt->fetchAll();
+            if(isset($result)){
+                return $result[0]['nro'];
+            }else{
+                return '0';
+            }
+    }
+
+    //FALTAAAA
+    public function validarNotasFinales(){
+        return true;
+    }
+    
 }

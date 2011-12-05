@@ -1,58 +1,75 @@
 <script>
-    function esInteger(e){
-        var charCode
-        if (navigator.appName == "Netscape"){
-            charCode = e.which
-        }
-        else{
-            charCode = e.keyCode}
-        if (charCode < 48 || charCode > 57){
-            alert("Por favor teclee solo números en este campo!");
-            return false
-        }
-        else{
-            return true}
-    }
+function esInteger(e){
+var charCode
+if (navigator.appName == "Netscape"){
+charCode = e.which
+}
+else{
+charCode = e.keyCode}
+if (charCode < 48 || charCode > 57){
+alert("Por favor teclee solo números en este campo!");
+return false
+}
+else{
+return true}
+}
 </script>
 <?php
-$this->titulopagina = 'Los Pinos - Lista de Cursos';
-$html = new Application_Model_Html();
-$menu = new Application_Model_Menu();
-$usuario = new Application_Model_Usuario();
+    $this->titulopagina='Los Pinos - Lista de Cursos';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+     $script='<script type="text/javascript" src="/js/jquery.form.js" ></script>
+        <script type="text/javascript" src="/js/codigito.js" > </script>
+        <script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>
+        <script type="text/javascript">
 
-$mysession = new Zend_Session_Namespace('sesion');
-$paginaActual = $mysession->paginaActual;
-$nombreUsuario = $mysession->usuario_nombre;
-$usuario_id = $mysession->usuario_id;
-
-$h3 = '<ul id="logout">
+        $(document).ready(function() {
+        $("#formLogin").ajaxForm(function() {
+        $(".setenta").load("listadocursosajax");
+        });
+        });
+        </script>
+        ';
+    $this->script=$script;
+    $css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">';
+    $this->css=$css;
+    
+    $h3 = '<ul id="logout">
             <li>
                 <a href="/admin/logout/" target="_top">
-                    <span>Cerrar Sesión de ' . $nombreUsuario . '</span>
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
                 </a>
             </li>
         </ul>';
-
-$tipo = $mysession->tipo_usuario;
-$result = $menu->getMenu($tipo);
-
-$h3 .= '<ul>';
-foreach ($result as $aux) {
-    if ($paginaActual == $aux['Descripcion']) {
-        $h3.='<li id="current">';
-    } else {
-        $h3.='<li>';
-    }
-
-    $h3.='
-           <a href="' . $aux['url'] . '" target="_top">
-                    <span id="tab_active">' . $aux['Descripcion'] . '</span>
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
                 </a>
             </li>';
-}
-$h3 .= '</ul>';
-
-$h4 = '
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
         <ul class="bread">
             <li>
                 <a class="home" href="/">
@@ -65,12 +82,12 @@ $h4 = '
                 </a>
             </li>
             <li>
-                <a href="listacursos" class="breadcrumb breadcrumb1">
+                <a href="listacursos?nroreg=6" class="breadcrumb breadcrumb1">
                     <span>Lista de Cursos</span>
                 </a>
             </li>
         </ul>';
-
+    
 //       $cursos = new Application_Model_Cursos;
 //       if($this->pri==0){
 //           $contenido = $cursos->crearTablaCursosSimple($this->pri,$this->nro,"pri");
@@ -80,66 +97,23 @@ $h4 = '
 //           //$contenido = $cursos->crearTablaCursosSimple($this->pri,$this->nro,null);
 //       }
 //       
-
-
-$contenido = '
+        $tablacursos = new Application_Model_Cursos();
+        $tablita=$tablacursos->crearTablaCursos($this->paginator);
+        
+        $contenido = '
             <form action="/admin/listacursos">Nro. de Registros <input type="text" name="nroreg" size="4" onKeyPress="return esInteger(event)"/> <input type="submit" value="Mostrar"/><br/>
-            </form>
-            <table class="data_table">
-                <tbody>
-                    <tr class="row_odd">
-                        <th>&nbsp;</th>
-                        <th>Codigo</th>
-                        <th><a href="">Grado</a></th>                    
-                        <th><a href="">Seccion</a></th>
-                        <th><a href="">Curso</a></th>
-                        <th><a href="">Descripcion</a></th>  
-                        <th><a href="">Accion</a></th>
-                    </tr>';
-$cont = 0;
-foreach ($this->paginator as $aux) {
-    if ($cont % 2) {
-        $contenido.='<tr class="row_even">';
-    } else {
-        $contenido .= '<tr class="row_odd">';
-    }
-    $contenido.='
-                        <td>
-                            <input type="checkbox" name="id" value="' . $aux['iCursIdCursos'] . '">
-                        </td>
-                        <td>
-                            <center>' . $aux['iCursIdCursos'] . '</center>
-                        </td>
-                        <td>
-                            <center>' . $aux['vGradoDescripcion'] . '</center>
-                        </td>
-                        <td>
-                            <center>' . $aux['vSeccDescripcion'] . '</center>
-                        </td>
-                        <td>
-                            <center>' . $aux['vCursNombreCurso'] . '</center>
-                        </td>
-                        <td>
-                            <center>' . $aux['iCursDescripcion'] . '</center>
-                        </td>
-                        <td>
-                            <center>';
-    if ($aux['tiCursActivo'] == 'A') {
-        $contenido.='<a href="/admin/actualizarseccion/?cur=' . $aux['iCursIdCursos'] . '&est=I" onclick="ActDelCurso(' . $aux['iCursIdCursos'] . ',\'I\',event,\'act\');" ><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';
-    } else {
-        $contenido.='<a href="/admin/actualizarseccion/?cur=' . $aux['iCursIdCursos'] . '&est=A" onclick="ActDelCurso(' . $aux['iCursIdCursos'] . ',\'A\',event,\'act\');" ><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
-    }
-    $contenido.='
-                           </center>
-                        </td>
-                    </tr>';
-    $cont++;
-}
-
-$contenido .= '</tbody>
-                </table>';
-$contenido .= $this->paginationControl($this->paginator, 'Sliding', 'pagination.phtml');
-
-
-print $html->crearWrapper(null, null, null, $h3, $h4, $this->layout()->content, null, $contenido);
+            '.$tablita.'</form>';
+        
+        $contenido .= $this->paginationControl($this->paginator,'Sliding','pagination.phtml');
+    
+         $mensaje='
+                <div id="dialog-confirm" title="Advertencia" style="display:none">
+                    <p>
+                        <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Esta Seguro de Confirmar?
+                    </p>
+                </div>';
+         
+    print $html->crearContentAjax($mensaje);
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);  
 ?>

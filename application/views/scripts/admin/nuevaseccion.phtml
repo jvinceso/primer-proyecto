@@ -25,13 +25,13 @@ function cargarsecion(){
     $nombreUsuario=$mysession->usuario_nombre;
     $usuario_id=$mysession->usuario_id;
     
-    $h3 = '<ul id="logout">
-<li>
-<a href="/admin/logout/" target="_top">
-<span>Cerrar Sesión de '.$nombreUsuario.'</span>
-</a>
-</li>
-</ul>';
+    $h3 = ' <ul id="logout">
+                <li>
+                    <a href="/admin/logout/" target="_top">
+                        <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                    </a>
+                </li>
+            </ul>';
  
     $tipo=$mysession->tipo_usuario;
     $result = $menu->getMenu($tipo);

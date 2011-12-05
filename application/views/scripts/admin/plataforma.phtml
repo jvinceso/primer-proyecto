@@ -118,6 +118,25 @@
                 <li><a href="subscribe_user2course.php">Inscribir sección en un grado</a></li>
             </ul>
         </div>';
+        
+//Mod Reportes        
+        $contenido.='<div class="admin_section">
+            <h4><img src="/main/img/icons/22/stats.png" alt="Reportes" title="Reportes Graficos"> Reportes</h4>
+             <ul>';
+//         if(!$peraca->validarActivarSeccion()){
+//            $contenido .= '<li><a style="text-decoration:line-through; color:#848484;">Crear Sección (No Disponible)</a></li>';
+//            }
+//            else{
+        $contenido .= '<li><a href="reportenotasbyseccion">Notas por Seccion</a></li> ';
+//            }
+        $contenido.='   
+                <li><a class="jqIframe" href="pruebando">Grados por Defecto</a></li>                
+                <li><a href="course_export.php">Exportar cursos</a></li>
+                <li><a href="course_import.php">Importar Seccion desde un fichero</a></li>
+                <li><a href="course_category.php">Secciones por Grado</a></li>
+                <li><a href="subscribe_user2course.php">Inscribir sección en un grado</a></li>
+            </ul>
+        </div>';
     
     print $html->crearWrapper(null, null, null, $h3, $h4 ,null, null,$contenido);
 ?>

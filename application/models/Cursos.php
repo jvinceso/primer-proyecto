@@ -14,12 +14,11 @@ class Application_Model_Cursos{
   
             $dbAdapter = Zend_Db_Table::getDefaultAdapter();
             $stmt=$dbAdapter->query("Select cur.iCursIdCursos, gr.vGradoDescripcion, sec.vSeccDescripcion, cur.vCursNombreCurso, cur.iCursDescripcion, cur.tiCursActivo
-                           from cursos cur
-                           inner join seccion sec on cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
-                           inner join grado gr on sec.Grado_iGradoIdGrado=gr.iGradoIdGrado
-                           where gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico=".$idperiodoacademicoactual."
-                           order by gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso"                    
-                    );
+                            from cursos cur
+                            inner join seccion sec on cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
+                            inner join grado gr on sec.Grado_iGradoIdGrado=gr.iGradoIdGrado
+                            where gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico=".$idperiodoacademicoactual."
+                            order by gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso");
              
             $result = $stmt->fetchAll();
             
@@ -30,62 +29,6 @@ class Application_Model_Cursos{
             }
     }
     
-    public function listarCursosPeriodoActualActivos(){
-      $periodoacademico=  new Application_Model_PeriodoAcademico();
-      $idperiodoacademicoactual=$periodoacademico->getPeriodoActualId();        
-        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
-        $stmt=$dbAdapter->query("SELECT cur.iCursIdCursos, gr.vGradoDescripcion, sec.vSeccDescripcion, cur.vCursNombreCurso, cur.iCursDescripcion, cur.tiCursActivo
-                            FROM cursos cur
-                            INNER JOIN seccion sec ON cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
-                            INNER JOIN grado gr ON sec.Grado_iGradoIdGrado = gr.iGradoIdGrado
-                            where gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico=".$idperiodoacademicoactual." and cur.tiCursActivo = 'A'
-                            ORDER BY gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso");
-
-        $result = $stmt->fetchAll();
-
-        if(isset($result)){
-            return $result;
-        }else{
-            return NULL;   
-        }        
-    }
-
-    public function listarNombreCursosActivos(){
-      $periodoacademico=  new Application_Model_PeriodoAcademico();
-      $idperiodoacademicoactual=$periodoacademico->getPeriodoActualId();        
-        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
-        $stmt=$dbAdapter->query("SELECT  cur.vCursNombreCurso
-                            FROM cursos cur
-                            INNER JOIN seccion sec ON cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
-                            INNER JOIN grado gr ON sec.Grado_iGradoIdGrado = gr.iGradoIdGrado
-                            where gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico=".$idperiodoacademicoactual." and cur.tiCursActivo = 'A'
-                            ORDER BY gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso");
-
-        $result = $stmt->fetchAll();
-
-        if(isset($result)){
-            return $result;
-        }else{
-            return NULL;   
-        }        
-    }    
-    
-    public function obtenerdocentescurso($idcurso){
-        $dbAdapter= Zend_Db_Table::getDefaultAdapter();
-        $stmt=$dbAdapter->query("
-            SELECT cusu.Cursos_iCursIdCursos, cusu.Usuarios_iUsuIdUsuario 
-            FROM cursosusuarios cusu 
-            inner join usuarios usu on usu.iUsuIdUsuario=cusu.Usuarios_iUsuIdUsuario 
-            inner join tipousuario tusu on tusu.iTiUsuarioIdTipoUsuario=usu.TipoUsuario_iTiUsuarioIdTipoUsuario
-            WHERE   tusu.iTiUsuarioIdTipoUsuario='2' and cusu.Cursos_iCursIdCursos='".$idcurso."'
-            ");
-        $result = $stmt->fetchAll();
-        if(isset($result)){
-            return $result;
-        }else{
-            return NULL;   
-        }        
-    }
     public function crearTablaCursosSimple($pag_inicio=null, $nroregistros=null, $opt=null) {
             $contenido = '
             <table class="data_table">
@@ -216,8 +159,8 @@ class Application_Model_Cursos{
             }
      }
      
-    public function crearTablaCursos(){
-            $contenido = '
+    public function crearTablaCursos($data,$page=null,$nroreg=null){
+             $contenido = ' 
             <table class="data_table">
                 <tbody>
                     <tr class="row_odd">
@@ -229,48 +172,56 @@ class Application_Model_Cursos{
                         <th><a href="">Descripcion</a></th>  
                         <th><a href="">Estado</a></th>
                     </tr>';
-
-            $listacursos = $this->listarCursosPeriodoActual();
-           
-            $cont=0;
-            foreach ($listacursos as $aux){
-                if ($cont % 2){
-                    $contenido.='<tr class="row_even">';
-                }
-                else{
-                    $contenido .= '<tr class="row_odd">';
-                }
-                $contenido.='
-                            <td>
-                                <input type="checkbox" name="id" value="'.$aux['iCursIdCursos'].'">
-                            </td>
-                            <td>
-                                <center>'.$aux['iCursIdCursos'].'</center>
-                            </td>
-                            <td>
-                                <center>'.$aux['vGradoDescripcion'].'</center>
-                            </td>
-                            <td>
-                                <center>'.$aux['vSeccDescripcion'].'</center>
-                            </td>
-                            <td>
-                                <center>'.$aux['vCursNombreCurso'].'</center>
-                            </td>
-                            <td>
-                                <center>'.$aux['iCursDescripcion'].'</center>
-                            </td>
-                            <td>
-                                <center>';
+        $cont=0;
+        foreach ($data as $aux){
+            if ($cont % 2){
+                $contenido.='<tr class="row_even">';
+            }
+            else{
+                $contenido .= '<tr class="row_odd">';
+            }
+            $contenido.='
+                        <td>
+                            <input type="checkbox" name="id" value="'.$aux['iCursIdCursos'].'">
+                        </td>
+                        <td>
+                            <center>'.$aux['iCursIdCursos'].'</center>
+                        </td>
+                        <td>
+                            <center>'.$aux['vGradoDescripcion'].'</center>
+                        </td>
+                        <td>
+                            <center>'.$aux['vSeccDescripcion'].'</center>
+                        </td>
+                        <td>
+                            <center>'.$aux['vCursNombreCurso'].'</center>
+                        </td>
+                        <td>
+                            <center>'.$aux['iCursDescripcion'].'</center>
+                        </td>
+                        <td>
+                            <center>';
+                            if($page==NULL && $nroreg==NULL){
                                 if($aux['tiCursActivo']=='A'){
-                                    $contenido.='<a href="/admin/actualizarseccion/?cur='.$aux['iCursIdCursos'].'&est=I" onclick="ActDelCurso('.$aux['iCursIdCursos'].',\'I\',event,\'act\');" ><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';
+                                    $contenido.='<a href="" onclick="ActDelCurso('.$aux['iCursIdCursos'].',\'I\',event,\'act\');" ><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';
                                 }
                                 else{
-                                    $contenido.='<a href="/admin/actualizarseccion/?cur='.$aux['iCursIdCursos'].'&est=A" onclick="ActDelCurso('.$aux['iCursIdCursos'].',\'A\',event,\'act\');" ><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
+                                    $contenido.='<a href="" onclick="ActDelCurso('.$aux['iCursIdCursos'].',\'A\',event,\'act\');" ><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
                                 }
-                $contenido.='
-                               </center>
-                            </td>
-                        </tr>';
+                            }
+                            else{
+                                if($aux['tiCursActivo']=='A'){
+                                    $contenido.='<a href="" onclick="ActDelCurso('.$aux['iCursIdCursos'].',\'I\',event,\'act\','.$page.','.$nroreg.');" ><img id="img_4" src="/main/img/icons/16/accept.png" alt="Desactivar" title="Desactivar"></a>';
+                                }
+                                else{
+                                    $contenido.='<a href="" onclick="ActDelCurso('.$aux['iCursIdCursos'].',\'A\',event,\'act\','.$page.','.$nroreg.');" ><img id="img_4" src="/main/img/icons/16/error.png" alt="Activar" title="Activar"></a>';
+                                }
+                            }
+                                
+            $contenido.='
+                           </center>
+                        </td>
+                    </tr>';
             $cont++;
         }
         
@@ -316,5 +267,55 @@ class Application_Model_Cursos{
                 
         }
     }
-        
+    
+    public function listarCursosPeriodoActualActivos(){
+        $periodoacademico= new Application_Model_PeriodoAcademico();
+        $idperiodoacademicoactual=$periodoacademico->getPeriodoActualId();
+        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
+        $stmt=$dbAdapter->query("SELECT cur.iCursIdCursos, gr.vGradoDescripcion, sec.vSeccDescripcion, cur.vCursNombreCurso, cur.iCursDescripcion, cur.tiCursActivo
+                    FROM cursos cur
+                    INNER JOIN seccion sec ON cur.Seccion_iSeccIdSeccion = sec.iSeccIdSeccion
+                    INNER JOIN grado gr ON sec.Grado_iGradoIdGrado = gr.iGradoIdGrado
+                    where gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico=".$idperiodoacademicoactual." and cur.tiCursActivo = 'A'
+                    ORDER BY gr.iGradoIdGrado, sec.vSeccDescripcion, vCursNombreCurso");
+
+        $result = $stmt->fetchAll();
+
+        if(isset($result)){
+            return $result;
+        }else{
+            return NULL;
+        }
+    }
+    
+    public function obtenerdocentescurso($idcurso){
+        $dbAdapter= Zend_Db_Table::getDefaultAdapter();
+        $stmt=$dbAdapter->query("
+                    SELECT cusu.Cursos_iCursIdCursos, cusu.Usuarios_iUsuIdUsuario
+                    FROM cursosusuarios cusu
+                    inner join usuarios usu on usu.iUsuIdUsuario=cusu.Usuarios_iUsuIdUsuario
+                    inner join tipousuario tusu on tusu.iTiUsuarioIdTipoUsuario=usu.TipoUsuario_iTiUsuarioIdTipoUsuario
+                    WHERE tusu.iTiUsuarioIdTipoUsuario='2' and tiCursUsuActivo='A'  and cusu.Cursos_iCursIdCursos='".$idcurso."'
+                    ");
+        $result = $stmt->fetchAll();
+        if(isset($result)){
+            return $result;
+        }else{
+            return NULL;
+        }
+    }
+    
+    public function verificardocentecurso($idcurso,$iddocente){
+        $dbAdapter= Zend_Db_Table::getDefaultAdapter();
+        $stmt=$dbAdapter->query("
+                    SELECT *
+                    FROM cursosusuarios
+                    WHERE Cursos_iCursIdCursos = ".$idcurso." AND Usuarios_iUsuIdUsuario = ".$iddocente);
+        $result = $stmt->fetchAll();
+        if(isset($result)){
+            return $result;
+        }else{
+            return NULL;
+        }
+    }
 }

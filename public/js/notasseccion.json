@@ -1,0 +1,47 @@
+[
+    {
+        "nota": 14,
+        "unidad": 1,
+        "Seccion": "A"
+    },
+    {
+        "nota": 10,
+        "unidad": 2,
+        "Seccion": "A"
+    },
+    {
+        "nota": 17,
+        "unidad": 3,
+        "Seccion": "A"
+    },
+    {
+        "nota": 11,
+        "unidad": 4,
+        "Seccion": "A"
+    },
+    {
+        "nota": 13,
+        "unidad": 5,
+        "Seccion": "A"
+    },
+    {
+        "nota": 19,
+        "unidad": 6,
+        "Seccion": "A"
+    },
+    {
+        "nota": 18,
+        "unidad": 7,
+        "Seccion": "A"
+    },
+    {
+        "nota": 14,
+        "unidad": 8,
+        "Seccion": "A"
+    },
+    {
+        "nota": 15,
+        "unidad": 9,
+        "Seccion": "A"
+    }
+]

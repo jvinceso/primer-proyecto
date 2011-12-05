@@ -50,26 +50,11 @@
                 </a>
             </li>
         </ul>';
-    $contenido = '
-        <div class="admin_section">
-            <h4><img src="/main/img/course.gif" alt="Cursos" title="Cursos"> Cursos</h4>
-            <ul>
-                <li><a href="nuevocurso?page=1&nroreg=6">Crear un curso</a></li>                
-                <li><a href="listacursos?page=1&nroreg=6">Lista de cursos</a></li>
-                <li><a href="asignardocentecurso">Asignar Docentes</a></li>
-                <li><a href="subscribe_user2course.php">Inscribir usuarios en un curso</a></li>
-            </ul>
-        </div>
-        <div class="admin_section">
-           <h4><img src="/main/img/course.gif" alt="Secciones" title="Secciones"> Secciones</h4>
-           <ul>
-                <li><a href="course_list.php">Lista de Secciones</a></li>
-                <li><a href="course_add.php">Crear una Seccion</a></li>
-                <li><a href="course_category.php">Secciones por Grado</a></li>
-            </ul>
-        </div>
-        ';
+    $content = '
+        <h1>
+            <img src="/main/img/icons/22/course.png" alt="Mis cursos" title="Mis cursos"> Mis cursos
+           </h1>
+         ';
     
-    print $html->crearWrapper(null, null, null, $h3, $h4 ,null, null,$contenido);
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$content, null);
 ?>
-

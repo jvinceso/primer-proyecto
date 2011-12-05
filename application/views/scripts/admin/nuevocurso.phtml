@@ -82,7 +82,7 @@
                 </a>
             </li>
             <li>
-                <a href="nuevocurso" class="breadcrumb breadcrumb1">
+                <a href="nuevocurso?nroreg=6" class="breadcrumb breadcrumb1">
                     <span>Nuevo Curso</span>
                 </a>
             </li>
@@ -95,8 +95,10 @@
             <div class="admin_section setenta">
                 <h4>Lista de Cursos</h4>';
         
-        $cursos = new Application_Model_Cursos;
-        $contenido .= $cursos->crearTablaCursos();
+        $tablacursos = new Application_Model_Cursos();
+        $tablita=$tablacursos->crearTablaCursos($this->paginator,$this->page,$this->nroreg);
+        $contenido .=  $tablita;
+        $contenido .= $this->paginationControl($this->paginator,'Sliding','pagination.phtml');
         $contenido .= '
             </div>';
     $mensaje='

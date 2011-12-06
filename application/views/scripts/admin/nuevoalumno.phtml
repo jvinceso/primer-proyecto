@@ -1,0 +1,128 @@
+<script type="text/javascript">   
+     function cargarseccion(){
+        var valor=$("#cbogrado").val();
+            elem=document.getElementById('cboseccion');
+            $("#cboseccion").html('<option>Cargando...</option>');
+            var option;
+            $.getJSON("listarsecciongrado/?codgrad="+valor, function(data){
+                var seccion = data;var option;
+                for (var x = 0 ; x < seccion.length ; x++) {
+                    option+='<option value='+seccion[x].iSeccIdSeccion+'>'+seccion[x].vSeccDescripcion+'</option>';
+                }
+                
+                $("#cboseccion").html(option);
+           });
+        }    
+
+</script>
+<?php
+
+    $this->titulopagina='Los Pinos - Nuevo Alumno';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();
+    
+    $mysession = new Zend_Session_Namespace('sesion');
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $script='<script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>
+            <script type="text/javascript" src="/js/codigito.js" > </script>
+            <script type="text/javascript" src="/js/mascarainput.js" > </script>
+            <script>$(document).ready(function(){
+            $("#nombreusuario").validaTexto("usuario");
+            $("#dni").validaTexto("dni");
+            $("#dni").mask("99999999");
+        });</script>';
+    
+    $this->script=$script;
+    $css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">';
+    $this->css=$css;
+    
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+   
+    
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>';
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+           $h3.='
+                    <a href="'.$aux['url'].'" target="_top">
+                        <span id="tab_active">'.$aux['Descripcion'].'</span>
+                    </a>
+                </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
+            <ul class="bread">
+                <li>
+                    <a class="home" href="/">
+                        <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                    </a>
+                </li>
+                <li>
+                    <a href="usuarios" class="breadcrumb breadcrumb0" target="_top">
+                        <span>Usuarios</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="nuevoalumno" class="breadcrumb breadcrumb1">
+                        <span>Registrar Alumno</span>
+                    </a>
+                </li>
+            </ul>';
+           
+        $contenido = '
+        <div class="admin_section formulario">
+            <h4>Registrar Nuevo Alumno</h4>'.$this->formularionuevoalumno.'</div>';
+        
+       
+        $contenido .= '
+</div>';
+    $mensaje='
+            <div id="dialog-form" title="Buscar Apoderado" style="display:none">
+                <p class="validateTips">Busca por Nombre o Dni.</p>
+                    <fieldset>
+                         <label for="nombres">Nombre</label>
+                            <input onkeyup="buscarapoderado(\'apellido\',this);" type="text" name="nombres" id="nombres" class="text ui-widget-content ui-corner-all" />
+                            &nbsp;&nbsp;<label for="dnis">Dni</label>
+                            <input type="text" onkeyup="buscarapoderado(\'dni\',this);" size="8" name="dnis" id="dnis" value="" class="text ui-widget-content ui-corner-all" />
+                    </fieldset>
+            <h3>Resultados Obtenidos:</h3>
+                <table id="users" class="ui-widget ui-widget-content">
+                    <thead>
+                        <tr class="ui-widget-header ">
+                            <th>Codigo</th>
+                            <th>Nombre</th>
+                            <th>Apellido Paterno</th>
+                            <th>Apellido Paterno</th>
+                            <th>Dni</th>
+                            <th>Seleccionar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="buscaap">
+
+                    </tbody>
+                </table>
+        </div>';
+
+    $html->crearContentAjax($mensaje);
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+?>

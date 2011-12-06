@@ -1,0 +1,22 @@
+<div>
+    <table>
+        <tr>
+            <td>Id</td>
+            <td>Descripcion</td>
+        </tr>
+        <?php if (count($this->posts)): ?>
+        
+        <?php foreach ($this->posts as $post) :?>
+        <tr>
+            <td><?php echo $post->idMenu;?></td>
+            <td><?php echo $post->Descripcion;?></td>
+        </tr>
+        <?php endforeach; ?>
+        
+        <?php else: ?>
+        <tr>
+            <td colspan="2">No hay Contenido</td>
+        </tr>
+        <?php endif; ?>
+    </table>
+</div>

@@ -1,0 +1,108 @@
+<script type="text/javascript">   
+     function cargarseccion(){
+        var valor=$("#cbogrado").val();
+            elem=document.getElementById('cboseccion');
+            $("#cboseccion").html('<option>Cargando...</option>');
+            var option;
+            $.getJSON("listarsecciongrado/?codgrad="+valor, function(data){
+                var seccion = data;var option;
+                for (var x = 0 ; x < seccion.length ; x++) {
+                    option+='<option value='+seccion[x].iSeccIdSeccion+'>'+seccion[x].vSeccDescripcion+'</option>';
+                }
+                 $("#cboseccion").html(option);
+           });
+        }    
+      
+      $(document).ready(function (){cargarseccion();} );
+      
+</script>
+
+<?php
+    $this->titulopagina='Los Pinos - Nuevo Curso';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $script='
+        <script type="text/javascript" src="/js/codigito.js" > </script>
+        <script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>
+        
+        ';
+    $this->script=$script;
+    $css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">';
+    $this->css=$css;
+    
+    $h3 = '<ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
+        <ul class="bread">
+            <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="cursos" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Cursos</span>
+                </a>
+            </li>
+            <li>
+                <a href="nuevocurso?nroreg=6" class="breadcrumb breadcrumb1">
+                    <span>Nuevo Curso</span>
+                </a>
+            </li>
+        </ul>';
+           
+        $contenido = '
+            <div class="admin_section treinta"> 
+                <h4>Registrar Nuevo Curso</h4>'.$this->formularioagregarcurso.'</div>'.
+            '
+            <div class="admin_section setenta">
+                <h4>Lista de Cursos</h4>';
+        
+        $tablacursos = new Application_Model_Cursos();
+        $tablita=$tablacursos->crearTablaCursos($this->paginator,$this->page,$this->nroreg);
+        $contenido .=  $tablita;
+        $contenido .= $this->paginationControl($this->paginator,'Sliding','pagination.phtml');
+        $contenido .= '
+            </div>';
+    $mensaje='
+    <div id="dialog-confirm" title="Advertencia" style="display:none">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Esta Seguro de Confirmar?
+        </p>
+    </div>';
+    print $html->crearContentAjax($mensaje);
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+?>

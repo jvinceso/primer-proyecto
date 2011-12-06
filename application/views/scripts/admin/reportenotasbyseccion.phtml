@@ -1,0 +1,316 @@
+<script>
+    function cargacheckbox()
+    {
+        var valor=$("#cbogrados").val();
+        $("#seccionesaction").html("Listando....");
+        
+        $.getJSON("listarsecciongrado/?codgrad="+valor, function(data){
+            var seccion = data;var checkbox="";
+if(seccion!=""){
+    if(seccion.length>0){
+            for (var x = 0 ; x < seccion.length ; x++) {
+               checkbox+='<input type="checkbox" onclick="obtenerdatosjson();" name="check_list" value='+seccion[x].iSeccIdSeccion+' id='+seccion[x].iSeccIdSeccion+'>\n\
+               <label for='+seccion[x].iSeccIdSeccion+'> Seccion : '+seccion[x].vSeccDescripcion+'</label>\n\
+        </br>';                
+            }
+             $("#seccionesaction").html(checkbox);
+      }else{
+      $("#seccionesaction").html("<h3>Aun No se han registrado Secciones</h3>");
+      }
+    }else{
+     $("#seccionesaction").html("<h3>No encuentran datos del Grado</h3>");
+    }
+       });        
+    }
+
+
+//Inicio del grafico 
+
+$(function() {
+    // let's loop to build tooltips and x labels.
+    var thelabels = new Array(9);
+    //Genera Labels Etiquetas para eje X
+    for (var i = 0; i < thelabels.length; i++) {
+        thelabels[i] = " Unidades : "+(i + 1);
+    }
+
+    // build the chart with no data but only x axis labels using the "google analytics" template.
+    $("#chart").chart({
+        template: "google_analytics"
+       ,labels: thelabels
+    });
+
+    // start a loop that sets new data in the chart every 5 seconds.
+    // POR DEFECTO 
+//    loop();
+});
+
+/* Here is a simple update function generating new random data for the plot */
+
+//    function loop() {
+//        var thevalues = new Array(9);
+//        var thevalues2 = new Array(9);
+//        for (var i = 0; i < thevalues.length; i++) {
+//            thevalues[i] = Math.floor(Math.random() * (i > 0 ? thevalues[i - 1] * 1.5 + 0 : 1) + 2);
+//            thevalues2[i] = Math.floor(Math.random() * (i > 0 ? thevalues2[i - 1] * 1.5 + 5 : 10) + 3);
+//        } /* Note how we simply call again .chart with only the updated values */
+//        $("#chart").chart({
+//            values: {
+//                serie1: thevalues,
+//                serie2: thevalues2
+//            }
+//        });
+//        setTimeout('loop()', 5000);
+//    }
+
+// this is a reausable template definition.
+$.elycharts.templates['google_analytics'] = {
+    type: "line",
+    margins: [5, 5, 5, 5],
+    /* Define how to draw tooltips starting from series data */
+    /* this can be an array with the tooltips content or a function to generate them on the fly */
+    tooltips: function(env, serie, index, value, label) {
+        return "<div class='label'><p class='date'>Unidad " + index + "</p><p><span class='visits'>Visits:</span> " + env.opt.values['serie1'][index] + "</p><p><span class='hits'>Hits:</span> " + env.opt.values['serie2'][index] + "</p></div>";
+    },
+    defaultSeries: {
+        plotProps: {
+            "stroke-width": 4
+        },
+        dot: true,
+        rounded: false,
+        dotProps: {
+            stroke: "white",
+            size: 5,
+            "stroke-width": 1,
+            opacity: 0 // dots invisible until we hover it
+        },
+        startAnimation: { // use an animation to start plotting the chart
+            active: true,
+            type: "avg", // start from the average line.
+            speed: 1000, // animate in 1 second.
+            easing: ">"
+        },
+        stepAnimation: { // defines an animation for data updates
+            speed: 2000,
+            delay: 0,
+            easing: '<>'
+        },
+        highlight: {
+            scaleSpeed: 0, // do not animate the dot scaling. instant grow.
+            scaleEasing: '',
+            scale: 1.2, // enlarge the dot on hover
+            newProps: {
+                opacity: 1 // show dots on hover
+            }
+        },
+        tooltip: {
+            height: 45,
+            width: 80,
+            padding: [3, 3],
+            offset: [-15, -10],
+            frameProps: {
+                opacity: 0.95,
+                /* fill: "white", */
+                stroke: "#000"
+
+            }
+        }
+    },
+    series: {
+        serie1: {
+            fill: true,
+            fillProps: {
+                opacity: .1
+            },
+            color: "#26B"
+        },
+        serie2: {
+            axis: 'r',
+            color: "#F80",
+            plotProps: {
+                "stroke-width": 2
+            },
+            dotProps: {
+                stroke: "white",
+                size: 3,
+                "stroke-width": 1
+            }
+        },
+        serie14: {
+            fill: true,
+            fillProps: {
+                opacity: .1
+            },
+            color: "#59F"
+        }     
+
+    },
+    defaultAxis: {
+        labels: true,
+        labelsProps: {
+            fill: "#49B",
+            "font-size": "10px"
+        },
+        labelsAnchor: "start",
+        labelsMargin: 5,
+        labelsDistance: -8
+    },
+    axis: {
+        l: { // left axis
+            labels: true,
+            labelsDistance: 0,
+            labelsSkip: 1,
+            labelsAnchor: "start",
+            labelsMargin: 15,
+            labelsProps: {
+                fill: "#AAA",
+                "font-size": "11px",
+                "font-weight": "bold"
+            }
+        },
+        r: { // left axis
+            labels: true,
+            labelsDistance: 0,
+            labelsSkip: 1,
+            labelsAnchor: "end",
+            labelsMargin: 15,
+            labelsProps: {
+                fill: "#AAA",
+                "font-size": "11px",
+                "font-weight": "bold"
+            }
+        }
+    },
+    features: {
+        mousearea: {
+            type: 'axis'
+        },
+        tooltip: {
+            positionHandler: function(env, tooltipConf, mouseAreaData, suggestedX, suggestedY) {
+                return [mouseAreaData.event.pageX, mouseAreaData.event.pageY, true]
+            }
+        },
+        grid: {
+            draw: true, // draw both x and y grids
+            forceBorder: [true, false, true, false], // force grid for external border
+            ny: 2, // use 10 divisions for y grid
+            nx: 5, // 10 divisions for x grid
+            props: {
+                stroke: "#CCC" // color for the grid
+            }
+        }
+    }
+}
+
+
+</script>
+<?php
+    $this->titulopagina='Los Pinos - Aperturar Cursos';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $script='<script src="/js/codigito.js" type="text/javascript"></script>
+              <script src="/js/graficas/chart.js" type="text/javascript"></script> 
+              <script src="/js/graficas/raphael.js" type="text/javascript"></script>                 
+              <script src="/js/graficas/elycharts.js" type="text/javascript"></script>             
+<script></script>              
+            ';
+      $this->script=$script;
+      $css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">
+<style  type="text/css">
+
+.charlab { font-face: helvetica, arial; color: black; margin: 0; }
+.date { font-size: 10px; font-weight: normal }
+.visits { color: #5Af; font-weight: normal }
+.hits { color: #F80; font-weight: normal }
+.label { font-size: 12px; line-height: 14px; margin-left: 2px; font-weight: bold }
+
+</style>          
+';
+      $this->css=$css;
+    
+
+      
+   $h3 = '<ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
+        <ul class="bread">
+            <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="panel" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Panel de Control</span>
+                </a>
+            </li>
+            <li>
+                <a href="aperturarcursos" class="breadcrumb breadcrumb1">
+                    <span>Aperturar Cursos</span>
+                </a>
+            </li>
+        </ul>';
+           
+        $contenido = '
+   <div id="submain">           
+      <div class="admin_section treinta">
+        <div class="actions" style="margin-bottom:30px">
+            Grados <select name="action" id="cbogrados" onchange="cargacheckbox()">
+                <option value="0">Selecionar Grado</option>';
+                    $grados=new Application_Model_Grado();
+                    $listagrados=$grados->listarGradosActivos();
+                    foreach($listagrados as $aux){
+                        $contenido.='<option value="'.$aux['iGradoIdGrado'].'">'.$aux['vGradoDescripcion'].'</option>';
+                    }
+$contenido .= '
+            </select>
+            <a style="cursor:pointer" onclick="selectcheckbox(true);">Seleccionar Todos</a>/ <a onclick="selectcheckbox(false);" style="cursor:pointer"> quitar seleccion</a>
+        </div>       
+        <form name="formchecks">
+            <div id="seccionesaction">
+                
+            </div>
+            <input type="button" value="Dibujame" onclick="ActualizaChart();" />
+        </form>
+      </div>
+      <div class="setenta">
+        <div id="chart" style="width: 100%; height: 250px">
+        </div>             
+   </div>';
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+?>    
+

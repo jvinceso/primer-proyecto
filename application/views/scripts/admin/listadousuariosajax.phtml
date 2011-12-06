@@ -1,0 +1,7 @@
+<?php
+    $html= new Application_Model_Html();
+    $usuarios = new Application_Model_Usuario();
+    $contenido = '<h4>Lista de Cursos</h4>'.$usuarios->crearTablaUsuarios($this->paginator);
+    $contenido .= $this->paginationControl($this->paginator,'Sliding','pagination.phtml');
+    print $html->crearContentAjax($contenido);
+?>

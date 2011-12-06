@@ -1,0 +1,113 @@
+<?php
+    $this->titulopagina='Aula Virtual "LOS PINOS"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id; 
+    
+    //Seccion para el Chat
+    
+    $_SESSION['username']=strtoupper($nombreUsuario);
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/docente/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="principal" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Mi Página Principal</span>
+                </a>
+            </li>
+        </ul>';
+    $contenido = 'Bienvenido Usuario';
+    $submain='
+        <div id="menu-wrapper">
+            <div id="menu" class="menu">
+                <div class="menusection  ">
+                    <span class="menusectioncaption">Perfil</span>
+                    <div id="social_widget">
+                        <div id="social_widget_image">
+                            <a href="">
+                                <img title="Editar perfil" src="/main/img/unknown.jpg" width="90" height="90" border="1">
+                            </a>
+                        </div>
+                    </div>
+                <div class="clear">
+                </div>
+                <div class="message-content">
+                    <ul class="menulist">
+                        <li>
+                            <a href="" class="message-body">Bandeja de entrada </a>
+                        </li>
+                        <li>
+                            <a href="" class="message-body">Redactar </a>
+                        </li>
+                        <li>
+                            <a href="" class="message-body">Invitaciones pendientes</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="menu" id="menu">
+            <div class="menusection">
+                <span class="menusectioncaption">Usuario</span>
+                    <ul class="menulist">
+                        <li>
+                            <a href="">Crear un curso</a>
+                        </li>
+                        <li>
+                            <a href="">Catálogo de cursos</a>
+                        </li>
+                    </ul>
+             </div>
+         </div>
+         <div id="menu" class="menu">
+            <div class="menusection  ">
+                <span class="menusectioncaption">General</span>
+                    <ul class="menulist">
+                        <li>
+                            <a href="" target="_self">Forum</a>
+                        </li>
+                    </ul>
+            </div>
+         </div>
+         </div>
+        ';
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$contenido, $this->layout()->content,$submain);
+?>

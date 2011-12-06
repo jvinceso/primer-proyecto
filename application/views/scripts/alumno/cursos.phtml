@@ -1,0 +1,136 @@
+<?php
+    $this->titulopagina='Los Pinos - "Cursos"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $urlFoto=$usuario->getFotobyIdUsuario($usuario_id);
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="cursos" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Cursos</span>
+                </a>
+            </li>
+        </ul>';
+    
+    $alumno = new Application_Model_Alumno();
+    $listacursos=$alumno->listarCursosAlumno($usuario_id);
+    
+    $arraycursos = new Application_Model_Cursos();
+
+    $content = '
+        <h1>
+            <img src="/main/img/icons/22/course.png" alt="Mis cursos" title="Mis cursos"> Mis cursos
+           </h1>';
+        foreach($listacursos as $curso){
+            $arraydocente=$arraycursos->getDocenteCursobyIdCurso($curso['iCursIdCursos']);
+            $nombredocente=($arraydocente==NULL? "No hay docente asignado":$arraydocente[0]['vUsuNombre'].' '.$arraydocente[0]['vUsuApellidoPat']);
+            
+            $content.= '<div id="plugin-mycourses_main"></div>
+                <div class="userportal-course-item">
+                    <div style="float:right;">
+                        <a id="document_preview_1_0" class="document_preview" href="javascript:void();">
+                            <img align="absmiddle" src="/main/img/icons/22/folder.png" alt="Documentos" title="Documentos">
+                        </a>
+                        <div id="document_result_1_0" class="document_preview_container" style="display: none; ">
+                        </div>
+                    </div>
+                    <div style="float: left; margin-right: 10px;">
+                        <a href="/courses/002/?id_session=0">
+                            <img width="48px" src="/main/img/blackboard.png" alt="Curso" title="Curso">
+                        </a>
+                    </div>
+                    <span class="userportal-course-item-title">
+                        <a href="'.$curso['iCursIdCursos'].'">'.$curso['vCursNombreCurso'].'</a>
+                    </span><br>'.$nombredocente.'&nbsp;
+                    <a href="/main/document/document.php?cidReq=002&amp;ref=204&amp;gidReq=0&amp;id_session=0">
+                        <img title="-- Documento -- Desde su última visita: visible (26/10/2011 23:23)." src="http://localhost:3001/chamilo/main/img/folder_document.gif" border="0" align="absbottom">
+                    </a>&nbsp;
+                </div>';
+        }
+    $menuwrapper='
+        <div id="menu-wrapper">
+            <div id="menu" class="menu">
+                <div class="menusection">
+                    <span class="menusectioncaption">Perfil</span>
+                    <div id="social_widget">
+                        <div id="social_widget_image">
+                            <a href="">
+                                <img title="Editar perfil" src="/'.($urlFoto==NULL? "main/img/unknown.jpg":$urlFoto).'" width="90" height="90" border="1">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="message-content">
+                        <ul class="menulist">
+                            <li>
+                                <a href="" class="message-body">Bandeja de entrada </a>
+                            </li>
+                            <li>
+                                <a href="" class="message-body">Redactar</a>
+                            </li>
+                            <li>
+                                <a href="" class="message-body">Invitaciones pendientes</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="menu" class="menu">
+                <div class="menusection">
+                    <span class="menusectioncaption">Usuario</span>
+                    <ul class="menulist">
+                        <li>
+                            <a href="">Catálogo de cursos</a>
+                        </li>
+                            <a href=""> Ordenar mis cursos</a>
+                        <li>
+                            <a href="">Historial de cursos</a>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+            </div>';
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$content, $menuwrapper);
+?>
+

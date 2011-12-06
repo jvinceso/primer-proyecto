@@ -1,0 +1,183 @@
+<script type="text/javascript">
+function cargarseccion(){
+        var valor=$("#cbogrados").val();
+            elem=document.getElementById('cboseccion');
+            $("#cboseccion").html('<option>Cargando...</option>');
+            var option;
+            $.getJSON("listarsecciongrado/?codgrad="+valor, function(data){
+                var seccion = data;var option;
+                for (var x = 0 ; x < seccion.length ; x++) {
+                    option+='<option value='+seccion[x].iSeccIdSeccion+'>'+seccion[x].vSeccDescripcion+'</option>';
+                }
+                 $("#cboseccion").html(option);
+                 cargaralumnos();
+           });
+        }
+function cargaralumnos(){
+        var valor=$("#cboseccion").val();
+            $.getJSON("listaralumnosseccion/?idseccion="+valor, function(data){
+                var alumnos = data;
+                var option;
+                if(alumnos!=null){
+                    if(alumnos.length>0){
+                       
+                        if(alumnos[0].rpta=='SI'){
+                            
+                           $("#tablaalumnos").html('<tr>\n\
+                                        <td colspan="5">\n\
+                                            <center>Ya se aperturó esta sección</center>\n\
+                                        </td>\n\
+                                    </tr>');
+                       }
+                       else{
+                           for (var x = 0 ; x < alumnos.length ; x++) {
+                                if(x%2==0){option+='<tr class="row_even">';}
+                                else{option+='<tr class="row_odd">';}
+                                option+='\n\
+                                            <td>\n\
+                                                <center>'+alumnos[x].iUsuIdUsuario+'</center>\n\
+                                            </td>\n\\n\
+                                            <td>\n\
+                                                '+alumnos[x].vUsuUsuario+'\n\
+                                            </td>\n\\n\
+                                            <td>\n\
+                                                '+alumnos[x].vUsuApellidoPat+' '+alumnos[x].vUsuApellidoMat+', '+alumnos[x].vUsuNombre+'\n\
+                                            </td>\n\\n\
+                                            <td>\n\
+                                                <center><img width=50px heigth=50px src="/'+alumnos[x].tFoto+'"/></center>\n\
+                                            </td>\n\\n\
+                                            <td>\n\
+                                                <center>'+alumnos[x].cUsuDni+'</center\n\
+                                            </td>\n\
+                                        </tr>\n\
+                                             ';
+                            }
+                            option+='\n\
+                                    <tr>\n\
+                                        <td colspan="5">\n\
+                                            <center>\n\
+                                                <button type="submit" class="save">\n\
+                                                    Aperturar Cursos\n\
+                                                </button>\n\
+                                            </center>\n\
+                                        </td>\n\
+                                    </tr>';
+                       }
+                    }
+                    else{
+                         $("#tablaalumnos").html('<tr>\n\
+                                        <td colspan="5">\n\
+                                            <center>No Existen alumnos asignados a esta Seccion</center>\n\
+                                        </td>\n\
+                                    </tr>');
+                    }
+                }
+                else{
+                    $("#tablaalumnos").html('<tr>\n\
+                                        <td colspan="5">\n\
+                                            <center>No Existen Datos</center>\n\
+                                        </td>\n\
+                                    </tr>');
+                }
+                 $("#tablaalumnos").html(option);
+           });
+        }
+</script>
+
+<?php
+    $this->titulopagina='Los Pinos - Aperturar Cursos';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $h3 = '<ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
+        <ul class="bread">
+            <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="panel" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Panel de Control</span>
+                </a>
+            </li>
+            <li>
+                <a href="aperturarcursos" class="breadcrumb breadcrumb1">
+                    <span>Aperturar Cursos</span>
+                </a>
+            </li>
+        </ul>';
+           
+        $contenido = '
+            <div id="submain">
+                <form method="POST" action="/admin/nuevaapertura" name="form_attendance_list">  
+                <div class="actions" style="margin-bottom:30px">
+                    <select id="cbogrados" name="cbogrados" onchange="cargarseccion();">
+                        <option value="0" >Seleccionar Grado</option>';
+                        $grados=new Application_Model_Grado();
+                        $listagrados=$grados->listarGradosActivos();
+                            foreach($listagrados as $aux){
+                                $contenido.='<option value="'.$aux['iGradoIdGrado'].'">'.$aux['vGradoDescripcion'].'</option>';
+                        }
+                    $contenido .= '
+                    </select>
+                    <select id="cboseccion" name="cboseccion" onchange="cargaralumnos();">
+                    </select>
+                </div>
+                    <div class="centraTabla">
+                            <table class="data_table" style="width:auto;">
+                                <thead>
+                                    <tr class="row_odd">
+                                        <th style="width:20px;">Id</th>
+                                        <th><a>Usuario</a></th>
+                                        <th><a>Nombre</a></th>
+                                        <th style="width:90px;"><a>Imagen</a></th>
+                                        <th style="text-align:center">DNI</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaalumnos">
+                                   
+                                <tbody>
+                            </table>
+                      </div>
+                
+                </form>
+                <div class="clear">&nbsp;</div>
+            </div>';
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+?>

@@ -1,0 +1,27 @@
+<a id="saludolink" href="#">Saludar a</a>
+<span id="saludospan"></span>  
+
+<script type="text/javascript">  
+
+    //version onClic de jquery para el elementeo de id=saludolink  
+    $('#saludolink').click(function(event)  
+    {  
+
+        //con esto evitamos que el enlace vaya a la direccion indicada  
+        event.preventDefault();  
+
+        var ajaxurl= "<?php echo $this->url(array(
+            'controller' => 'index',
+            'action' => 'saludoajax2'));
+        ?>";  
+
+            //LLAMADA AJAX(). llama a la url guardada en ajaxurl, y lo que devuelva lo coloca  
+            //en el elemento id= saludospan  
+            $("#mensaje").load(ajaxurl, function ()  
+            {  
+               //function() se llama despues de que se ha hecho la llamada a ajax  
+               //y el servidor ha devuelto datos  
+               alert("datos recibidos desde servidor");  
+            });  
+        });  
+</script>  

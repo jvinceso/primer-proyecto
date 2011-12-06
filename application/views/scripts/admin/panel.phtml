@@ -1,0 +1,108 @@
+<?php
+    $this->titulopagina='Los Pinos - Panel de Control';
+    $this->css='
+        <link media="screen" rel="stylesheet" href="/css/colorbox.css" />';
+    $this->script=' 
+    	<script type="text/javascript" src="/js/colorbox/jquery.colorbox.js"></script>
+    	<script>
+        $(document).ready(function () {
+            //Examples of how to assign the ColorBox event to elements
+            $(".jqIframe").colorbox({ width: "90%", height: "90%", iframe: true });
+            //Example of preserving a JavaScript event for inline calls.
+            $("#click").click(function () {
+                $("#click").css({ "background-color": "#f00", "color": "#fff", "cursor": "inherit" }).text("Abrir esta ventana de nuevo y este mensaje aún estará aqui.");
+                return false;
+            });
+        });
+	</script>';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="panel" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Panel de Control</span>
+                </a>
+            </li>
+        </ul>';
+    $peraca= new Application_Model_PeriodoAcademico();
+    $contenido = '
+        <div class="admin_section">
+            <h4><img src="/main/img/course.gif" alt="Cursos" title="Cursos"> Aperturar Año Académico</h4>
+            <ul>';
+        
+        if($peraca->validarExistePeriodo()>0){
+            if($peraca->validarNotasCerradas()){
+                //Promover alumnos
+                $contenido .= '<li><a href=""><img src="/main/img/accept.png"/> Cerrar Notas</a></li>';
+                $contenido .= '<li><a href="promoveralumnos"><img src="/main/img/online.png"/> Promover Alumnos</a></li>';
+                $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Aperturar Cursos (Nuevo Periodo)</a></li>';
+            }
+            else{
+                if(date("n")>2 && date("n")>11){
+                    //Mensaje de que aun no se cierran las notas finales
+                    $contenido .= '<li><a href="cerrarnotas"><img src="/main/img/online.png"/> Cerrar Notas</a></li>';
+                    $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Promover Alumnos</a></li>';
+                    $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Aperturar Cursos (Nuevo Periodo)</a></li>';
+                }
+                else{
+                    $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Cerrar Notas</a></li>';
+                    $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Promover Alumnos</a></li>';
+                    $contenido .= '<li><a href="aperturarcursos"><img src="/main/img/online.png"/> Aperturar Cursos</a></li>';
+                }
+            }
+        }
+        
+        else{
+             $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Cerrar Notas</a></li>';
+             $contenido .= '<li><a href=""><img src="/main/img/offline.png"/> Promover Alumnos</a></li>';
+             $contenido .= '<li><a href="aperturarcursos"><img src="/main/img/online.png"/> Aperturar Cursos</a></li>';
+        }
+        $contenido .= '              
+            </ul>
+        </div>
+        ';
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,null, null,$contenido);
+?>
+

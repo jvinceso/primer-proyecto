@@ -1,8 +1,0 @@
-#playground {
-    background: url("i/blackboard.jpg") no-repeat scroll center top transparent;
-    clear: both;
-    font-family: "Comic Sans MS",cursive;
-    height: 420px;
-    padding-top: 30px;
-    position: relative;
-}

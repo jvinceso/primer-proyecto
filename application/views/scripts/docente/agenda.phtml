@@ -1,0 +1,375 @@
+<script>
+              
+</script>
+<?php
+$dias = array("Lunes","Martes","Miercoles","Jueves","Viernes","Sábado","Domingo");
+$meses=array('','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto',
+    'Septiembre','Octubre','Noviembre','Diciembre');
+    $this->titulopagina='Aula Virtual "LOS PINOS"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;     
+    
+    //Seccion para el Chat
+     $script='
+        <script type="text/javascript" src="/js/codigito.js" > </script>
+        <script type="text/javascript" src="/jfcalendar/fullcalendar.min.js" > </script>
+        <script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>
+<script type="text/javascript">
+    $.fx.speeds._default = 1000;
+    $(function() {
+        $( "#dialog" ).dialog({
+            autoOpen: false,
+            show: "clip",
+            hide: "clip"
+        });
+
+    });
+
+var selectedDate = new Date();
+ 
+$(document).ready(function() {
+    var date = new Date();
+    var d = date.getDate();
+    var m = date.getMonth();
+    var y = date.getFullYear();
+		
+    var calendar = $("#calendar").fullCalendar({
+        allDayText:"Todo El Dia",
+        monthNames: ["Enero","Febrero","Marzo","Abril","Mayo","Junio",
+        "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],
+        monthNamesShort: ["Ene","Feb","Mar","Abr","May","Jun",
+        "Jul","Ago","Sep","Oct","Nov","Dic"],
+        dayNames: ["Domingo","Lunes","Martes","Mi&eacute;rcoles","Jueves","Viernes","S&aacute;bado"],
+        dayNamesShort: ["Dom","Lun","Mar","Mi&eacute;","Jue","Vie","S&aacute;b"],
+        dayNamesMin: ["Do","Lu","Ma","Mi","Ju","Vi","S&aacute;"],   
+        buttonText: {
+            today:"Hoy",
+            month:"Mes",
+            week:"Semana",
+            day:"Dia"
+        },
+        theme: true,                        
+        header: {
+            left: "prev,next today",
+            center: "title",
+            right: "month,agendaWeek,agendaDay"
+                                
+        },
+        //                        defaultView: "agendaDay",
+        editable: false,                        
+        selectable: true,
+        selectHelper: true,
+        select: function(start, end, allDay) {
+            allDayDefault:false;
+            var title=$("#evento").val("");
+            $.fx.speeds._default = 250;
+            $(function() {
+                $( "#dialog-form" ).dialog({
+                    show: "blind",
+                    hide: "drop",
+                    resizable: false,
+                    height: "auto",
+                    width: "auto",
+                    buttons:{
+                        Ok:function(){ 
+                            var title=$("#evento").val();
+                            if(title){
+                                calendar.fullCalendar("renderEvent",{
+                                    title: title,
+                                    start: start,
+                                    end: end,
+                                    allDay: false
+                                },
+                                true);    
+                                var unixini = Math.round(start/1000);
+                                var unixfin = Math.round(end/1000);
+
+                            
+                                $.getJSON("registraevento/",{
+                                    fechaini:unixini,
+                                    fechafin:unixfin,
+                                    vdoc:0,
+                                    valum:0,
+                                    vapod:0,
+                                    titulo:title,
+                                    contenido:"contenido",
+                                    url:0,
+                                    iduser:'.$usuario_id.',
+                                    codcurso:2
+                                });
+                                $( this ).dialog( "close" );
+                            }else{
+                                alert("Ingrese Titulo");
+                            }
+                        },
+                        Cancelar: function(){
+                            $( this ).dialog( "close" );
+                        }
+                    }
+                });
+                $( "#dialog-form" ).dialog( "open" );
+            });
+            calendar.fullCalendar("unselect");
+        },
+        eventClick: function(event, element) {
+//            var conf = confirm("Realmente Desea Actualizarlo");
+//            if (conf) {
+//                var title=prompt("Nuevo Titulo :");
+//                if(title)
+//                    event.title=title;
+//                $("#calendar").fullCalendar("updateEvent", event);
+//            }else if(confirm("Desea Borrarlo")){
+//                $("#calendar").fullCalendar( "removeEvents" ,event.id );
+//            }
+            $.fx.speeds._default = 1000;
+            $(function() {
+                $( "#dialog-confirm" ).dialog({
+                    autoOpen: false,
+                    show: "blind",
+                    hide: "explode",
+                    resizable: false,
+                    height:140,
+                    modal: true,
+                    buttons:{
+                        "Eliminar": function(){
+                            $( this ).dialog( "close" );
+                            var cod=event.id;
+                            $.post("eliminareventos/",{idevento:cod});
+                            $("#calendar").fullCalendar( "removeEvents" ,event.id );
+                            },
+                        "Editar": function(){
+//                              var div=document.getElementById("dialog-form");
+//                              div.display="";
+//                               $("#calendar").load("#dialog-form");                            
+                            $( this ).dialog( "close" );
+
+                        }
+                    }
+                });
+                //Invoca al panel Informativo
+                $( "#dialog-confirm" ).dialog( "open" );
+            });
+                            
+
+        },
+        events: "listareventos/?iduser='.$usuario_id.'",
+//        eventDrop: function(event, delta) {
+//         var unixinis = Math.round(event.start/1000);
+//         var unixfins = Math.round(event.end/1000);
+//         alert(unixinis+" FIN "+unixfins+" dfd "+event.title);
+//                $.getJSON("actualizaevento/",{
+//                    fechaini:unixinis,
+//                    fechafin:unixinis,
+//                    vdoc:0,
+//                    valum:0,
+//                    vapod:0,
+//                    titulo:event.title,
+//                    contenido:"contenido",
+//                    url:0,
+//                    iduser:'.$usuario_id.',
+//                    codcurso:2
+//                });                        
+//        }       
+    });    
+});    
+</script>      
+        ';
+     
+$css='
+        <link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">
+        <link href="/jfcalendar/fullcalendar.css" rel="stylesheet" type="text/css">
+        <link media="print" href="/jfcalendar/fullcalendar.print.css" rel="stylesheet" type="text/css">
+            <style type="text/css">
+                #calendar {
+        		width: 100%;
+                	margin: 0 auto;
+                    }
+
+            </style>  
+      ';
+    $this->css=$css;    
+    $this->script=$script;    
+    $this->titulopagina='Aula Virtual "LOS PINOS"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id; 
+       
+    $_SESSION['username']=strtoupper($nombreUsuario);
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/docente/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="agenda" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Agenda</span>
+                </a>
+            </li>
+        </ul>';
+    $contenido = '
+    <div id="opt-agenda">    
+        <span class="fc-button fc-button-agendaWeek ui-state-default" style="hover:ui-state-hover">
+            <span class="fc-button-inner">
+                <span class="fc-button-content">CREAR</span>
+                <span class="fc-button-effect">
+                    <span></span>
+                </span>
+            </span>
+        </span>
+        </span>    
+    </div>    
+    <button onclick="javascript:imprimirSelec(\'calendar\');">Imprime</button>    
+   
+    <div id="calendar">
+    </div>
+';
+    $submain='
+        <div id="menu-wrapper">
+            <div id="menu" class="menu">
+                <div class="menusection  ">
+                    <span class="menusectioncaption">Perfil</span>
+                    <div id="social_widget">
+                        <div id="social_widget_image">
+                            <a href="">
+                                <img title="Editar perfil" src="/main/img/unknown.jpg" width="90" height="90" border="1">
+                            </a>
+                        </div>
+                    </div>
+                <div class="clear">
+                </div>
+                <div class="message-content">
+                    <ul class="menulist">
+                        <li>
+                            <a href="" class="message-body">Bandeja de entrada </a>
+                        </li>
+                        <li>
+                            <a href="" class="message-body">Redactar </a>
+                        </li>
+                        <li>
+                            <a href="" class="message-body">Invitaciones pendientes</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="menu" id="menu">
+            <div class="menusection">
+                <span class="menusectioncaption">Usuario</span>
+                    <ul class="menulist">
+                        <li>
+                            <a href="">Crear un curso</a>
+                        </li>
+                        <li>
+                            <a href="">Catálogo de cursos</a>
+                        </li>
+                    </ul>
+             </div>
+         </div>
+         <div id="menu" class="menu">
+            <div class="menusection  ">
+                <span class="menusectioncaption">General</span>
+                    <ul class="menulist">
+                        <li>
+                            <a href="" target="_self">Forum</a>
+                        </li>
+                    </ul>
+            </div>
+         </div>
+         </div>
+        ';
+
+
+    $mensaje='
+<div id="dialog-form" title="Registrar Evento" style="display:none">
+    <fieldset><legend>Registre Eventos</legend>
+        <label for="evento">Evento</label>
+        <input type="text" name="evento" id="evento" class="text ui-widget-content ui-corner-all" />
+         
+    </fieldset>
+</div>
+';
+$mensaje.='
+        <div id="dialog-confirm" title="informacion" style="display:none">
+            <p>
+              <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;">
+              </span>que operacion desea realizar?
+            </p>
+        </div>';   
+    $tipousu=new Application_Model_TipoUsuario();
+    $result=$tipousu->getTipoUsuario();
+$mensaje.='
+<div id="dialog-form" title="Registrar Evento" style="display:none">
+    <fieldset>
+        <legend>Registre Eventos</legend>
+            <label for="eventonombre">Evento</label>
+                <input type="text" name="eventonombre" autofocus id="eventonombre" class="text ui-widget-content ui-corner-all" />
+            <label for="descripcion">Descripcion</label>
+                <textarea type="text" name="descripcion" id="descripcion">   
+                </textarea>
+            <label for="fechaini">Fecha Inicio</label>
+                <input type="text" name="fechaini" id="fechaini" />      
+            <label for="fechafin">Fecha Fin</label>
+                <input type="text" name="fechafin" id="fechafin" />
+            <label for="usuarios">Selecione Usuarios</label>
+            <input type="checkbox" name="usuarios[]" id="usuarios" />
+                ';
+   if($result!=NULL){
+       $i=0;
+        foreach($result as $aux =>$key) {
+
+            $mensaje.='<input type="checkbox" name="usuarios[]" id="usuarios" />'.$aux['vDescripcion']; 
+            $i++;            
+            }        
+    }
+    else{
+        $mensaje.="TIPOS DE USUARIOS AUN NO DEFINIDOS";
+    }
+    
+$mensaje.=' </fieldset>
+</div> ';
+
+    $html->crearContentAjax($mensaje);
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$contenido, $this->layout()->content,$submain);
+?>

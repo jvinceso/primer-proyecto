@@ -1,0 +1,190 @@
+<?php
+    $this->titulopagina='Los Pinos - Red Social';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    //MODIFICACION DATOS USUARIOS
+    //$docente= new Application_Model_Docente();    
+    $resultuser=$usuario->getUsuariobyId($usuario_id);
+    
+    
+    $h3 = '<ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
+        <ul class="bread">
+            <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="redsocial" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Red Social</span>
+                </a>
+            </li>
+        </ul>';
+$foto;
+($resultuser[0]['tFoto']!=NULL? $foto=$resultuser[0]['tFoto'] : $foto='main/img/unknown.jpg');
+        $contenido = '
+            <div id="submain">
+                <div id="social-content">
+                    <div id="social-content-left">
+                        <div class="social-menu">
+                            <script type="text/javascript">      
+                                function show_icon_edit(element_html) { 
+                                    ident="#edit_image";
+                                    $(ident).show();
+                                }       
+
+                                function hide_icon_edit(element_html)  {
+                                    ident="#edit_image";
+                                    $(ident).hide();
+                                }               
+                            </script>
+                            <div class="social-content-image">
+                                <div class="social-background-content" onmouseout="hide_icon_edit()" onmouseover="show_icon_edit()">
+                                    <center>
+                                        <img src="/'.$foto.'" width="110px">
+                                        <div id="edit_image" class="hidden_message" style="display: none; ">
+                                            <a href="http://localhost:3001/chamilo/main/auth/profile.php">Editar perfil</a>
+                                        </div>
+                                    </center>
+                                </div>
+                            </div>
+                            <div align="center" class="social-menu-title">
+                                <span class="social-menu-text1">Menú</span>
+                            </div>
+                            <div>
+                                <ul>
+                                    <li>
+                                        <a href="">
+                                            <img hspace="6" src="/main/img/home.png" alt="Principal" title="Principal">
+                                            <span class="social-menu-text-active">Principal</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="mensajes">
+                                            <img hspace="6" src="/main/img/instant_message.png" alt="Mensajes" title="Mensajes">
+                                                <span class="social-menu-text4">Mensajes</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <img hspace="6" src="/main/img/invitation.png" alt="Invitaciones" title="Invitaciones">
+                                            <span class="social-menu-text4">Invitaciones</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <img hspace="6" src="/main/img/my_shared_profile.png" alt="Mi perfil compartido" title="Mi perfil compartido">
+                                            <span class="social-menu-text4">Mi perfil compartido</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <img hspace="6" src="/main/img/friend.png" alt="Amigos" title="Amigos">
+                                            <span class="social-menu-text4">Amigos</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <img hspace="6" src="/main/img/group.png" alt="Grupos" title="Grupos">
+                                            <span class="social-menu-text4">Grupos</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <img hspace="6" src="/main/img/zoom.png" alt="Buscar" title="Buscar">
+                                            <span class="social-menu-text4">Buscar</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="">
+                                            <img hspace="6" src="/main/img/icons/16/briefcase.png" alt="Mis archivos" title="Mis archivos">
+                                            <span class="social-menu-text4">Mis archivos</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="social-content-right">
+                        <div class="social-box-main1">';
+           
+               $contenido.='<div class="rounded_div" style="width:280px">
+                                <div>
+                                    <p>
+                                        <strong>Nombre</strong><br>
+                                        <span class="social-groups-text4">'.$resultuser[0]['vUsuApellidoPat'].' '.$resultuser[0]['vUsuApellidoMat'].' , '.$resultuser[0]['vUsuNombre'].'</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p>
+                                        <strong>Correo electrónico</strong><br>
+                                        <span class="social-groups-text4">'.$resultuser[0]['vUsuEmail'].'</span>
+                                    </p>
+                                </div>
+                                <div class="box_description_group_actions">
+                                    <a href="">
+                                        <img hspace="6" src="/main/img/profile_edit.png" alt="Editar perfil" title="Editar perfil">Editar perfil
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="social-box-right"><br>
+                                <form method="GET" action="/main/social/search.php">
+                                    <table cellspacing="0" cellpadding="0">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div id="search_label">
+                                                        <b>Buscar</b> (Usuarios, Grupos)
+                                                        <div>
+                                                            <input type="text" size="25" value="" name="q"> &nbsp;
+                                                            <button class="search" type="submit" value="search">Buscar</button>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </form><br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear">&nbsp;</div>
+</div>';
+    
+    print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+?>

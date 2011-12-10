@@ -155,41 +155,22 @@ class Application_Model_Html{
 $chat= new Application_Model_Chat();
 $result=$chat->usuariosconectados();
 $arratemp="";
-foreach($result as $aux){
-print'<div>
-        <a onclick="javascript:chatWith(\''.strtoupper($aux['vUsuUsuario']).'\')" href="javascript:void(0)">
-         <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/372617_1420530801_1579660712_q.jpg" class="pic">
-         <span class="name">'.$aux['vUsuNombre'].' '.$aux['vUsuApellidoPat'].' '.$aux['vUsuApellidoMat'].'</span>              
-        </a>
-      </div>';
-}            
-            print '<div>
-                       <a onclick="javascript:chatWith(\'Luis Salazar\')" href="javascript:void(0)">
-                                        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/372617_1420530801_1579660712_q.jpg" class="pic">
-                                         <span class="name">Luis Salazar</span>                                   
-                                    </a>
-                                </div>
-                                <div>
-                                    <a href="">
-                                        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/276299_1643254581_840383293_q.jpg" class="pic">
-                                        <span class="name">Harumy Ac</span>                                    
-                                    </a>
-                                </div>
-                                <div>
-                                    <a href="">
-                                        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/371572_1320182226_1371922053_q.jpg" class="pic">
-                                        <span class="name">Margori Miñano</span>                                     
-                                    </a>
-                                </div>
-                                <div>
-                                    <a href="">
-                                        <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/274006_1394739207_3741528_q.jpg" class="pic">
-                                        <span class="name">José Vinces Ortiz</span>                                     
-                                    </a>
-                                </div>
-                                
-                            </div>
-                    </li>'; 
+    if($result!="NADA"){
+        foreach($result as $aux){
+        print '<div>
+                <a onclick="javascript:chatWith(\''.strtoupper($aux['vUsuUsuario']).'\')" href="javascript:void(0)">
+                 <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/372617_1420530801_1579660712_q.jpg" class="pic">
+                 <span class="name">'.$aux['vUsuNombre'].' '.$aux['vUsuApellidoPat'].' '.$aux['vUsuApellidoMat'].'</span>              
+                </a>
+              </div>';
+        }
+    }else{
+        print'<div>No Hay Usuarios</div>';
+    }
+
+print '
+    </div>
+ </li>'; 
                 }
         }
         //Fin de Div Navigation

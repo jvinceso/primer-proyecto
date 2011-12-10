@@ -1,0 +1,41 @@
+<?php
+$dias = array("Lunes","Martes","Miercoles","Jueves","Viernes","Sábado","Domingo");
+$meses=array('','Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto',
+    'Septiembre','Octubre','Noviembre','Diciembre');
+    $this->titulopagina='Aula Virtual "LOS PINOS"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;   
+?>
+<div id="dialog-form" title="Registrar Evento" style="display:none">
+    <fieldset>
+        <legend>Registre Eventos</legend>
+            <label for="eventonombre">Evento</label>
+                <input type="text" name="eventonombre" autofocus id="eventonombre" class="text ui-widget-content ui-corner-all" />
+            <label for="descripcion">Descripcion</label>
+                <textarea type="text" name="descripcion" id="descripcion">   
+                </textarea>
+            <label for="fechaini">Fecha Inicio</label>
+                <input type="text" name="fechaini" id="fechaini" />      
+            <label for="fechafin">Fecha Fin</label>
+                <input type="text" name="fechafin" id="fechafin" />
+            <label for="usuarios">Selecione Usuarios</label>
+                ';
+   if($result!=NULL){
+        foreach($result as $aux) {
+            $mensaje.='<input type="checkbox" name="usuarios[]" id="usuarios" />'.$aux['vDescripcion']; 
+            
+            }        
+    }
+    else{
+        $mensaje.="TIPOS DE USUARIOS AUN NO DEFINIDOS";
+    }
+    $html->crearContentAjax($mensaje);
+    
+    </fieldset>
+</div> 

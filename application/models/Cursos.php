@@ -337,4 +337,17 @@ class Application_Model_Cursos{
         }
     }
     
+    //MODIFICACION CARPETAS
+    
+    public function creafile($id){
+        $filename="archivos/".$id;
+        if(!file_exists($filename))
+        {
+            if(mkdir($filename,0777)){
+                return ;
+            }
+        }else{
+            return "EXISTE";
+        }
+    }
 }

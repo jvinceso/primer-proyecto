@@ -1,7 +1,6 @@
 function ActDelSeccion(secc,estado,e,opt){
     e.preventDefault();
     $.fx.speeds._default = 1000;
-         
     $(function() {
         $( "#dialog-confirm" ).dialog({
             autoOpen: false,
@@ -319,4 +318,38 @@ function infoDocenteCurso(idcurso){
             }
              $( "#dialog" ).dialog( "open" );
         });
+}
+
+function imprimirSelec(nombre)
+{
+     var ficha = document.getElementById(nombre);//almacenamos en variable los datos del div a imprimir
+     var ventimp = window.open(' ', 'Impresion');//aqui se genera una pagina temporal 
+     ventimp.document.write( ficha.innerHTML );//aqui cargamos el contenido del div seleccionado
+     ventimp.document.close();//cerramos el documento
+     ventimp.print( );//enviamos los datos a la impresora
+     ventimp.close();//cerramos ventana temporal
+}
+
+
+//Funciones de Agenda
+
+function modnewEvent(){
+    $.fx.speeds._default = 1000;
+    $(function() {
+        $( "#dialog-form" ).dialog({
+            autoOpen: false,
+            show: "blind",
+            hide: "Drop",
+            resizable: false,
+            height: 450,
+            width: 'auto',
+            modal: true,
+            buttons:{
+                Cancelar: function(){
+                    $( this ).dialog( "close" );
+                }
+            }
+        });
+        $( "#dialog" ).dialog( "open" );
+    });
 }

@@ -67,6 +67,7 @@ WHERE usu.vUsuApellidoPat LIKE '".$apellido."%' and tipusu.iTiUsuarioIdTipoUsuar
                 return NULL;
             }
         }
-    
+
+
 }
 ?>

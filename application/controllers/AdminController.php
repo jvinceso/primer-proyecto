@@ -5,7 +5,7 @@ class AdminController extends Zend_Controller_Action{
     public function init(){  
         $this->verificarInactividad();
         $mysession = new Zend_Session_Namespace('sesion');
-        $mysession->setExpirationSeconds(60*3,'actividad');
+        $mysession->setExpirationSeconds(60*5,'actividad');
     } 
     
     public function indexAction(){ 
@@ -708,59 +708,33 @@ class AdminController extends Zend_Controller_Action{
         }
     }
 
-//MODIFICACION
-    
-    public function reporteusualumnoAction(){
-        $this->_helper->layout->disableLayout();
-        $this->_helper->viewRenderer->setNoRender();
-        
-//        $usunombre=$this->getRequest()->getParam('usudni');
-        $alumno = new Application_Model_Alumno();
-        
-        $result = $alumno->reportealumnos();
-        
-        if($result==NULL){
-            echo "nada";
-        }
-        else{
-            $json=Zend_Json_Encoder::encode($result);
-                echo $json;
-        }
-    }
-
-    public function countalumnosbysexoseccionAction(){
-        $this->_helper->layout->disableLayout();
-        $this->_helper->viewRenderer->setNoRender();
-        
-        $alumno = new Application_Model_Alumno();
-//        $sexo=$this->getRequest()->getParam('sex');        
-        $result = $alumno->cantidadalumnosbysexo();
-        
-        if($result==NULL){
-            echo "nada";
-        }
-        else{
-            $json=Zend_Json_Encoder::encode($result);
-                echo $json;
-        }      
+    public function editarunidadesAction(){
+        $mysession = new Zend_Session_Namespace('sesion');                    
+        $mysession->paginaActual = 'Editar Unidades'; 
     }
     
-    public function reporte1Action(){
+    public function agregarunidadAction(){
+        $fechaini = $this->_request->fechaini;
+        $fechafin = $this->_request->fechafin;
+        if($fechaini!=NULL && $fechafin !=NULL){
+            $unidades = new Application_Model_Unidades();
         
-    }
-    public function reporte2Action(){
+            $result = $unidades->listarUnidades();
+            $contUni = sizeof($result) + 1;
         
+            $unidades->registrarUnidad("UNIDAD ".$contUni ,strtotime($fechaini), strtotime($fechafin),$contUni);
+        }
+        return $this->_redirect('/admin/editarunidades');
     }
-
-//Mod Reporte Notas
-    public function reportenotasbyseccionAction(){
-        $mysession = new Zend_Session_Namespace('sesion');
-        $mysession->paginaActual = 'Reporte Notas';
-    }
-//Mod Reporte Notas
-    public function flotgraficoAction(){
-        $mysession = new Zend_Session_Namespace('sesion');
-        $mysession->paginaActual = 'Reporte Notas';
-    }     
+    
+    public function eliminarunidadAction(){
+         $idunidad = $this->_request->id;
+         
+         $unidades = new Application_Model_Unidades();
+         $result = $unidades->eliminarUnidad($idunidad);
+         
+         return $this->_redirect('/admin/editarunidades');
+     }
+     
     
 }

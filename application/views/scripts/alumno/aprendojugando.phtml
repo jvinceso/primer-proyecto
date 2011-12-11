@@ -1,0 +1,109 @@
+<?php
+
+$this->titulopagina = 'Aula Virtual "LOS PINOS"';
+$html = new Application_Model_Html();
+$menu = new Application_Model_Menu();
+$usuario = new Application_Model_Usuario();
+
+$mysession = new Zend_Session_Namespace('sesion');
+$paginaActual = $mysession->paginaActual;
+$nombreUsuario = $mysession->usuario_nombre;
+$usuario_id = $mysession->usuario_id;
+
+    $this->css='
+        <link media="screen" rel="stylesheet" href="/css/colorbox.css" />';
+    $this->script=' 
+    	<script type="text/javascript" src="/js/colorbox/jquery.colorbox.js"></script>
+    	<script>
+        $(document).ready(function () {
+            //Examples of how to assign the ColorBox event to elements
+            $(".jqIframe").colorbox({ width: "90%", height: "90%", iframe: true });
+        });
+	</script>'; 
+
+$_SESSION['username'] = strtoupper($nombreUsuario);
+$h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/docente/logout/" target="_top">
+                    <span>Cerrar Sesión de ' . $nombreUsuario . '</span>
+                </a>
+            </li>
+        </ul>';
+
+$tipo = $mysession->tipo_usuario;
+$result = $menu->getMenu($tipo);
+
+$h3 .= '<ul>';
+foreach ($result as $aux) {
+    if ($paginaActual == $aux['Descripcion']) {
+        $h3.='<li id="current">';
+    } else {
+        $h3.='<li>';
+    }
+
+    $h3.='
+            <a href="' . $aux['url'] . '" target="_top">
+                <span id="tab_active">' . $aux['Descripcion'] . '</span>
+            </a>
+            </li>';
+}
+$h3 .= '</ul>';
+
+$curso = new Application_Model_Cursos();
+$infocurso = $curso->getInfoCurso($this->idcurso);
+
+$h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="/alumno/cursos" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Cursos</span>
+                </a>
+            </li>
+            <li>
+                <a href="/alumno/detallecurso?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb0" target="_top">
+                    <span>'.$infocurso[0]['vCursNombreCurso'].'</span>
+                </a>
+            </li>
+        </ul>';
+$contenido = '
+  <div id="juegos-didacticos">
+    <ul>
+        <li><a href="/juegos/oca/index.html">El Juego de la OCA</a></li>
+        <li><a href="/juegos/seniorpi.phtml" class="jqIframe" >Las Aventuras del Señor PI</a></li>
+        <li><a href="/juegos/granjamatematica.phtml" class="jqIframe">Granja Matematica</a></li>        
+    </ul>
+ <div>
+        
+  </div>
+        ';
+$submain ='
+    ';
+
+
+$mensaje = '
+<div id="dialog-form" title="Registrar Evento" style="display:none">
+    <fieldset>
+        <legend>Registre Eventos</legend>
+            <label for="evento">Evento</label>
+                <input type="text" name="evento" id="evento" class="text ui-widget-content ui-corner-all" />
+    </fieldset>
+</div>
+';
+$mensaje.='
+<div id="dialog-confirm" title="informacion" style="display:none">
+  <p>
+   <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;">
+   </span>que operacion desea realizar?
+  </p>
+</div>
+';
+
+$html->crearContentAjax($mensaje);
+
+print $html->crearWrapper(null, null, null, $h3, $h4, $contenido, $this->layout()->content, $submain);
+?>

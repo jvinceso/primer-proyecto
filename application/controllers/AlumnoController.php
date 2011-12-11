@@ -29,11 +29,31 @@ class AlumnoController extends Zend_Controller_Action{
     }
     public function cursosAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
-        $mysession->paginaActual = 'Cursos';        
+        $mysession->paginaActual = 'Mis Cursos';        
     }
     public function agendaAction(){
         $mysession = new Zend_Session_Namespace('sesion');                    
-        $mysession->paginaActual = 'Agenda';        
+        $mysession->paginaActual = 'Mi Agenda';        
     }
+
+    public function detallecursoAction(){
+        $mysession = new Zend_Session_Namespace('sesion');                    
+        $mysession->paginaActual = 'Mis Cursos';  
+        $idcurso = $this->_request->idcurso;
+        $this->view->idcurso = $idcurso;
+    }    
     
+// MODIFICACION JUEGOS
+    public function aprendojugandoAction(){
+        $mysession = new Zend_Session_Namespace('sesion');                    
+        $mysession->paginaActual = 'Mis Cursos';     
+        $idcurso = $this->_request->idcurso;
+        $this->view->idcurso = $idcurso;
+    }
+    public function granjamatematicaAction(){
+        $mysession = new Zend_Session_Namespace('sesion');                    
+        $mysession->paginaActual = 'Mis Cursos';     
+        $idcurso = $this->_request->idcurso;
+        $this->view->idcurso = $idcurso;
+    }    
 }

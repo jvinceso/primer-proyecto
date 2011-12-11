@@ -1,0 +1,101 @@
+<?php
+    include_once "ckeditor/ckeditor.php";
+    
+    $this->titulopagina='Los Pinos - "Editar Unidades"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $urlFoto=$usuario->getFotobyIdUsuario($usuario_id);
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo = $mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $curso = new Application_Model_Cursos();
+    $infocurso = $curso->getInfoCurso($this->idcurso);
+    
+    $h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="/docente/cursos" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Cursos</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/detallecurso?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb1" target="_top">
+                    <span>'.$infocurso[0]['vCursNombreCurso'].'</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/editarunidades?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb2">
+                    <span>Editar Unidades</span>
+                </a>
+            </li>
+        </ul>';
+    
+    print $html->crearCabecera(null, null, null, $h3, $h4) ;
+    $cursounidad = new Application_Model_CursoUnidad();
+    $unidad=$cursounidad->getunidadCurso($this->idunicurso);  
+    
+?>
+<div id="main">
+    <div id="submain">
+        <div class="row">
+            <div class="form_header">Editar Unidad: "<?php echo $unidad[0]['vNombreUnidad']; ?>"</div>
+                <form action="/docente/agregarunidadcurso?idcurso=<?php echo $this->idcurso;?>&idunicurso=<?php echo $this->idunicurso;?>" method="post" name="Funidad" id="glossary">
+                    <div class="row">
+                        <div class="label">
+                            <span class="form_required">*</span> Título de la Unidad
+                        </div>
+                        <div class="formw">
+                            &nbsp;&nbsp;&nbsp;<input size="40" name="txtunidad" type="text" value="" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="label">&nbsp;
+                        </div>
+                        <div class="formw">
+                            &nbsp;&nbsp;&nbsp;<button class="save" name="submitunidad" type="submit">Actualizar Unidad</button>
+                        </div>
+                    </div>
+                    <div class="clear">
+                            &nbsp;
+                    </div>
+            </form>
+	</div>
+    </div>
+</div>

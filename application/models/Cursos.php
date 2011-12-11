@@ -1,5 +1,5 @@
 <?php
-class Application_Model_Cursos{
+class Application_Model_Cursos extends Zend_Db_Table_Abstract{
     protected $iCursIdCursos;
     protected $vCursNombreCurso;
     protected $tiCursActivo;
@@ -8,6 +8,7 @@ class Application_Model_Cursos{
     protected $iCursDescripcion;
     protected $Seccion_iSeccIdSeccion;
     
+   
     public function listarCursosPeriodoActual(){
             $periodoacademico=  new Application_Model_PeriodoAcademico();
             $idperiodoacademicoactual=$periodoacademico->getPeriodoActualId();
@@ -128,7 +129,7 @@ class Application_Model_Cursos{
 //        
         return $contenido.$paginador;
     }    
-	 
+
     public function registrarCurso($nombrecurso, $descripcion, $idseccion) {
             $dbAdapter = Zend_Db_Table::getDefaultAdapter();
             
@@ -336,18 +337,412 @@ class Application_Model_Cursos{
             return NULL;
         }
     }
-    
-    //MODIFICACION CARPETAS
-    
-    public function creafile($id){
-        $filename="archivos/".$id;
-        if(!file_exists($filename))
-        {
-            if(mkdir($filename,0777)){
-                return ;
-            }
+
+    public function getInfoCurso($idcurso){
+        $dbAdapter= Zend_Db_Table::getDefaultAdapter();
+        $stmt=$dbAdapter->query('
+            SELECT *
+            FROM cursos cur
+            INNER JOIN seccion secc ON cur.iCursIdCursos = secc.iSeccIdSeccion
+            INNER JOIN grado gr ON secc.Grado_iGradoIdGrado = gr.iGradoIdGrado
+            WHERE cur.iCursIdCursos = '.$idcurso);
+
+        $result = $stmt->fetchAll();
+
+        if(isset($result)){
+            return $result;
         }else{
-            return "EXISTE";
+            return NULL;
         }
     }
+    
+    public function crearVistaCurso($idcurso,$tipoVista){
+        $html = "";
+        $curso=$this->getInfoCurso($idcurso);
+        $seccion = new Application_Model_Seccion();
+        $idseccion = $curso[0]['Seccion_iSeccIdSeccion'];
+        $nroalumnos = sizeof($seccion->listarAlumnosporSecciones($idseccion));
+        if($tipoVista=="docente"){
+            $html.='
+                    <div style="margin-left:10%; margin-right:10%;">
+                        <table align="center">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="110" valign="middle" align="left">
+                                                        <img src="/main/img/blackboard_blue.png" alt="Mr. Chamilo" title="Mr. Chamilo">
+                                                    </td>
+                                                    <td valign="middle" align="left"><h1>&nbsp;Nombre del Curso: <a style="color:#5084A0;">'.$curso[0]['vCursNombreCurso'].'</a><br/>
+                                                        <h2>&nbsp;Grado: <a style="color:#5084A0;">'.$curso[0]['vGradoDescripcion'].' "'.$curso[0]['vSeccDescripcion'].'"</a> - Nro. Alumnos: <a style="color:#5084A0;">'.$nroalumnos.'</a></h2></h1>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
+                <div class="clear">
+                </div>
+                <div class="courseadminview" style="border:0px; margin-top: 0px;padding:0px;">
+                    <div class="normal-message" id="id_normal_message" style="display:none">
+                        <img src="/main/inc/lib/javascript/indicator.gif">&nbsp;&nbsp;Por favor, espere...
+                    </div>
+                    <div class="confirmation-message" id="id_confirmation_message" style="display:none"></div>
+                    </div>
+                    <div class="courseadminview">
+                        <span class="viewcaption">Creación de contenidos
+                        </span>		
+                        <table width="100%">
+                            <tbody>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_1" href="/main/course_description?cidReq=002" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_1" src="/main/img/info.gif" alt="Descripción del curso" title="Descripción del curso">
+                                        </a>
+                                        <a id="istooldesc_1" href="/docente/descripcioncurso?idcurso='.$idcurso.'&opt=ini" class="" target="_self">
+                                            Descripción del curso
+                                        </a>
+                                        </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_3" href="documentos?idcurso='.$idcurso.'&iddocpadre=0" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_3" src="/main/img/folder_document.gif" alt="Documentos" title="Documentos">
+                                        </a>
+                                        <a id="istooldesc_3" href="documentos?idcurso='.$idcurso.'&iddocpadre=0" class="" target="_self">
+                                            Documentos
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_25" href="editarunidades?idcurso='.$idcurso.'" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_25" src="/main/img/scormbuilder.gif" alt="Leccion 1" title="Leccion 1">
+                                        </a>
+                                        <a id="istooldesc_25" href="editarunidades?idcurso='.$idcurso.'" class="" target="_self">
+                                            Unidades
+                                        </a>
+                                        </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_4" href="lecciones?idcurso='.$idcurso.'&iddocpadre=0" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_4" src="/main/img/scorms.gif" alt="Lecciones" title="Lecciones">
+                                        </a>
+                                        <a id="istooldesc_4" href="lecciones?idcurso='.$idcurso.'&iddocpadre=0" class="" target="_self">
+                                            Lecciones
+                                        </a>
+                                        </center>    
+                                    </td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_6" href="" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_6" src="/main/img/quiz.gif" alt="Ejercicios" title="Ejercicios">
+                                        </a>
+                                        <a id="istooldesc_6" href="main/exercice/exercice.php?cidReq=002" class="" target="_self"> Ejercicios
+                                        </a>
+                                        </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_16" href="/main/gradebook/index.php?cidReq=002" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_16" src="/main/img/gradebook.gif" alt="Evaluaciones" title="Evaluaciones">
+                                        </a>
+                                        <a id="istooldesc_16" href="/main/gradebook/index.php?cidReq=002" class="" target="_self">
+                                            Evaluaciones
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_17" href="" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_17" src="/main/img/glossary.gif" alt="Glosario" title="Glosario">
+                                        </a>
+                                        <a id="istooldesc_17" href="/main/glossary/index.php?cidReq=002" class="" target="_self">
+                                            Glosario
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="courseadminview">
+                        <span class="viewcaption">Interacción
+                        </span>
+                        <table width="100%">
+                            <tbody>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_2" href="/main/calendar/agenda.php?cidReq=002" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_2" src="/main/img/agenda.gif" alt="Agenda" title="Agenda">
+                                        </a>
+                                        <a id="istooldesc_2" href="" class="" target="_self">
+                                            Agenda
+                                        </a>
+                                        </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_8" href="" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_8" src="/main/img/forum.gif" alt="Foros" title="Foros">
+                                        </a>
+                                        <a id="istooldesc_8" href="/main/forum/index.php?cidReq=002" class="" target="_self">
+                                            Foros
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_9" href="/main/dropbox/index.php?cidReq=002" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_9" src="/main/img/dropbox.gif" alt="Compartir documentos" title="Compartir documentos">
+                                        </a>
+                                        <a id="istooldesc_9" href="/main/dropbox/index.php?cidReq=002" class="" target="_self">
+                                            Compartir documentos
+                                        </a>
+                                        <center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_10" href="/main/user/user.php?cidReq=002" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_10" src="/main/img/members.gif" alt="Usuarios" title="Usuarios">
+                                        </a>
+                                        <a id="istooldesc_10" href="/main/user/user.php?cidReq=002" class="" target="_self">
+                                            Usuarios
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_11" href="" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_11" src="/main/img/group.gif" alt="Grupos" title="Grupos">
+                                        </a>
+                                        <a id="istooldesc_11" href="/main/group/group.php?cidReq=002" class="" target="_self">
+                                            Grupos
+                                        </a>
+                                        </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_12" class="" href="" target="_self">
+                                            <img class="tool-icon" id="toolimage_12" src="/main/img/chat.gif" alt="Chat" title="Chat">
+                                        </a>
+                                        <a id="istooldesc_12" class="" href="" target="_self">
+                                            Chat
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_13" href="" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_13" src="/main/img/works.gif" alt="Tareas" title="Tareas">
+                                        </a>
+                                        <a id="istooldesc_13" href="" class="" target="_self">
+                                            Tareas
+                                        </a>
+                                        </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_14" href="/main/survey/survey_list.php?cidReq=002" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_14" src="/main/img/survey.gif" alt="Encuestas" title="Encuestas">
+                                        </a>
+                                        <a id="istooldesc_14" href="" class="" target="_self">
+                                            Encuestas
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    
+                    
+                <div class="clear">
+                    &nbsp;
+                </div>';
+            
+        }
+        else if($tipoVista=="alumno"){
+             $html.='
+                    <div style="margin-left:10%; margin-right:10%;">
+                        <table align="center">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="110" valign="middle" align="left">
+                                                        <img src="/main/img/blackboard_blue.png" alt="Mr. Chamilo" title="Mr. Chamilo">
+                                                    </td>
+                                                    <td valign="middle" align="left"><h1>&nbsp;Nombre del Curso: <a style="color:#5084A0;">'.$curso[0]['vCursNombreCurso'].'</a><br/>
+                                                        <h2>&nbsp;Grado: <a style="color:#5084A0;">'.$curso[0]['vGradoDescripcion'].' "'.$curso[0]['vSeccDescripcion'].'"</a> - Nro. Alumnos: <a style="color:#5084A0;">'.$nroalumnos.'</a></h2></h1>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
+                <div class="clear">
+                </div>
+                <div class="courseadminview" style="border:0px; margin-top: 0px;padding:0px;">
+                    <div class="normal-message" id="id_normal_message" style="display:none">
+                        <img src="/main/inc/lib/javascript/indicator.gif">&nbsp;&nbsp;Por favor, espere...
+                    </div>
+                    <div class="confirmation-message" id="id_confirmation_message" style="display:none"></div>
+                    </div>
+                    <div class="courseadminview">
+                        <span class="viewcaption">Creación de contenidos
+                        </span>		
+                        <table width="100%">
+                            <tbody>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_1" href="/main/course_description?cidReq=002" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_1" src="/main/img/info.gif" alt="Descripción del curso" title="Descripción del curso">
+                                        </a>
+                                        <a id="istooldesc_1" href="/alumno/descripcioncurso?idcurso='.$idcurso.'&opt=ini" class="" target="_self">
+                                            Descripción del curso
+                                        </a>
+                                        </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_3" href="/alumnos/documentos?idcurso='.$idcurso.'&iddocpadre=0" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_3" src="/main/img/folder_document.gif" alt="Documentos" title="Documentos">
+                                        </a>
+                                        <a id="istooldesc_3" href="/alumno/documentos?idcurso='.$idcurso.'&iddocpadre=0" class="" target="_self">
+                                            Documentos
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_25" href="/alumnos/editarunidades?idcurso='.$idcurso.'" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_25" src="/main/img/scormbuilder.gif" alt="Leccion 1" title="Leccion 1">
+                                        </a>
+                                        <a id="istooldesc_25" href="/alumnos/editarunidades?idcurso='.$idcurso.'" class="" target="_self">
+                                            Unidades
+                                        </a>
+                                        </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_4" href="/alumnos/lecciones?idcurso='.$idcurso.'&iddocpadre=0" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_4" src="/main/img/scorms.gif" alt="Lecciones" title="Lecciones">
+                                        </a>
+                                        <a id="istooldesc_4" href="/alumnos/lecciones?idcurso='.$idcurso.'&iddocpadre=0" class="" target="_self">
+                                            Lecciones
+                                        </a>
+                                        </center>    
+                                    </td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_6" href="" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_6" src="/main/img/quiz.gif" alt="Ejercicios" title="Ejercicios">
+                                        </a>
+                                        <a id="istooldesc_6" href="main/exercice/exercice.php?cidReq=002" class="" target="_self"> Ejercicios
+                                        </a>
+                                        </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_16" href="/main/gradebook/index.php?cidReq=002" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_16" src="/main/img/gradebook.gif" alt="Evaluaciones" title="Evaluaciones">
+                                        </a>
+                                        <a id="istooldesc_16" href="/main/gradebook/index.php?cidReq=002" class="" target="_self">
+                                            Evaluaciones
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_17" href="" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_17" src="/main/img/glossary.gif" alt="Glosario" title="Glosario">
+                                        </a>
+                                        <a id="istooldesc_17" href="/main/glossary/index.php?cidReq=002" class="" target="_self">
+                                            Glosario
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="courseadminview">
+                        <span class="viewcaption">Interacción
+                        </span>
+                        <table width="100%">
+                            <tbody>
+                                <tr valign="top">
+                                    <td width="50%">
+                                      <center>
+                                        <a id="tooldesc_13" href="aprendojugando?idcurso='.$idcurso.'" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_13" src="/main/img/works.gif" alt="Tareas" title="Tareas">
+                                        </a>
+                                        <a id="istooldesc_13" href="aprendojugando?idcurso='.$idcurso.'" class="" target="_self">
+                                            Aprendo Jugando 
+                                        </a>
+                                      </center>
+                                    </td>
+                                    <td width="50%">
+                                        <center>
+                                        <a id="tooldesc_14" href="/main/survey/survey_list.php?cidReq=002" class="" target="_self">
+                                            <img class="tool-icon" id="toolimage_14" src="/main/img/survey.gif" alt="Encuestas" title="Encuestas">
+                                        </a>
+                                        <a id="istooldesc_14" href="" class="" target="_self">
+                                            Encuestas
+                                        </a>
+                                        </center>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    
+                    
+                <div class="clear">
+                    &nbsp;
+                </div>';
+        }
+        return $html;
+    }
+    
 }
+

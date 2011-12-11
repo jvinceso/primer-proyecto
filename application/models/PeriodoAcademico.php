@@ -29,10 +29,10 @@ class Application_Model_PeriodoAcademico extends Zend_Db_Table_Abstract{
             //No existe Periodo Academico Activo 
             return 'A';
         }
-        if($filas>1){
-            //Error en la BD
-            return 'B';
-        }
+//        if($filas>1){
+//            //Error en la BD
+//            return 'B';
+//        }
         
         $result = $stmt->fetchAll();
         

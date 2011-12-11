@@ -1,0 +1,224 @@
+<?php
+    $this->titulopagina='Los Pinos - Editar Unidades';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();
+    $unidades = new Application_Model_Unidades();
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $ultimaunidad=$unidades->getUltimaUnidadActualRegistrada();
+    
+    $includes = new Application_Model_Includes();
+    if($ultimaunidad==0){
+       $finicio= "2011,2,1";
+       $ffin= "2011,3,5";
+    }
+    else{
+        $idultimaunidad=$ultimaunidad[0]['id'];
+        $datosultimaunidad = $unidades->getUnidad($idultimaunidad);
+        
+        $dia=strftime("%e",$datosultimaunidad[0]['dFechaFin']) + 1;
+        $mes=strftime("%m",$datosultimaunidad[0]['dFechaFin']) - 1;
+        $anual=(int)strftime("%Y",$datosultimaunidad[0]['dFechaFin']);
+        
+        $finicio= $anual.','.$mes.','.$dia;
+        
+        $tomorrow = mktime(0,0,0,$mes,$dia+40,$anual);
+        $ffin=strftime("%Y",$tomorrow).','.strftime("%m",$tomorrow).','.strftime("%l",$tomorrow);
+    }
+        
+    $script='
+            <script type="text/javascript" src="/js/jquery-ui/jquery-ui-1.8.16.custom.min.js" > </script>
+            <script>
+            $(function() {
+                    var dates = $( "#from, #to" ).datepicker({
+                            minDate: new Date('.$finicio.'),
+                            maxDate: new Date('.$ffin.'),
+                            defaultDate: new Date('.$finicio.'),
+                            "dateFormat": "mm/dd/yy",    
+                            changeMonth: true,
+                            numberOfMonths: 1,
+                            onSelect: function( selectedDate ) {
+                                    var option = this.id == "from" ? "minDate" : "maxDate",
+                                            instance = $( this ).data( "datepicker" ),
+                                            date = $.datepicker.parseDate(
+                                                    instance.settings.dateFormat ||
+                                                    $.datepicker._defaults.dateFormat,
+                                                    selectedDate, instance.settings );
+                                    dates.not( this ).datepicker( "option", option, date );
+                            }
+                    });
+            });
+            </script>
+            ';
+
+    $css='<link media="projection, screen" href="/js/jquery-ui/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css">';
+    
+    $this->script=$script;
+    $this->css=$css;
+    
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo=$mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $h4='
+        <ul class="bread">
+            <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="plataforma" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Plataforma</span>
+                </a>
+            </li>
+            <li>
+                <a href="editarunidades" class="breadcrumb breadcrumb1">
+                    <span>Editar Unidades</span>
+                </a>
+            </li>
+        </ul>';
+        $unidades = new Application_Model_Unidades();
+        
+        $validaunidades=$unidades->listarUnidades();
+        $contenido ='
+            <div class="admin_section treinta">
+                <h4>Crear Unidad</h4>
+                    <form action="agregarunidad" method="post">
+                        <table id="tablaalumnos">
+                                <tr>
+                                    <td>
+                                        F. Inicio: 
+                                    </td>
+                                    <td>
+                                        <input size="12" name="fechaini" id="from" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        F. Fin: 
+                                    </td>
+                                    <td>
+                                        <input size="12" name="fechafin" id="to" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <input type="submit" value="Registrar"/>
+                                    </td>
+                                </tr>
+                        </table>
+                    </form>
+            </div>
+            <div class="admin_section setenta">
+                <h4>Lista de Unidades</h4>
+                <table class="data_table">
+                    <tbody>
+                        <tr class="row_odd">
+                            <th width="18px">&nbsp;</th>
+                            <th>Codigo</th>
+                            <th><a href="">Unidad</a></th>
+                            <th><a href="">Fecha Inicio</a></th>
+                            <th><a href="">Fecha Fin</a></th>
+                            <th>Acción</th>
+                        </tr>';
+        
+       
+        $listaunidades = $unidades->listarUnidades();
+        
+        $cont=0;
+        if($listaunidades==0){
+            $contenido.='
+                    <tr class="row_even">
+                        <td colspan="6"><center>Aún no se han creado Unidades</center></td>
+                    </tr>';
+        }
+        else{
+            foreach ($listaunidades as $aux){
+                if ($cont % 2){
+                    $contenido.='<tr class="row_even">';
+                }
+                else{
+                    $contenido .= '<tr class="row_odd">';
+                }
+                $fechaini=strftime("%Y",$aux['dFechaInicio']).'/'.strftime("%m",$aux['dFechaInicio']).'/'.strftime("%d",$aux['dFechaInicio']);
+                $fechafin=strftime("%Y",$aux['dFechaFin']).'/'.strftime("%m",$aux['dFechaFin']).'/'.strftime("%d",$aux['dFechaFin']);
+                $contenido.='
+                        <td>
+                            <input type="checkbox" name="id[]" value="4">
+                        </td>
+                          <td>
+                            <center>'.$aux['IdUnidad'].'</center>
+                        </td>
+                        <td>
+                            <center>'.$aux['vUniDescripcion'].'</center>
+                        </td>
+                        <td>
+                            <center>'.$fechaini.'</center>
+                        </td>
+                        <td>
+                            <center>'.$fechafin.'</center>
+                        </td>
+                        <td>
+                            <center>';
+
+                                if ($cont<sizeof($listaunidades)-1){
+                                    $contenido.='
+                                        <a>
+                                            <img src="/main/img/icons/22/delete_na.png" alt="No Eliminar" title="No Puede Eliminarse">
+                                        </a>';
+                                    }
+                                    else {
+                                    $contenido.='
+                                        <a href="eliminarunidad?id='.$aux['IdUnidad'].'">
+                                            <img src="/main/img/icons/22/delete.png" alt="Eliminar?" title="Eliminar?">
+                                        </a>';
+
+                                }
+
+                           $contenido.='
+                            </center>     
+                        </td>
+                    </tr>';
+
+                $cont++;
+            }
+        }
+        
+$contenido .= '</tbody>
+            </table>
+        </div>';
+
+   print $html->crearWrapper(null, null, null, $h3, $h4 ,$this->layout()->content, null,$contenido);
+    
+?>

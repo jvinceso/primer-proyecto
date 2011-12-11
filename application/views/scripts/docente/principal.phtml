@@ -9,9 +9,6 @@
     $nombreUsuario=$mysession->usuario_nombre;
     $usuario_id=$mysession->usuario_id; 
     
-    //Seccion para el Chat
-    
-    $_SESSION['username']=strtoupper($nombreUsuario);
     $h3 = '
         <ul id="logout">
             <li>
@@ -53,9 +50,7 @@
                 </a>
             </li>
         </ul>';
-    $contenido = 'Bienvenido Usuario
-        <a href="/docente/crearcarpeta/?id=telloGIL2" >Crear Carpeta</a>
-        ';
+    $contenido = 'Bienvenido Usuario';
     $submain='
         <div id="menu-wrapper">
             <div id="menu" class="menu">

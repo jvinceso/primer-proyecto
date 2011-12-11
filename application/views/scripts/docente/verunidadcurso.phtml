@@ -1,0 +1,196 @@
+<?php
+    include_once "ckeditor/ckeditor.php";
+    
+    $this->titulopagina='Los Pinos - "Ver Unidad"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();   
+    
+    $cursounidad = new Application_Model_CursoUnidad();
+    $curunidad=$cursounidad->getunidadCurso($this->idunicurso);
+    
+    $competencia = new Application_Model_Competencias();
+    $capacidades = new Application_Model_Capacidades();
+    $conocimientos = new Application_Model_Conocimiento();
+    $indicadores = new Application_Model_Indicadores();
+    
+    $listacompetencias=$competencia->getCompetenciasbyIdCursoUnidad($this->idunicurso);
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $urlFoto=$usuario->getFotobyIdUsuario($usuario_id);
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo = $mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $curso = new Application_Model_Cursos();
+    $infocurso = $curso->getInfoCurso($this->idcurso);
+    
+    $h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="/docente/cursos" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Cursos</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/detallecurso?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb1" target="_top">
+                    <span>'.$infocurso[0]['vCursNombreCurso'].'</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/editarunidades?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb2">
+                    <span>Editar Unidades</span>
+                </a>
+            </li>
+            <li>
+                <a class="breadcrumb breadcrumb3">
+                    <span>'.$curunidad[0]['vUniDescripcion'].': '.$curunidad[0]['vNombreUnidad'].'</span>
+                </a>
+            </li>
+        </ul>';
+        
+    //print $html->crearWrapper(null, null, null, $h3, $h4 ,null, null,$content);
+    print $html->crearCabecera(null, null, null, $h3, $h4) ;
+    
+    
+    
+?>
+<div id="main">
+    <div id="submain">
+        <div class="actions" style="height:32px">
+            <a href="detalleunidadcurso?idcur=<?php echo $this->idcurso;?>&idunicur=<?php echo $this->idunicurso;?>&opt=com">
+                <img src="/main/img/icons/32/promotion.png" alt="Nueva Competencia" title="Nueva Competencia"> Nueva Competencia
+            </a>
+            <span style="float:right; padding-top:0px;">
+                <a href="" onclick="javascript: window.print();">
+                    <img src="/main/img/icons/32/printer.png" alt="Imprimir" title="Imprimir">
+                </a>
+            </span>
+        </div>
+        
+        <?php 
+        if($listacompetencias == 0){
+            
+        }
+        else{
+            foreach($listacompetencias as $competencia){
+                $idcompetencia = $competencia['iComIdCompetencia'];
+        ?>
+        <div class="actions" style="margin-left:40px; margin-right: 50px; height:auto; background:#A3C2F8">
+            <img src="/main/img/icons/32/promotion.png" alt="Competencia" title="Competencia"> <?php echo $competencia['vComTitulo'];?>
+            <span style="float:right; padding-top:0px;">
+                <a href="/docente/detalleunidadcurso?idcur=<?php echo $this->idcurso;?>&idunicur=<?php echo $this->idunicurso;?>&idcom=<?php echo $idcompetencia;?>&opt=cap">
+                    <img src="/main/img/icons/22/star.png" alt="Nueva Capacidad" title="Nueva Capacidad">&nbsp;Nueva Capacidad
+                </a>
+            </span>
+        </div>
+        <div class="actions" style="margin-left:40px; margin-right: 50px; height:auto; background:#BFD3F5">
+            <?php echo $competencia['vComDescripcion'];?>
+        </div>
+        
+            <?php 
+                $listacapacidades = $capacidades->getCapacidadesbyIdCompetencia($idcompetencia);
+                if($listacapacidades == 0){
+                    
+                }
+                else{
+                    foreach($listacapacidades as $capacidad){
+                        $idcapacidad = $capacidad['iCapIdCapacidad'];
+                 ?>
+                        <div class="actions" style="margin-left:80px; margin-right: 50px; height:auto; background:#F5BFC2">
+                            <img src="/main/img/icons/22/star.png" alt="Capacidad" title="Capacidad"> <?php echo $capacidad['tCapDescripcion'];?>
+                            <span style="float:right; padding-top:0px;">
+                                <a href="/docente/detalleunidadcurso?idcur=<?php echo $this->idcurso;?>&idunicur=<?php echo $this->idunicurso;?>&idcap=<?php echo $idcapacidad;?>&opt=ind">
+                                    <img src="/main/img/icons/22/test_results.png" alt="Nuevo Indicador" title="Nuevo Indicador">&nbsp;Nuevo Indicador
+                                </a>
+                            </span> 
+                            <span style="float:right; padding-top:0px;">
+                                <a href="/docente/detalleunidadcurso?idcur=<?php echo $this->idcurso;?>&idunicur=<?php echo $this->idunicurso;?>&idcap=<?php echo $idcapacidad;?>&opt=con">
+                                    <img src="/main/img/icons/22/forum.png" alt="Nuevo Conocimiento" title="Nuevo Conocimiento">&nbsp;Nuevo Conocimiento
+                                </a>
+                            </span>
+                        </div>
+                        <div class="actions" style="margin-left:80px; margin-right: 50px; height:auto; background:#F6D3D5">
+                            Actitud: <?php echo $capacidad['tCapActitud'];?>
+                        </div>
+
+                        <?php
+                        $listaindicadores = $indicadores->getIndicadoresbyIdCapacidad($idcapacidad);
+                        if($listaindicadores == 0){
+
+                        }
+                        else{
+                            foreach($listaindicadores as $indicador){
+                                $idindicador = $indicador['iIndIdIndicadores'];
+                            ?>
+                                <div class="actions" style="margin-left:120px; margin-right: 50px; height:auto; background:#9FE69B">
+                                    <img src="/main/img/icons/22/test_results.png" alt="Indicador" title="Indicador"> <?php echo $indicador['tIndDescripcion'];?>
+                                </div>
+                            <?php
+                            }
+                        }
+                        ?>
+                        
+                        <?php
+                        $listaconocimiento = $conocimientos->getConocimientosbyIdCapacidad($idcapacidad);
+                        if($listaconocimiento == 0){
+
+                        }
+                        else{
+                            foreach($listaconocimiento as $conocimiento){
+                                $idconocimiento = $conocimiento['iConIdConocimiento'];
+                            ?>
+                                <div class="actions" style="margin-left:120px; margin-right: 50px; height:auto; background:#F7F798">
+                                    <img src="/main/img/icons/22/forum.png" alt="Conocimiento" title="Conocimiento"> <?php echo $conocimiento['tConDescripcion'];?>
+                                </div>
+                            <?php
+                            }
+                        }
+                        ?>
+                                
+                       
+                  <?php
+                    }
+                }
+            ?>
+        
+        
+        <?php
+                }
+            }
+            ?>
+    </div>
+</div>

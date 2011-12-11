@@ -17,12 +17,18 @@ class Application_Model_Alumno extends Zend_Db_Table_Abstract{
     }
 
     public function listarCursosAlumno($idUsuarioAl){
+        $peracademico = new Application_Model_PeriodoAcademico();
+        $idperiodoacademico = $peracademico->getPeriodoActualId();
         $dbAdapter = Zend_Db_Table::getDefaultAdapter();
         $stmt=$dbAdapter->query("SELECT *
                             FROM cursosusuarios curusu
                             INNER JOIN cursos cur ON curusu.Cursos_iCursIdCursos = cur.iCursIdCursos
                             INNER JOIN usuarios usu ON usu.iUsuIdUsuario = curusu.Usuarios_iUsuIdUsuario
-                            WHERE usu.iUsuIdUsuario = ".$idUsuarioAl);
+                            INNER JOIN seccion secc ON secc.iSeccIdSeccion = cur.Seccion_iSeccIdSeccion
+                            INNER JOIN grado gr ON gr.iGradoIdGrado = secc.Grado_iGradoIdGrado
+                            INNER JOIN periodoacademico peraca ON peraca.iPerAcaIdPeriodoAcademico = gr.PeriodoAcademico_iPerAcaIdPeriodoAcademico
+                            WHERE usu.iUsuIdUsuario = ".$idUsuarioAl." 
+                            AND peraca.iPerAcaIdPeriodoAcademico = ".$idperiodoacademico);
         
         $result = $stmt->fetchAll();
 
@@ -32,39 +38,5 @@ class Application_Model_Alumno extends Zend_Db_Table_Abstract{
             return NULL;   
         }
     }
-
-    public function reportealumnos(){
-        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
-        $stmt = $dbAdapter->query("SELECT al.iAlumIdAlumno, usu.iUsuIdUsuario FROM alumnos al 
-            INNER JOIN usuarios usu ON usu.iUsuIdUsuario = al.Usuarios_iUsuIdUsuario");
-        $result=$stmt->fetchAll();
-        
-        if(sizeof($result)>0){
-            return $result;
-        }else{
-            return NULL;
-        }
-    }
-
-    public function cantidadalumnosbysexo(){
-        $dbAdapter = Zend_Db_Table::getDefaultAdapter();
-        $stmt=$dbAdapter->query("
-SELECT count(*) as contador,usu.cSexo as Sexo FROM alumnos al 
-            INNER JOIN usuarios usu ON usu.iUsuIdUsuario = al.Usuarios_iUsuIdUsuario 
-           where  usu.cSexo='M'
-UNION
-SELECT count(*),usu.cSexo FROM alumnos al 
-INNER JOIN usuarios usu ON usu.iUsuIdUsuario = al.Usuarios_iUsuIdUsuario 
- where  usu.cSexo='F'              
-            ");
-        $result=$stmt->fetchAll();
-        
-        if(sizeof($result)>0){
-            return $result;
-        }else{
-            return NULL;
-        }        
-    }
-    
 }
 ?>

@@ -76,8 +76,9 @@
                 break;
             default:
                 $mysession->id_periodoacademico=$idperacademico;
+                $anual = $periodoacademico->getPeriodoActualAnual();
                 $contenido =  '
-                <h2>Actualizar Periodo'.$idperacademico.'</h2><div class="warning-message">
+                <h2>Actualizar Periodo '.$anual.'</h2><div class="warning-message">
                     <b>ADVERTENCIA:</b> Al aceptar el registro actual se inhabilitará el periodo académico anterior ('.$peranterior.').
                     Recuerde que esta operación quedará registrada y no podrá modificarla hasta el siguiente periodo académico.</div>'.$this->formactperiodo;
                 break;

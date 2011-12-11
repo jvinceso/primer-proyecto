@@ -1,13 +1,5 @@
 <?php
 class Application_Model_Html{
-    /*protected $layoutt;
-    public function setLayoutt($layoutt){
-        $this->layoutt=$layoutt;
-    }
-    
-    public function getLayoutt($layoutt){
-        return $this->layoutt;
-    }*/
     public function crearDoctype(){
         return '
             <!DOCTYPE html>
@@ -81,7 +73,30 @@ class Application_Model_Html{
             });
             </script>
             <script type="text/javascript" src="/main/inc/lib/javascript/dtree/dtree.js" ></script>
-            
+            <script type="text/javascript">
+                function zoomText(Accion,Elemento){
+                    var obj=document.getElementById(Elemento)
+                    var max = 200 //tamaño máximo del fontSize
+                    var min = 70 //tamaño mínimo del fontSize
+                    if (obj.style.fontSize==""){
+                        obj.style.fontSize="100%";
+                    }
+                    actual=parseInt(obj.style.fontSize); //valor actual del tamaño del texto
+                    incremento=10;// el valor del incremento o decremento en el tamaño
+                    //accion sobre el texto
+                    if( Accion=="reestablecer" ){
+                        obj.style.fontSize="100%"
+                    }
+                    if( Accion=="aumentar" && ((actual+incremento) <= max )){
+                        valor=actual+incremento;
+                        obj.style.fontSize=valor+"%"
+                    }
+                    if( Accion=="disminuir" && ((actual+incremento) >= min )){
+                        valor=actual-incremento;
+                        obj.style.fontSize=valor+"%"
+                    }
+                }                  
+            </script>            
             ';
         
 //        if ($script==null){
@@ -139,38 +154,36 @@ class Application_Model_Html{
             print $navigation;
         }
         else{
-//            print '
-//                    <li class="report">
-//                            <a href="#" target="_blank">
-//                            <img src="/main/img/chat.png" style="vertical-align: middle;" alt="Comunicar un error" title="Dejar un Mensaje">
-//                              <a>1 Tello</a>
-//                              <a>2 Tello</a>
-//                            </a>
-//                    </li>';  
             if (Zend_Session::sessionExists()){
-            print '
+                print '
                     <li class="report">
-                            <img src="/main/img/chat.png" style="vertical-align: middle;" alt="Chatea con tus amigos" title="Dejar un Mensaje">
+                            <img src="/main/img/chat.png" style="vertical-align: middle;" alt="Comunicar un error" title="Dejar un Mensaje">
                             <div id="chatdiv">';
-$chat= new Application_Model_Chat();
-$result=$chat->usuariosconectados();
-$arratemp="";
-    if($result!="NADA"){
-        foreach($result as $aux){
-        print '<div>
-                <a onclick="javascript:chatWith(\''.strtoupper($aux['vUsuUsuario']).'\')" href="javascript:void(0)">
-                 <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-snc4/372617_1420530801_1579660712_q.jpg" class="pic">
-                 <span class="name">'.$aux['vUsuNombre'].' '.$aux['vUsuApellidoPat'].' '.$aux['vUsuApellidoMat'].'</span>              
-                </a>
-              </div>';
-        }
-    }else{
-        print'<div>No Hay Usuarios</div>';
-    }
-
-print '
-    </div>
- </li>'; 
+                    $chat= new Application_Model_Chat();
+                    $result=$chat->usuariosconectados();
+                    $arratemp="";
+                    if($result==0){
+                        
+                    }
+                    else{
+                        foreach($result as $aux){
+                            $nombre = $aux['vUsuNombre'].' '.$aux['vUsuApellidoPat'];
+                            $nombre = substr($nombre,0,10).'...';
+                            print '
+                                <div>
+                                    <a onclick="javascript:chatWith(\''.strtoupper($aux['vUsuUsuario']).'\')" href="javascript:void(0)">
+                                        <img src="/'.($aux['tFoto']==NULL? "main/img/unknown.jpg":$aux['tFoto']).'" width="28" height="28" class="pic">
+                                        <span class="name">'.$nombre.'</span>
+                                    </a>
+                                </div>';
+                        } 
+                    }
+                        
+                                
+             print '          
+                                
+                            </div>
+                    </li>'; 
                 }
         }
         //Fin de Div Navigation
@@ -209,6 +222,11 @@ print '
                     <div id="Header2Right">
                         <ul>
                             <li>
+                                <ul>
+                                    <li><a href="#" onclick="zoomText(\'aumentar\',\'wrapper\');" ><span>MAS</span></a></li>
+                                    <li><a href="#" onclick="zoomText(\'disminuir\',\'wrapper\');" ><span>MENOS</span></a></li>
+                                    <li><a href="#" onclick="zoomText(\'reestablecer\',\'wrapper\');" ><span>REESTABLECE</span></a></li>
+                                </ul>
                             </li>
                             <li>
                                 <a href="" target="_top" title="Usuarios en línea">
@@ -298,6 +316,134 @@ print '
            print 'ERROR NO HAY CONTENIDO';
         }
     } 
+
+    public function crearCabecera($navigation=null, $header1=null,$header2=null,$header3=null,$header4=null){
+        //Inicio del Div Wrapper y ul Navigation
+        print '
+            <div id="wrapper">
+                <ul id="navigation">';
+        if (!$navigation==null){
+            print $navigation;
+        }
+        else{
+//            print '
+//                    <li class="report">
+//                            <a href="#" target="_blank">
+//                            <img src="/main/img/chat.png" style="vertical-align: middle;" alt="Comunicar un error" title="Dejar un Mensaje">
+//                              <a>1 Tello</a>
+//                              <a>2 Tello</a>
+//                            </a>
+//                    </li>';  
+            if (Zend_Session::sessionExists()){
+                print '
+                    <li class="report">
+                            <img src="/main/img/chat.png" style="vertical-align: middle;" alt="Comunicar un error" title="Dejar un Mensaje">
+                            <div id="chatdiv">';
+                    $chat= new Application_Model_Chat();
+                    $result=$chat->usuariosconectados();
+                    $arratemp="";
+                    if($result==0){
+                        
+                    }
+                    else{
+                        foreach($result as $aux){
+                            $nombre = $aux['vUsuNombre'].' '.$aux['vUsuApellidoPat'];
+                            $nombre = substr($nombre,0,10).'...';
+                            print '
+                                <div>
+                                    <a onclick="javascript:chatWith(\''.strtoupper($aux['vUsuUsuario']).'\')" href="javascript:void(0)">
+                                        <img src="/'.($aux['tFoto']==NULL? "main/img/unknown.jpg":$aux['tFoto']).'" width="28" height="28" class="pic">
+                                        <span class="name">'.$nombre.'</span>
+                                    </a>
+                                </div>';
+                        } 
+                    }
+                        
+                                
+             print '          
+                                
+                            </div>
+                    </li>'; 
+                }
+        }
+        //Fin de Div Navigation
+        print '</ul>';
+        
+        //Inicio del div Header
+        print '<div id="header">';
+        
+            //Inicio del div header1
+            print '<div id="header1">';
+            if (!$header1==null){
+                print $header1;
+            }
+            else{
+                print '
+                    <div id="top_corner">
+                    </div>
+                    <div id="logo">
+                        <a href="/"/>
+                            <img title="INE Los Pinos - Los Pinos" src="/main/css/tesis/images/header-logo.png" alt="INE Los Pinos - Los Pinos">
+                        </a>
+                    </div>
+                    <div id="plugin-header">
+                    </div>';                
+            }
+            //Fin del Div header1
+            print '</div>';
+            
+            //Inicio del div header2
+            print '<div id="header2">';
+            if (!$header2==null){
+                print $header2;
+            }
+            else{
+                print '
+                    <div id="Header2Right">
+                        <ul>
+                            <li>
+                            </li>
+                            <li>
+                                <a href="" target="_top" title="Usuarios en línea">
+                                    <img width="13px" src="/main/img/members.gif" title="Usuarios en línea"> 1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>';                
+            }
+            //Fin del Div header2
+            print '</div>';
+            
+            if (!$header3==null){
+                 //Inicio del div header3
+                print '<div id="header3">';
+                print $header3;
+                
+                //Fin del Div header3
+                print '</div>';
+            } 
+            
+            //Inicio del div header4
+            print '<div id="header4">';
+            if (!$header4==null){
+                print $header4;
+            }/*
+            else{
+                print '';                
+            }*/
+            //Fin del Div header4
+            print '</div>';
+            
+            //Inicio del Div Clear
+            print '
+                <div class="clear">
+                </div>';
+            //Fin del Div Clear
+           
+        //Fin del Div Header
+        print '</div>';
+    }
+    
 }
 
 ?>

@@ -1,0 +1,258 @@
+<?php    
+    $this->titulopagina='Los Pinos - "Ver Unidad"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();   
+    
+    $cursounidad = new Application_Model_CursoUnidad();
+    $curunidad=$cursounidad->getunidadCurso($this->idunicurso);
+    
+    $competencia = new Application_Model_Competencias();
+    $listacompetencias=$competencia->getCompetenciasbyIdCursoUnidad($this->idunicurso);
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $urlFoto=$usuario->getFotobyIdUsuario($usuario_id);
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo = $mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $curso = new Application_Model_Cursos();
+    $infocurso = $curso->getInfoCurso($this->idcurso);
+    
+    $h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="/docente/cursos" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Cursos</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/detallecurso?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb1" target="_top">
+                    <span>'.$infocurso[0]['vCursNombreCurso'].'</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/editarunidades?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb2">
+                    <span>Editar Unidades</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/verunidadcurso?idcur='.$this->idcurso.'&idunicur='.$this->idunicurso.'" class="breadcrumb breadcrumb3">
+                    <span>'.$curunidad[0]['vUniDescripcion'].': '.$curunidad[0]['vNombreUnidad'].'</span>
+                </a>
+            </li>
+        </ul>';
+        
+    //print $html->crearWrapper(null, null, null, $h3, $h4 ,null, null,$content);
+    print $html->crearCabecera(null, null, null, $h3, $h4) ;
+?>
+
+<div id="main">
+    <div id="submain">
+        <?php 
+        switch($this->opt){
+            case 'com':?>
+                <form action="/docente/registrardetalleunidadcurso?idcur=<?php echo $this->idcurso;?>&idunicur=<?php echo $this->idunicurso;?>&opt=<?php echo $this->opt;?>" method="post">
+                    <div class="row">
+                        <div class="form_header">
+                            <div class="centraTabla">
+                                <img src="/main/img/icons/48/promotion.png" /> <h2>NUEVA COMPETENCIA</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="centraTabla">
+                        <table style="width:auto; border:none;" cellpadding="10">
+                                <tr>
+                                    <td>
+                                        <center>
+                                            <span class="form_required">*</span>Título:
+                                        </center>
+                                    </td>
+
+                                    <td>
+                                        <input type="text" size="70" name="txttitulo"/>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>                                
+                                        <center>
+                                            <span class="form_required">*</span> Descripción:
+                                        </center>
+                                    </td>
+
+                                    <td>
+                                        <textarea rows="5" cols="70" name="txtdescripcion"></textarea>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>
+                                        &nbsp;
+                                    </td>
+
+                                    <td>
+                                        <button class="save" type="submit">Registrar Competencia</button>
+                                    </td>
+                                </tr>
+                        </table>
+                    </div>
+                </form> 
+        <?php
+                break;
+            case 'cap':?>
+                <form action="/docente/registrardetalleunidadcurso?idcur=<?php echo $this->idcurso;?>&idunicur=<?php echo $this->idunicurso;?>&opt=<?php echo $this->opt;?>&idcom=<?php echo $this->idcom;?>" method="post">
+                    <div class="row">
+                        <div class="form_header">
+                            <div class="centraTabla">
+                                <img src="/main/img/icons/48/star.png" /> <h2>NUEVA CAPACIDAD</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="centraTabla">
+                        <table style="width:auto; border:none;" cellpadding="10">
+                                <tr>
+                                    <td>                                
+                                        <center>
+                                            <span class="form_required">*</span> Descripción:
+                                        </center>
+                                    </td>
+
+                                    <td>
+                                        <textarea rows="5" cols="70" name="txtdescripcion"></textarea>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>                                
+                                        <center>
+                                            <span class="form_required">*</span> Actitud:
+                                        </center>
+                                    </td>
+
+                                    <td>
+                                        <input type="text" size="50" name="txtactitud"/>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>
+                                        &nbsp;
+                                    </td>
+
+                                    <td>
+                                        <button class="save" type="submit">Registrar Capacidad</button>
+                                    </td>
+                                </tr>
+                        </table>
+                    </div>
+                </form> 
+        <?php
+                break;
+            case 'ind':?>
+                <form action="/docente/registrardetalleunidadcurso?idcur=<?php echo $this->idcurso;?>&idunicur=<?php echo $this->idunicurso;?>&opt=<?php echo $this->opt;?>&idcap=<?php echo $this->idcap;?>" method="post">
+                    <div class="row">
+                        <div class="form_header">
+                            <div class="centraTabla">
+                                <img src="/main/img/icons/48/test_results.png" /> <h2>NUEVO INDICADOR</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="centraTabla">
+                        <table style="width:auto; border:none;" cellpadding="10">
+                                <tr>
+                                    <td>                                
+                                        <center>
+                                            <span class="form_required">*</span> Descripción:
+                                        </center>
+                                    </td>
+
+                                    <td>
+                                        <textarea rows="5" cols="70" name="txtdescripcion"></textarea>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>
+                                        &nbsp;
+                                    </td>
+
+                                    <td>
+                                        <button class="save" type="submit">Registrar Indicador</button>
+                                    </td>
+                                </tr>
+                        </table>
+                    </div>
+                </form> 
+        <?php
+                
+                break;
+            case 'con':?>
+                <form action="/docente/registrardetalleunidadcurso?idcur=<?php echo $this->idcurso;?>&idunicur=<?php echo $this->idunicurso;?>&opt=<?php echo $this->opt;?>&idcap=<?php echo $this->idcap;?>" method="post">
+                    <div class="row">
+                        <div class="form_header">
+                            <div class="centraTabla">
+                                <img src="/main/img/icons/48/forum.png" /> <h2>NUEVO CONOCIMIENTO</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="centraTabla">
+                        <table style="width:auto; border:none;" cellpadding="10">
+                                <tr>
+                                    <td>                                
+                                        <center>
+                                            <span class="form_required">*</span> Descripción:
+                                        </center>
+                                    </td>
+
+                                    <td>
+                                        <textarea rows="5" cols="70" name="txtdescripcion"></textarea>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <td>
+                                        &nbsp;
+                                    </td>
+
+                                    <td>
+                                        <button class="save" type="submit">Registrar Conocimiento</button>
+                                    </td>
+                                </tr>
+                        </table>
+                    </div>
+                </form> 
+        <?php
+                
+                break;
+        }
+        ?>
+    </div>
+</div>

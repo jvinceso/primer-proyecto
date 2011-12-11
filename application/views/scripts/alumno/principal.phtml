@@ -23,9 +23,9 @@
     $paginaActual=$mysession->paginaActual ;
     $nombreUsuario=$mysession->usuario_nombre;
     $usuario_id=$mysession->usuario_id;
-
-    //Seccion para el Chat    
-    $_SESSION['username']=strtoupper($nombreUsuario);
+    
+    
+    $urlFoto=$usuario->getFotobyIdUsuario($usuario_id);
     
     $h3 = '
         <ul id="logout">
@@ -77,7 +77,7 @@
                     <div id="social_widget">
                         <div id="social_widget_image">
                             <a href="">
-                                <img title="Editar perfil" src="/main/img/unknown.jpg" width="90" height="90" border="1">
+                                <img title="Editar perfil"  src="/'.($urlFoto==NULL? "main/img/unknown.jpg":$urlFoto).'" width="90" height="90">
                             </a>
                         </div>
                     </div>

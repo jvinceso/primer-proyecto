@@ -1,0 +1,123 @@
+<?php
+ $this->titulopagina='Los Pinos - "Lecciones"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    $documentos = new Application_Model_Documentos();
+    $includes = new Application_Model_Includes();
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $urlFoto=$usuario->getFotobyIdUsuario($usuario_id);
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo = $mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $curso = new Application_Model_Cursos();
+    $infocurso = $curso->getInfoCurso($this->idcurso);
+    
+    $h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="/docente/cursos" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Cursos</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/detallecurso?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb1" target="_top">
+                    <span>'.$infocurso[0]['vCursNombreCurso'].'</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/lecciones?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb2">
+                    <span>Lecciones</span>
+                </a>
+            </li>
+        </ul>';
+        
+    print $html->crearCabecera(null, null, null, $h3, $h4) ;
+    $cursounidad = new Application_Model_CursoUnidad();
+    $listaunidades=$cursounidad->listarCursoUnidad($this->idcurso);
+?>
+<div id="main">
+    <div id="submain">
+        <div class="actions">
+            <a href="" title="Añadir lección">
+                <img src="/main/img/icons/32/add_learnpath_section.png" alt="Añadir lección" title="Añadir lección">
+            </a>
+            <img src="/main/img/i.gif" alt="i.gif" title="i.gif">
+        </div>
+        
+        <table width="100%" cellpadding="0" cellspacing="0" class="lp_build">
+            <tbody>
+                <tr style="vertical-align: top;">
+                    <td class="tree">
+                        <div class="lp_tree">
+                            <div class="dtree">
+                                <?php
+                                foreach($listaunidades as $unidad){
+                                    ?>
+                                <div class="dTreeNode">
+                                    <a>
+                                        <img id="im0" src="/main/img/icons/22/learnpath.png" alt="">
+                                        <?php echo $unidad['vUniDescripcion'].': '.$unidad['vNombreUnidad']; ?>
+                                    </a>
+                                </div>
+                                <?php
+                    }
+                    ?>
+                            </div>
+                        </div>
+                        
+                    </td>
+                    <td class="workspace">
+                        <!--<div class="normal-message">
+                            Lección añadida
+                        </div>-->
+                        <div class="normal-message">
+                            <p></p>
+                            <h2>Bienvenido a la herramienta de creación de lecciones!</h2><br>
+                            <a href="" title="Añadir lección">
+                                 <img style="vertical-align: middle;" src="/main/img/icons/22/add_learnpath_section.png" alt="Añadir lección" title="Añadir lección"> Añadir Lección
+                            </a>: Capítulo 1, Capítulo 2 o Semana 1, Semana 2, etc<br>
+                            <br><br>
+                            <p></p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

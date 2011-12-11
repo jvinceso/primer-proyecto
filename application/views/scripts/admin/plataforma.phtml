@@ -77,11 +77,7 @@
             $contenido .= '<li><a href="actualizarperiodo">Actualizar Periodo Académico</a></li>';
         }
         $contenido .= '                
-                <li><a href="course_list.php">Lista de cursos</a></li>
-                <li><a href="course_export.php">Exportar cursos</a></li>
-                <li><a href="course_import.php">Importar cursos desde un fichero</a></li>
-                <li><a href="course_category.php">Categorías de cursos</a></li>
-                <li><a href="subscribe_user2course.php">Inscribir usuarios en un curso</a></li>
+                <li><a href="editarunidades">Editar Unidades</a></li>
             </ul>
         </div>
         <div class="admin_section">
@@ -95,11 +91,7 @@
         }
         $contenido .= '
                 <li><a href="configrados">Grados por Defecto</a></li>                
-                <li><a href="course_export.php">Exportar cursos</a></li>
-                <li><a href="course_import.php">Importar Seccion desde un fichero</a></li>
-                <li><a href="course_category.php">Secciones por Grado</a></li>
-                <li><a href="subscribe_user2course.php">Inscribir sección en un grado</a></li>
-            </ul>
+                </ul>
         </div>
         <div class="admin_section">
             <h4><img src="/main/img/course.gif" alt="Secciones" title="Secciones">Secciones</h4>
@@ -111,22 +103,9 @@
                 $contenido .= '<li><a href="nuevaseccion">Crear Sección</a></li> ';
             }
         $contenido.='   
-                <li><a class="jqIframe" href="pruebando">Grados por Defecto</a></li>                
-                <li><a href="course_export.php">Exportar cursos</a></li>
-                <li><a href="course_import.php">Importar Seccion desde un fichero</a></li>
-                <li><a href="course_category.php">Secciones por Grado</a></li>
-                <li><a href="subscribe_user2course.php">Inscribir sección en un grado</a></li>
-            </ul>
+                
+                </ul>
         </div>';
-$contenido.='
-  <div class="admin_section">
-    <h4><img src="/main/img/statistics.gif" alt="Reportes" title="Reportes"> Reportes </h4>
-    <ul>
-        <li><a href="reporte1">Reporte de Alumnos</a></li>
-        <li><a href="reporte2">Reporte de Alumnos</a></li>
-        <li><a href="reportenotasbyseccion">Notas por Seccion</a></li> 
-    </ul>
-  </div>';
     
     print $html->crearWrapper(null, null, null, $h3, $h4 ,null, null,$contenido);
 ?>

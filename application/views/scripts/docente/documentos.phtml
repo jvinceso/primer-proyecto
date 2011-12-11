@@ -1,0 +1,269 @@
+<?php
+ $this->titulopagina='Los Pinos - "Editar Documentos"';
+    $html= new Application_Model_Html();
+    $menu= new Application_Model_Menu();
+    $usuario= new Application_Model_Usuario();    
+    $documentos = new Application_Model_Documentos();
+    $includes = new Application_Model_Includes();
+    
+    $mysession = new Zend_Session_Namespace('sesion');                    
+    $paginaActual=$mysession->paginaActual ;
+    $nombreUsuario=$mysession->usuario_nombre;
+    $usuario_id=$mysession->usuario_id;
+    
+    $urlFoto=$usuario->getFotobyIdUsuario($usuario_id);
+    $h3 = '
+        <ul id="logout">
+            <li>
+                <a href="/admin/logout/" target="_top">
+                    <span>Cerrar Sesión de '.$nombreUsuario.'</span>
+                </a>
+            </li>
+        </ul>';
+ 
+    $tipo = $mysession->tipo_usuario;
+    $result = $menu->getMenu($tipo);
+    
+    $h3 .= '<ul>'; 
+    foreach ($result as $aux) {
+       if ($paginaActual==$aux['Descripcion']){
+           $h3.='<li id="current">';
+       }
+       else {
+           $h3.='<li>';
+       }
+       
+       $h3.='
+           <a href="'.$aux['url'].'" target="_top">
+                    <span id="tab_active">'.$aux['Descripcion'].'</span>
+                </a>
+            </li>';
+    }
+    $h3 .= '</ul>';
+    
+    $curso = new Application_Model_Cursos();
+    $infocurso = $curso->getInfoCurso($this->idcurso);
+    
+    $h4='<ul class="bread">
+             <li>
+                <a class="home" href="/">
+                    <img align="middle" src="/main/css/home.png" alt="Página principal" title="Página principal">
+                </a>
+            </li>
+            <li>
+                <a href="/docente/cursos" class="breadcrumb breadcrumb0" target="_top">
+                    <span>Cursos</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/detallecurso?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb1" target="_top">
+                    <span>'.$infocurso[0]['vCursNombreCurso'].'</span>
+                </a>
+            </li>
+            <li>
+                <a href="/docente/documentos?idcurso='.$this->idcurso.'" class="breadcrumb breadcrumb2">
+                    <span>Documentos</span>
+                </a>
+            </li>
+        </ul>';
+        
+    print $html->crearCabecera(null, null, null, $h3, $h4) ;
+    $listadocumentos = $documentos->getDocumentosbyIdCursoIdPadre($this->idcurso, $this->iddocpadre);
+?>
+<div id="main">
+    <div id="submain">
+        <?php
+            if ($this->crearcar==1){
+                ?>
+        <form action="/docente/crearcarpeta?idcurso=<?php echo $this->idcurso;?>&iddocpadre=<?php echo $this->iddocpadre;?>" method="post">
+            <div class="row">
+                <div class="form_header">
+                    Crear una carpeta
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">
+                    <span class="form_required">*</span>Nombre de la nueva carpeta
+                </div>
+                <div class="formw">
+                    &nbsp;&nbsp;&nbsp;<input type="text" name="txtnombrecarpeta">
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">&nbsp;</div>
+                <div class="formw">
+                    <button type="submit" class="add">Crear la carpeta</button>
+                </div>
+            </div>
+        </form>
+        <div style="clear: both; margin-bottom: 10px;"></div>
+                <?php
+            }
+            else if($this->crearcar==2){
+                ?>
+                 <form action="/docente/cargararchivo?idcurso=<?php echo $this->idcurso;?>&iddocpadre=<?php echo $this->iddocpadre;?>" method="POST" enctype="multipart/form-data">
+            <div class="row">
+                <div class="form_header">
+                    Cargar un archivo
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">
+                    <span class="form_required">*</span>Nombre del Archivo
+                </div>
+                <div class="formw">
+                    <input type="hidden" name="MAX_FILE_SIZE" value="90000000" />
+                    &nbsp;&nbsp;&nbsp;<input type="text" name="txtnombre"/> 
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">
+                    <span class="form_required">*</span>Ruta del Archivo
+                </div>
+                <div class="formw">
+                    &nbsp;&nbsp;&nbsp;<input type="file" name="filee">
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">&nbsp;</div>
+                <div class="formw">
+                    <button type="submit" class="add">Enviar Archivo</button>
+                </div>
+            </div>
+        </form>
+        <div style="clear: both; margin-bottom: 10px;"></div>
+                <?php
+            }
+        ?>
+        <div class="actions">
+            <a href="/docente/documentos?idcurso=<?php echo $this->idcurso;?>&iddocpadre=<?php echo $this->iddocpadre;?>&crearcar=1">
+                <img src="/main/img/icons/32/new_folder.png" alt="Crear una carpeta" title="Crear una carpeta">
+            </a>
+            <a href="/docente/documentos?idcurso=<?php echo $this->idcurso;?>&iddocpadre=<?php echo $this->iddocpadre;?>&crearcar=2">
+                <img src="/main/img/icons/32/upload_file.png" alt="Cargar un archivo" title="Cargar un archivo">
+            </a>
+        </div>
+        <div><h2>Carpeta Actual: <?php echo $documentos->obternerruta($this->iddocpadre);?></h2></div>
+        <table class="data_table">
+            <tr class="row_odd">
+                <th style="width:30px;">
+                    <a href="">Tipo</a>
+                </th>
+                <th>
+                    <a href="">Nombre</a>
+                </th>
+                <th style="width:50px;">
+                    <a href="">Tamaño</a>
+                </th>
+                <th style="width:105px;">
+                    <a href="">Modificado</a>
+                </th>
+                <th style="width:100px;">
+                    <a href="">Opciones</a>
+                </th>
+            </tr>
+        <?php
+        if($listadocumentos==0){
+        }
+        else{
+            foreach($listadocumentos as $documento){
+                $iddocumento = $documento['iDocuIdDocumento'];
+                ?>
+            
+            <tr class="row_even">
+                <td>
+                    <center>
+                        <?php
+                            if($documento['vDocuTipoDocumento']=="folder"){?>
+                        <a href="" title="<?php echo $documento['vDocuTitulo'];?>" target="_self" style="float:left">
+                            <img hspace="5" align="middle" height="22" width="22" src="/main/img/folder_document.gif" alt="" title="">
+                        </a>
+                        <?php
+                            }
+                            else{
+                                ?>
+                                <img hspace="5" align="middle" height="22" width="22" src="/main/img/file_txt.gif" alt="" title="">
+                            <?php
+                            }
+                        ?>
+                       
+                    </center>
+                </td>
+                <td>
+                    <a href="/docente/documentos?idcurso=<?php echo $this->idcurso;?>&iddocpadre=<?php echo $iddocumento;?>" title="<?php echo $documento['vDocuTitulo'];?>">
+                        <?php echo $documento['vDocuTitulo'];?>
+                    </a>
+                    <a href="" style="float:right">
+                        <img src="/main/img/icons/22/save_pack.png" alt="Descargar" title="Descargar">
+                    </a>
+                    <br>
+                    <i></i>
+                </td>
+                <td>
+                    <center>
+                        <?php echo $documento['vDocuTamano'];?>
+                    </center>
+                </td>
+                <td>
+                    <center>
+                        <a title="<?php 
+                        $dia= $includes->timestampToDate($documento['iDocuFechaCreacion']);
+                        echo $dia;?>">
+                        <?php
+                            $segundos_diferencia = time() - $documento['iDocuFechaModificado']; 
+                            $dias_diferencia = $segundos_diferencia / (60 * 60 * 24);
+                            $dias_diferencia = abs($dias_diferencia);
+                            $dias_diferencia = floor($dias_diferencia);
+                            if($dias_diferencia<7){
+                                if($dias_diferencia==0){
+                                    echo "Hoy";
+                                }
+                                else if($dias_diferencia==1){
+                                    echo "Ayer";
+                                }
+                                else{
+                                    echo "Hace ".$dias_diferencia." días";
+                                }
+                            }
+                            else if($dias_diferencia<30){
+                                if($dias_diferencia==7){
+                                    echo "Hace una semana";
+                                }
+                                else if($dias_diferencia>=8 && $dias_diferencia<=14){
+                                    echo "Hace dos Semanas";
+                                }
+                                else if($dias_diferencia>14 && $dias_diferencia<15){
+                                    echo "Hace tres Semanas";
+                                }
+                            }
+                            else{
+                                 if($dias_diferencia==30){
+                                    echo "Hace un mes";
+                                }
+                                else{
+                                    echo "Hace ".$dias_diferencia." dias";
+                                }
+                            }
+                        ?>
+                        </a>
+                    </center>
+                </td>
+                <td>
+                    <center>
+                        <a href="">
+                            <img src="/main/img/icons/22/edit.png" alt="Modificar" title="Modificar">
+                        </a>&nbsp;
+                         <a href="">
+                            <img src="/main/img/icons/22/delete.png" alt="Eliminar" title="Eliminar">
+                        </a>&nbsp;
+                        </center>
+                </td>
+            </tr> 
+        
+        <?php
+            }
+        }
+        ?>
+        </table>
+    </div>
+</div>

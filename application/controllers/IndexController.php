@@ -14,7 +14,7 @@ class IndexController extends Zend_Controller_Action
         $this->render('form');
  
     }
-     public function loginAction(){
+    public function loginAction(){
         if (!$this->getRequest()->isPost()) {
             return $this->_forward('index');
         }
@@ -41,9 +41,12 @@ class IndexController extends Zend_Controller_Action
                         
             $mysession = new Zend_Session_Namespace('sesion');
             $mysession->actividad='SI';
-            $mysession->setExpirationSeconds(60,'actividad');
+            $mysession->setExpirationSeconds(60*5,'actividad');
             //$mysession->usuario_id =  $usuario->getIdUsuario();
             $mysession->usuario_nombre = $result->getIdentity();
+            
+            $_SESSION['username']=strtoupper($mysession->usuario_nombre);
+            
             $aux=$usuario->getUsuariobyNombreUsuario($mysession->usuario_nombre);
             
             $mysession->usuario_id = $aux[0]['iUsuIdUsuario'];
